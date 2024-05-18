@@ -26,7 +26,7 @@
 
 ### Local Setup
 
-```sh
+```shell
 # Install dependencies
 pnpm install
 
