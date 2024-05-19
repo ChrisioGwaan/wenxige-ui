@@ -1,5 +1,5 @@
 interface Product {
-  id: number
+  id: string
   brandTypeId: number
   productName: string
   specification: string

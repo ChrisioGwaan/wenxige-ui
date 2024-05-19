@@ -1,17 +1,17 @@
 import { ref, watch } from "vue"
 
-/** 项目标题 */
-const VITE_APP_TITLE = import.meta.env.VITE_APP_TITLE ?? "C & E"
+/** Project title */
+const VITE_APP_TITLE = import.meta.env.VITE_APP_TITLE ?? "Wenxige"
 
-/** 动态标题 */
+/** Dynamic title */
 const dynamicTitle = ref<string>("")
 
-/** 设置标题 */
+/** Title configuration */
 const setTitle = (title?: string) => {
   dynamicTitle.value = title ? `${VITE_APP_TITLE} | ${title}` : VITE_APP_TITLE
 }
 
-/** 监听标题变化 */
+/** Title change listening */
 watch(dynamicTitle, (value, oldValue) => {
   if (document && value !== oldValue) {
     document.title = value

@@ -1,11 +1,21 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
-import { createTableDataApi, deleteTableDataApi, updateTableDataApi } from "@/api/table"
-import { type CreateOrUpdateTableRequestData, type GetTableData } from "@/api/table/types/table"
+import {
+  batchDeleteTableRequestData,
+  type CreateOrUpdateTableRequestData,
+  type GetTableData
+} from "@/api/table/types/table"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
-import { getTableDataPage } from "@/api/product"
+import {
+  createProduct,
+  getTableDataPage,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+  batchDeleteProduct
+} from "@/api/product"
 
 defineOptions({
   name: "ElementPlus"
@@ -24,6 +34,7 @@ const DEFAULT_FORM_DATA: CreateOrUpdateTableRequestData = {
   productName: "",
   specification: "",
   manufactureDate: "",
+  hasSpecificDay: "",
   retailPrice: undefined,
   sellPrice: undefined,
   unitType: undefined,
@@ -34,34 +45,42 @@ const dialogVisible = ref<boolean>(false)
 const formRef = ref<FormInstance | null>(null)
 const formData = ref<CreateOrUpdateTableRequestData>(JSON.parse(JSON.stringify(DEFAULT_FORM_DATA)))
 const formRules: FormRules<CreateOrUpdateTableRequestData> = {
-  brandTypeId: [{ required: true, trigger: "blur", message: "Please enter brandTypeId" }],
-  productName: [{ required: true, trigger: "blur", message: "Please enter productName" }],
-  specification: [{ required: true, trigger: "blur", message: "Please enter specification" }],
-  manufactureDate: [{ required: true, trigger: "blur", message: "Please enter manufactureDate" }],
-  retailPrice: [{ required: true, trigger: "blur", message: "Please enter retailPrice" }],
-  sellPrice: [{ required: true, trigger: "blur", message: "Please enter sellPrice" }],
-  unitType: [{ required: true, trigger: "blur", message: "Please enter unitType" }],
-  currentQuantity: [{ required: true, trigger: "blur", message: "Please enter currentQuantity" }],
-  comment: [{ required: true, trigger: "blur", message: "Please enter comment" }]
+  brandTypeId: [{ required: true, trigger: "blur", message: "品牌不能為空！" }],
+  productName: [{ required: true, trigger: "blur", message: "產品名稱不能為空！" }],
+  specification: [{ required: true, trigger: "blur", message: "產品規格不能為空！" }],
+  manufactureDate: [{ required: true, trigger: "blur", message: "製造日期不能為空！" }],
+  retailPrice: [{ required: true, trigger: "blur", message: "全國統一零售價格不能為空！" }],
+  sellPrice: [{ required: false, trigger: "blur", message: "銷售價格不能為空！" }],
+  unitType: [{ required: true, trigger: "blur", message: "單位不能為空！" }],
+  currentQuantity: [{ required: true, trigger: "blur", message: "現有貨存數不能為空！" }],
+  comment: [{ required: false, trigger: "blur", message: "備註不能為空！" }]
 }
 const handleCreateOrUpdate = () => {
   formRef.value?.validate((valid: boolean, fields) => {
-    if (!valid) return console.error("Invalid input", fields)
-    loading.value = true
-    const api = formData.value.id === undefined ? createTableDataApi : updateTableDataApi
-    api(formData.value)
-      .then(() => {
-        ElMessage({
-          message: "Create successfully",
-          type: "success",
-          plain: true
+    if (valid) {
+      loading.value = true
+      const api = formData.value.id === undefined ? createProduct : updateProduct
+      api(formData.value)
+        .then(() => {
+          ElMessage({
+            message: "新增成功！",
+            type: "success",
+            plain: true
+          })
+          dialogVisible.value = false
+          getTableData()
         })
-        dialogVisible.value = false
-        getTableData()
-      })
-      .finally(() => {
-        loading.value = false
-      })
+        .catch((error) => {
+          ElMessage({
+            message: `Error: ${error.message}`,
+            type: "error",
+            plain: true
+          })
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    }
   })
 }
 const resetForm = () => {
@@ -71,14 +90,14 @@ const resetForm = () => {
 // #endregion
 
 // #region delete
-const handleDelete = (row: GetTableData) => {
-  ElMessageBox.confirm(`Are you sure you are going to delete ${row.username}?`, "Alert", {
-    confirmButtonText: "Confirm",
-    cancelButtonText: "Cancel",
+const handleDelete = (row: Product) => {
+  ElMessageBox.confirm(`你確定要刪除 ${row.productName} ?`, "產品刪除提示", {
+    confirmButtonText: "確定",
+    cancelButtonText: "再諗下",
     type: "warning"
   }).then(() => {
-    deleteTableDataApi(row.id).then(() => {
-      ElMessage.success("Delete successfully")
+    deleteProduct(row.id).then(() => {
+      ElMessage.success("刪除成功！")
       getTableData()
     })
   })
@@ -86,26 +105,41 @@ const handleDelete = (row: GetTableData) => {
 
 const handleBatchDelete = () => {
   if (multipleSelection.length === 0) {
-    ElMessage.warning("請選擇需要刪除的產品")
+    ElMessage.warning("請選擇需要刪除的產品！")
     return
   }
-  // ElMessageBox.confirm("Are you sure you are going to delete the selected items?", "Alert", {
-  //   confirmButtonText: "Confirm",
-  //   cancelButtonText: "Cancel",
-  //   type: "warning"
-  // }).then(() => {
-  //   deleteTableDataApi(multipleSelection).then(() => {
-  //     ElMessage.success("Delete successfully")
-  //     getTableData()
-  //   })
-  // })
+  ElMessageBox.confirm("確定要刪除嗎？", "刪除提示", {
+    confirmButtonText: "確定",
+    cancelButtonText: "再諗下",
+    type: "warning"
+  }).then(() => {
+    const data: batchDeleteTableRequestData = { productIds: multipleSelection }
+    batchDeleteProduct(data)
+      .then(() => {
+        ElMessage.success("刪除成功！")
+        getTableData()
+      })
+      .catch((error) => {
+        ElMessage.error(`刪除失敗：${error.msg}`)
+      })
+  })
 }
 // #endregion
 
 // #region update
 const handleUpdate = (row: GetTableData) => {
   dialogVisible.value = true
-  formData.value = JSON.parse(JSON.stringify(row))
+  getProductById(row.id)
+    .then((response) => {
+      formData.value = response.data
+    })
+    .catch((error) => {
+      ElMessage({
+        message: `Error: ${error.message}`,
+        type: "error",
+        plain: true
+      })
+    })
 }
 // #endregion
 
@@ -113,7 +147,7 @@ const handleUpdate = (row: GetTableData) => {
 const tableData = ref<GetTableData[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 
-const searchData = reactive({
+let searchData = reactive({
   productName: "",
   dataRange: []
 })
@@ -141,7 +175,8 @@ const handleSearch = () => {
   paginationData.currentPage === 1 ? getTableData() : (paginationData.currentPage = 1)
 }
 const resetSearch = () => {
-  searchFormRef.value?.resetFields()
+  searchData.productName = ""
+  searchData.dataRange = []
   handleSearch()
 }
 // #endregion
@@ -165,7 +200,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
           <el-date-picker
             v-model="searchData.dataRange"
             type="datetimerange"
-            range-separator="To"
+            range-separator="至"
             start-placeholder="開始日期"
             end-placeholder="結束日期"
             value-format="YYYY-MM-DD HH:mm:ss"
@@ -205,13 +240,13 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
             width="120"
             :show-overflow-tooltip="true"
           />
-          <el-table-column prop="manufactureDate" label="製造日期" align="center" width="180" />
+          <el-table-column prop="manufactureDateStr" label="製造日期" align="center" width="180" />
           <el-table-column prop="retailPrice" label="全國統一零售價" align="center" width="180" />
           <el-table-column prop="sellPrice" label="銷售價格" align="center" width="180" />
           <el-table-column prop="unitType" label="單位" align="center">
             <template #default="scope">
               <el-tag v-if="scope.row.unitType === 1" type="success" effect="plain">個</el-tag>
-              <el-tag v-else type="info" effect="plain">未知</el-tag>
+              <el-tag v-else type="info" effect="plain">其它</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="currentQuantity" label="現有貨存數量" align="center" width="180" />
@@ -246,12 +281,15 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       width="50%"
     >
       <div class="title">產品信息</div>
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" label-position="left">
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="180px" label-position="left">
         <el-form-item prop="productName" label="產品名稱">
-          <el-input v-model="formData.productName" placeholder="輸入產品名稱" />
+          <el-input v-model="formData.productName" placeholder="輸入產品名稱" clearable />
+        </el-form-item>
+        <el-form-item prop="brandTypeId" label="品牌類型">
+          <el-input v-model="formData.brandTypeId" placeholder="輸入品牌類型" clearable />
         </el-form-item>
         <el-form-item prop="specification" label="規格">
-          <el-input v-model="formData.specification" placeholder="輸入規格" />
+          <el-input v-model="formData.specification" placeholder="輸入規格" clearable />
         </el-form-item>
         <el-form-item prop="manufactureDate" label="製造日期">
           <el-date-picker
@@ -259,22 +297,29 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
             type="month"
             placeholder="選擇製造日期"
             value-format="YYYY-MM-DD"
+            clearable
           />
         </el-form-item>
+        <el-form-item prop="hasSpecificDay" label="製造日期是否精確到天">
+          <el-radio-group v-model="formData.hasSpecificDay" disabled>
+            <el-radio aria-label="1" value="1">是</el-radio>
+            <el-radio aria-label="0" value="0">否</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item prop="retailPrice" label="全國統一零售價">
-          <el-input v-model="formData.retailPrice" placeholder="輸入全國統一零售價" />
+          <el-input v-model="formData.retailPrice" placeholder="輸入全國統一零售價" clearable />
         </el-form-item>
         <el-form-item prop="sellPrice" label="銷售價格">
-          <el-input v-model="formData.sellPrice" placeholder="輸入銷售價格" />
+          <el-input v-model="formData.sellPrice" placeholder="輸入銷售價格" clearable />
         </el-form-item>
         <el-form-item prop="unitType" label="單位">
           <el-radio-group v-model="formData.unitType">
-            <el-radio label="1">個</el-radio>
-            <el-radio label="2">未知</el-radio>
+            <el-radio aria-label="1" :value="1">個</el-radio>
+            <el-radio aria-label="2" :value="2">其它</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item prop="currentQuantity" label="現有貨存數量">
-          <el-input v-model="formData.currentQuantity" placeholder="輸入現有貨存數量" />
+          <el-input v-model="formData.currentQuantity" placeholder="輸入現有貨存數量" clearable />
         </el-form-item>
         <el-form-item prop="comment" label="備註">
           <el-input
@@ -288,8 +333,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="handleCreateOrUpdate" :loading="loading">Submit</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button color="#626aef" @click="handleCreateOrUpdate" :loading="loading" plain>提交</el-button>
       </template>
     </el-dialog>
   </div>

@@ -4,8 +4,9 @@ export interface CreateOrUpdateTableRequestData {
   productName: string
   specification: string
   manufactureDate: string
+  hasSpecificDay?: string
   retailPrice: number
-  sellPrice: number
+  sellPrice?: number
   unitType: number
   currentQuantity: number
   comment?: string
@@ -13,7 +14,7 @@ export interface CreateOrUpdateTableRequestData {
 
 export interface GetTableRequestData {
   /** 当前页码 */
-  currentPage: number
+  current: number
   /** 查询条数 */
   size: number
   /** 查询参数：用户名 */
@@ -30,6 +31,10 @@ export interface GetTableData {
   roles: string
   status: boolean
   username: string
+}
+
+export interface batchDeleteTableRequestData {
+  productIds: string[]
 }
 
 export type GetTableResponseData = ApiResponseData<{

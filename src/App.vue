@@ -3,7 +3,8 @@ import { useTheme } from "@/hooks/useTheme"
 import { ElNotification } from "element-plus"
 // Element Plus language setup
 // import zhCn from "element-plus/es/locale/lang/zh-cn"
-import en from "element-plus/es/locale/lang/en"
+import zhCn from "element-plus/es/locale/lang/zh-tw"
+// import en from "element-plus/es/locale/lang/en"
 
 const { initTheme } = useTheme()
 
@@ -23,7 +24,7 @@ initTheme()
 </script>
 
 <template>
-  <el-config-provider :locale="en">
+  <el-config-provider :locale="zhCn">
     <router-view />
   </el-config-provider>
 </template>
