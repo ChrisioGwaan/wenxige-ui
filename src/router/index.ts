@@ -91,7 +91,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: "brand-type",
-        component: () => import("@/views/tea-business/brand/index.vue"),
+        component: () => import("@/views/tea-business/brand-type/index.vue"),
         name: "BrandType",
         meta: {
           title: "品牌種類管理",
