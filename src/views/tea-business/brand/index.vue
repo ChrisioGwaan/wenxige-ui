@@ -1,18 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import {
-  Search,
-  Refresh,
-  CirclePlus,
-  Delete,
-  Download,
-  RefreshRight,
-  Check,
-  Close,
-  CircleCheckFilled,
-  CircleCloseFilled
-} from "@element-plus/icons-vue"
+import { Search, Refresh, CirclePlus, Delete, CircleCheckFilled, CircleCloseFilled } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import { createBrand, getBrandById, updateBrand, deleteBrand, batchDeleteBrand } from "@/api/brand"
 import { getTableDataPage } from "@/api/brand"
