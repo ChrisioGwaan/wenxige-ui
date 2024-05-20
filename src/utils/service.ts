@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios"
 import { useUserStoreHook } from "@/store/modules/user"
-import { ElMessage } from "element-plus"
+import { ElMessage, ElNotification } from "element-plus"
 import { get, merge } from "lodash-es"
 import { getToken } from "./cache/cookies"
 
@@ -39,6 +39,18 @@ function createService() {
         case 0:
           // code === 0 represent success in our business logic
           return apiData
+        case 1:
+          // code === 1 represent failure in our business logic
+          // ElMessage.error(apiData.message || "Error")
+          if (apiData.msg === "Token has expired or is invalid") {
+            ElNotification({
+              title: "Notification",
+              message: "Token has expired. Please log in again.",
+              type: "warning"
+            })
+            return logout()
+          }
+          return Promise.reject(new Error("Error"))
         case 401:
           // Token expired
           return logout()
