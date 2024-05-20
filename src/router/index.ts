@@ -65,14 +65,37 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/tea-business",
     component: Layouts,
     redirect: "/tea-business/product-info",
+    meta: {
+      title: "基礎數據",
+      elIcon: "Menu",
+      alwaysShow: true
+    },
     children: [
       {
-        path: "ProductInfo",
+        path: "product-info",
         component: () => import("@/views/tea-business/product-info/index.vue"),
         name: "ProductInfo",
         meta: {
-          title: "茶葉產品",
+          title: "茶葉產品管理",
           elIcon: "Box"
+        }
+      },
+      {
+        path: "brand",
+        component: () => import("@/views/tea-business/brand/index.vue"),
+        name: "Brand",
+        meta: {
+          title: "品牌管理",
+          elIcon: "Goods"
+        }
+      },
+      {
+        path: "brand-type",
+        component: () => import("@/views/tea-business/brand/index.vue"),
+        name: "BrandType",
+        meta: {
+          title: "品牌種類管理",
+          elIcon: "Handbag"
         }
       }
     ]

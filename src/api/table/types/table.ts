@@ -33,10 +33,6 @@ export interface GetTableData {
   username: string
 }
 
-export interface batchDeleteTableRequestData {
-  productIds: string[]
-}
-
 export type GetTableResponseData = ApiResponseData<{
   list: GetTableData[]
   total: number

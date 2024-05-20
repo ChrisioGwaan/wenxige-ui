@@ -2,14 +2,14 @@ import { request } from "@/utils/service"
 import type * as productInfo from "@/api/product/types/table"
 
 export function getTableDataPage(params: productInfo.GetTableRequestData) {
-  return request<productInfo.GetTableResponseData>({
+  return request({
     url: `product/page`,
     method: "get",
     params
   })
 }
 
-export function createProduct(data: productInfo.CreateOrUpdateTableRequestData) {
+export function createProduct(data: productInfo.CreateOrUpdateProductRequestData) {
   return request({
     url: `product/create`,
     method: "post",
@@ -17,7 +17,7 @@ export function createProduct(data: productInfo.CreateOrUpdateTableRequestData) 
   })
 }
 
-export function updateProduct(data: productInfo.CreateOrUpdateTableRequestData) {
+export function updateProduct(data: productInfo.CreateOrUpdateProductRequestData) {
   return request({
     url: `product/update`,
     method: "put",

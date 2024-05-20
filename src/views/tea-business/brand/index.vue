@@ -1,18 +1,27 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
-import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
-import { usePagination } from "@/hooks/usePagination"
 import {
-  createProduct,
-  getTableDataPage,
-  getProductById,
-  updateProduct,
-  deleteProduct,
-  batchDeleteProduct
-} from "@/api/product"
-import { CreateOrUpdateProductRequestData, GetTableData, batchDeleteTableRequestData } from "@/api/product/types/table"
-import { Product } from "@/api/product/types/table"
+  Search,
+  Refresh,
+  CirclePlus,
+  Delete,
+  Download,
+  RefreshRight,
+  Check,
+  Close,
+  CircleCheckFilled,
+  CircleCloseFilled
+} from "@element-plus/icons-vue"
+import { usePagination } from "@/hooks/usePagination"
+import { createBrand, getBrandById, updateBrand, deleteBrand, batchDeleteBrand } from "@/api/brand"
+import { getTableDataPage } from "@/api/brand"
+import {
+  CreateOrUpdateBrandRequestData,
+  batchDeleteTableRequestData,
+  Brand,
+  GetTableData
+} from "@/api/brand/types/table"
 
 defineOptions({
   name: "ElementPlus"
@@ -25,38 +34,25 @@ const loading = ref<boolean>(false)
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 
 // #region create
-const DEFAULT_FORM_DATA: CreateOrUpdateProductRequestData = {
+const DEFAULT_FORM_DATA: CreateOrUpdateBrandRequestData = {
   id: undefined,
-  brandTypeId: undefined,
-  productName: "",
-  specification: "",
-  manufactureDate: "",
-  hasSpecificDay: "",
-  retailPrice: undefined,
-  sellPrice: undefined,
-  unitType: undefined,
-  currentQuantity: undefined,
+  brandName: "",
+  originYear: "",
   comment: ""
 }
 const dialogVisible = ref<boolean>(false)
 const formRef = ref<FormInstance | null>(null)
-const formData = ref<CreateOrUpdateProductRequestData>(JSON.parse(JSON.stringify(DEFAULT_FORM_DATA)))
-const formRules: FormRules<CreateOrUpdateProductRequestData> = {
-  brandTypeId: [{ required: true, trigger: "blur", message: "品牌不能為空！" }],
-  productName: [{ required: true, trigger: "blur", message: "產品名稱不能為空！" }],
-  specification: [{ required: true, trigger: "blur", message: "產品規格不能為空！" }],
-  manufactureDate: [{ required: true, trigger: "blur", message: "製造日期不能為空！" }],
-  retailPrice: [{ required: true, trigger: "blur", message: "全國統一零售價格不能為空！" }],
-  sellPrice: [{ required: false, trigger: "blur", message: "銷售價格不能為空！" }],
-  unitType: [{ required: true, trigger: "blur", message: "單位不能為空！" }],
-  currentQuantity: [{ required: true, trigger: "blur", message: "現有貨存數不能為空！" }],
+const formData = ref<CreateOrUpdateBrandRequestData>(JSON.parse(JSON.stringify(DEFAULT_FORM_DATA)))
+const formRules: FormRules<CreateOrUpdateBrandRequestData> = {
+  brandName: [{ required: true, trigger: "blur", message: "品牌名稱不能為空！" }],
+  originYear: [{ required: true, trigger: "blur", message: "品牌創立年份不能為空！" }],
   comment: [{ required: false, trigger: "blur", message: "備註不能為空！" }]
 }
 const handleCreateOrUpdate = () => {
   formRef.value?.validate((valid: boolean, fields) => {
     if (valid) {
       loading.value = true
-      const api = formData.value.id === undefined ? createProduct : updateProduct
+      const api = formData.value.id === undefined ? createBrand : updateBrand
       api(formData.value)
         .then(() => {
           ElMessage({
@@ -87,13 +83,13 @@ const resetForm = () => {
 // #endregion
 
 // #region delete
-const handleDelete = (row: Product) => {
-  ElMessageBox.confirm(`你確定要刪除 ${row.productName} ?`, "產品刪除提示", {
+const handleDelete = (row: Brand) => {
+  ElMessageBox.confirm(`你確定要刪除 ${row.brandName} ?`, "產品刪除提示", {
     confirmButtonText: "確定",
     cancelButtonText: "再諗下",
     type: "warning"
   }).then(() => {
-    deleteProduct(row.id).then(() => {
+    deleteBrand(row.id).then(() => {
       ElMessage.success("刪除成功！")
       getTableData()
     })
@@ -110,8 +106,8 @@ const handleBatchDelete = () => {
     cancelButtonText: "再諗下",
     type: "warning"
   }).then(() => {
-    const data: batchDeleteTableRequestData = { productIds: multipleSelection }
-    batchDeleteProduct(data)
+    const data: batchDeleteTableRequestData = { brandIds: multipleSelection }
+    batchDeleteBrand(data)
       .then(() => {
         ElMessage.success("刪除成功！")
         getTableData()
@@ -126,7 +122,7 @@ const handleBatchDelete = () => {
 // #region update
 const handleUpdate = (row: GetTableData) => {
   dialogVisible.value = true
-  getProductById(row.id)
+  getBrandById(row.id)
     .then((response) => {
       formData.value = response.data
     })
@@ -145,7 +141,8 @@ const tableData = ref<GetTableData[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 
 let searchData = reactive({
-  productName: "",
+  brandName: "",
+  originYear: "",
   dataRange: []
 })
 const getTableData = () => {
@@ -153,7 +150,8 @@ const getTableData = () => {
   getTableDataPage({
     current: paginationData.currentPage || 1,
     size: paginationData.pageSize || 10,
-    productName: searchData.productName,
+    brandName: searchData.brandName || "",
+    originYear: searchData.originYear || "",
     startDate: searchData.dataRange ? searchData.dataRange[0] : "",
     endDate: searchData.dataRange ? searchData.dataRange[1] : ""
   })
@@ -172,7 +170,8 @@ const handleSearch = () => {
   paginationData.currentPage === 1 ? getTableData() : (paginationData.currentPage = 1)
 }
 const resetSearch = () => {
-  searchData.productName = ""
+  searchData.brandName = ""
+  searchData.originYear = ""
   searchData.dataRange = []
   handleSearch()
 }
@@ -182,6 +181,14 @@ const handleSelectionChange = (selection: GetTableData[]) => {
   console.log(multipleSelection)
 }
 
+const handleYearChange = (val: any) => {
+  if (val) {
+    formData.value.originYear = val.getFullYear().toString()
+  } else {
+    formData.value.originYear = ""
+  }
+}
+
 /** Watch if queries are different based on the page results */
 watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
 </script>
@@ -189,11 +196,20 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 <template>
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
-      <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="productName" label="產品名稱：" style="width: 260px">
-          <el-input v-model="searchData.productName" placeholder="請輸入" clearable />
-        </el-form-item>
-        <el-form-item prop="createTime" label="創建時間：">
+      <el-form ref="searchFormRef" :inline="true" :model="searchData" label-width="120px" label-position="left">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item prop="brandName" label="品牌名稱：" style="width: 100%">
+              <el-input v-model="searchData.brandName" placeholder="請輸入" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item prop="originYear" label="品牌創立年份：" style="width: 100%">
+              <el-input v-model="searchData.originYear" placeholder="請輸入" clearable />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item prop="createTime" label="創建時間：" style="width: 600px">
           <el-date-picker
             v-model="searchData.dataRange"
             type="datetimerange"
@@ -213,43 +229,39 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true">新增產品</el-button>
-          <el-button type="danger" :icon="Delete" @click="handleBatchDelete">批量刪除產品</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true">新增品牌</el-button>
+          <el-button type="danger" :icon="Delete" @click="handleBatchDelete">批量刪除品牌</el-button>
         </div>
-        <div>
-          <el-tooltip content="導出Excel">
-            <el-button type="primary" :icon="Download" circle />
-          </el-tooltip>
-          <el-tooltip content="刷新查詢頁">
-            <el-button type="primary" :icon="RefreshRight" circle @click="getTableData" />
-          </el-tooltip>
-        </div>
+        <!--        <div>-->
+        <!--          <el-tooltip content="導出Excel">-->
+        <!--            <el-button type="primary" :icon="Download" circle />-->
+        <!--          </el-tooltip>-->
+        <!--          <el-tooltip content="刷新查詢頁">-->
+        <!--            <el-button type="primary" :icon="RefreshRight" circle @click="getTableData" />-->
+        <!--          </el-tooltip>-->
+        <!--        </div>-->
       </div>
       <div class="table-wrapper">
         <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="45" />
-          <el-table-column type="index" label="序号" width="80" align="center" />
-          <el-table-column prop="productName" label="產品名稱" align="center" width="180" />
-          <el-table-column
-            prop="specification"
-            label="產品規格"
-            align="center"
-            width="120"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column prop="manufactureDateStr" label="製造日期" align="center" width="180" />
-          <el-table-column prop="retailPrice" label="全國統一零售價" align="center" width="180" />
-          <el-table-column prop="sellPrice" label="銷售價格" align="center" width="180" />
-          <el-table-column prop="unitType" label="單位" align="center">
+          <el-table-column type="selection" width="100" align="center" />
+          <el-table-column type="index" label="序号" width="150px" align="center" />
+          <el-table-column prop="brandName" label="品牌名稱" align="center" width="450px" />
+          <el-table-column prop="originYear" label="品牌創立年份" align="center" width="200px" />
+          <el-table-column prop="createTime" label="創建時間" align="center" width="200px" />
+          <el-table-column prop="modifiedTime" label="更新時間" align="center" width="200px" />
+          <el-table-column prop="isLock" label="狀態" align="center" width="200px">
             <template #default="scope">
-              <el-tag v-if="scope.row.unitType === 1" type="success" effect="plain">個</el-tag>
-              <el-tag v-else type="info" effect="plain">其它</el-tag>
+              <el-switch
+                v-model="scope.row.isLock"
+                :active-icon="CircleCheckFilled"
+                :inactive-icon="CircleCloseFilled"
+                active-value="0"
+                inactive-value="1"
+                style="--el-switch-on-color: #8cfa9e; --el-switch-off-color: #f56c6c"
+              />
             </template>
           </el-table-column>
-          <el-table-column prop="currentQuantity" label="現有貨存數量" align="center" width="180" />
-          <el-table-column prop="createTime" label="創建時間" align="center" width="180" />
-          <el-table-column prop="modifiedTime" label="更新時間" align="center" width="180" />
-          <el-table-column fixed="right" label="操作" width="150" header-align="center" align="center">
+          <el-table-column fixed="right" label="操作" width="250" header-align="center" align="center">
             <template #default="scope">
               <el-button type="primary" text bg size="small" @click="handleUpdate(scope.row)">編輯</el-button>
               <el-button type="danger" text bg size="small" @click="handleDelete(scope.row)">刪除</el-button>
@@ -273,50 +285,23 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <!-- Create/update -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '🌟新增產品' : '✏️編輯產品'"
+      :title="formData.id === undefined ? '🌟新增品牌' : '✏️編輯品牌'"
       @closed="resetForm"
       width="50%"
     >
-      <div class="title">產品信息</div>
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="180px" label-position="left">
-        <el-form-item prop="productName" label="產品名稱">
-          <el-input v-model="formData.productName" placeholder="輸入產品名稱" clearable />
+      <div class="title">品牌信息</div>
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="150px" label-position="left">
+        <el-form-item prop="brandName" label="品牌名稱">
+          <el-input v-model="formData.brandName" placeholder="輸入品牌名稱" clearable />
         </el-form-item>
-        <el-form-item prop="brandTypeId" label="品牌類型">
-          <el-input v-model="formData.brandTypeId" placeholder="輸入品牌類型" clearable />
-        </el-form-item>
-        <el-form-item prop="specification" label="規格">
-          <el-input v-model="formData.specification" placeholder="輸入規格" clearable />
-        </el-form-item>
-        <el-form-item prop="manufactureDate" label="製造日期">
+        <el-form-item prop="originYear" label="品牌創立年份">
           <el-date-picker
-            v-model="formData.manufactureDate"
-            type="month"
-            placeholder="選擇製造日期"
-            value-format="YYYY-MM-DD"
+            v-model="formData.originYear"
+            type="year"
+            placeholder="輸入品牌創立年份"
+            @change="handleYearChange"
             clearable
           />
-        </el-form-item>
-        <el-form-item prop="hasSpecificDay" label="製造日期是否精確到天">
-          <el-radio-group v-model="formData.hasSpecificDay" disabled>
-            <el-radio aria-label="1" value="1">是</el-radio>
-            <el-radio aria-label="0" value="0">否</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item prop="retailPrice" label="全國統一零售價">
-          <el-input v-model="formData.retailPrice" placeholder="輸入全國統一零售價" clearable />
-        </el-form-item>
-        <el-form-item prop="sellPrice" label="銷售價格">
-          <el-input v-model="formData.sellPrice" placeholder="輸入銷售價格" clearable />
-        </el-form-item>
-        <el-form-item prop="unitType" label="單位">
-          <el-radio-group v-model="formData.unitType">
-            <el-radio aria-label="1" :value="1">個</el-radio>
-            <el-radio aria-label="2" :value="2">其它</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item prop="currentQuantity" label="現有貨存數量">
-          <el-input v-model="formData.currentQuantity" placeholder="輸入現有貨存數量" clearable />
         </el-form-item>
         <el-form-item prop="comment" label="備註">
           <el-input
@@ -371,6 +356,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 
 .table-wrapper {
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
 .pager-wrapper {

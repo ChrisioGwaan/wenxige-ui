@@ -1,4 +1,4 @@
-interface Product {
+export interface Product {
   id: string
   brandTypeId: number
   productName: string
@@ -18,20 +18,7 @@ interface Product {
   isDel: string
 }
 
-interface Pageable {
-  pageNumber: number
-  pageSize: number
-  sort: {
-    sorted: boolean
-    empty: boolean
-    unsorted: boolean
-  }
-  offset: number
-  paged: boolean
-  unpaged: boolean
-}
-
-interface GetTableRequestData {
+export interface GetTableRequestData {
   current: number
   size: number
   productName?: string
@@ -39,24 +26,36 @@ interface GetTableRequestData {
   endDate?: string
 }
 
-interface TableDataResponse {
-  code: number
-  msg: string | null
-  data: {
-    content: Product[]
-    pageable: Pageable
-    totalPages: number
-    totalElements: number
-    last: boolean
-    size: number
-    number: number
-    sort: {
-      sorted: boolean
-      empty: boolean
-      unsorted: boolean
-    }
-    numberOfElements: number
-    first: boolean
-    empty: boolean
-  }
+export interface CreateOrUpdateProductRequestData {
+  id?: string
+  brandTypeId: number
+  productName: string
+  specification: string
+  manufactureDate: string
+  hasSpecificDay?: string
+  retailPrice: number
+  sellPrice?: number
+  unitType: number
+  currentQuantity: number
+  comment?: string
+}
+
+export interface GetTableData {
+  id: string
+  productName: string
+  specification: string
+  manufactureDate: string
+  hasSpecificDay: any
+  retailPrice: number
+  sellPrice: number
+  unitType: number
+  currentQuantity: number
+  comment: string
+  createTime: string
+  modifiedTime: string | null
+  isLock: any
+}
+
+export interface batchDeleteTableRequestData {
+  productIds: string[]
 }
