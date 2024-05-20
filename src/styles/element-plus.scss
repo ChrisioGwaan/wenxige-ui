@@ -4,11 +4,11 @@
 .el-table {
   // 表头
   th.el-table__cell {
-    background-color: var(--el-fill-color-light) !important;
+    background-color: var(--el-fill-color-extra-light) !important;
   }
   // 行元素
   tr {
-    background-color: transparent;
+    background-color: var(--el-fill-color-blank);
   }
 }
 
