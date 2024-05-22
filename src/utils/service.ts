@@ -46,7 +46,8 @@ function createService() {
             ElNotification({
               title: "Notification",
               message: "Token has expired. Please log in again.",
-              type: "warning"
+              type: "warning",
+              duration: 0
             })
             return logout()
           }
