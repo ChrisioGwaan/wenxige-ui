@@ -46,3 +46,11 @@ export function batchDeleteBrandType(data: batchDeleteTableRequestData) {
     data: data
   })
 }
+
+export function dropDownBrandTypeList(args: string) {
+  return request({
+    url: `brandType/dropdown`,
+    method: "get",
+    params: { args: args }
+  })
+}

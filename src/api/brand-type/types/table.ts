@@ -22,6 +22,7 @@ export interface GetTableRequestData {
 export interface CreateOrUpdateBrandTypeRequestData {
   id?: string
   brandId: string
+  brandName: string
   brandTypeName: string
   comment?: string
 }

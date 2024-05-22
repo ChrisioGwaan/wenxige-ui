@@ -13,6 +13,10 @@ import {
 } from "@/api/product"
 import { CreateOrUpdateProductRequestData, GetTableData, batchDeleteTableRequestData } from "@/api/product/types/table"
 import { Product } from "@/api/product/types/table"
+import { Brand } from "@/api/brand/types/table"
+import { dropDownList } from "@/api/brand"
+import { BrandType } from "@/api/brand-type/types/table"
+import { dropDownBrandTypeList } from "@/api/brand-type"
 
 defineOptions({
   name: "ElementPlus"
@@ -27,7 +31,10 @@ const { paginationData, handleCurrentChange, handleSizeChange } = usePagination(
 // #region create
 const DEFAULT_FORM_DATA: CreateOrUpdateProductRequestData = {
   id: undefined,
-  brandTypeId: undefined,
+  brandId: "",
+  brandName: "",
+  brandTypeId: "",
+  brandTypeName: "",
   productName: "",
   specification: "",
   manufactureDate: "",
@@ -42,6 +49,7 @@ const dialogVisible = ref<boolean>(false)
 const formRef = ref<FormInstance | null>(null)
 const formData = ref<CreateOrUpdateProductRequestData>(JSON.parse(JSON.stringify(DEFAULT_FORM_DATA)))
 const formRules: FormRules<CreateOrUpdateProductRequestData> = {
+  brandId: [{ required: true, trigger: "blur", message: "品牌不能為空！" }],
   brandTypeId: [{ required: true, trigger: "blur", message: "品牌不能為空！" }],
   productName: [{ required: true, trigger: "blur", message: "產品名稱不能為空！" }],
   specification: [{ required: true, trigger: "blur", message: "產品規格不能為空！" }],
@@ -182,8 +190,72 @@ const handleSelectionChange = (selection: GetTableData[]) => {
   console.log(multipleSelection)
 }
 
+const brandOptions = ref<Brand[]>([])
+const fetchBrandOptions = (args: string) => {
+  formData.value.brandTypeId = ""
+  loading.value = true
+  dropDownList(args)
+    .then((response) => {
+      brandOptions.value = response.data
+      loading.value = false
+    })
+    .catch((error) => {
+      ElMessage({
+        message: `Error: ${error.msg}`,
+        type: "error",
+        plain: true
+      })
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const brandTypeOptions = ref<BrandType[]>([])
+
+const fetchBrandTypeByBrandId = () => {
+  console.log("sds", formData.value.brandId)
+  if (formData.value.brandId === "") {
+    return
+  }
+
+  loading.value = true
+  dropDownBrandTypeList(formData.value.brandId)
+    .then((response) => {
+      brandTypeOptions.value = response.data
+      loading.value = false
+    })
+    .catch((error) => {
+      ElMessage({
+        message: `Error: ${error.msg}`,
+        type: "error",
+        plain: true
+      })
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
 /** Watch if queries are different based on the page results */
 watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
+watch(() => formData.value.brandId, fetchBrandTypeByBrandId)
+watch(
+  () => formData.value.brandId,
+  () => {
+    if (!formData.value.brandId) {
+      brandOptions.value = []
+    }
+  }
+)
+watch(
+  () => formData.value.brandTypeId,
+  () => {
+    if (!formData.value.brandTypeId) {
+      brandTypeOptions.value = []
+    }
+  }
+)
 </script>
 
 <template>
@@ -230,6 +302,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
           <el-table-column type="selection" width="45" />
           <el-table-column type="index" label="序号" width="80" align="center" />
           <el-table-column prop="productName" label="產品名稱" align="center" width="180" />
+          <el-table-column prop="brandName" label="品牌名稱" align="center" width="180" />
+          <el-table-column prop="brandTypeName" label="種類" align="center" width="180" />
           <el-table-column
             prop="specification"
             label="產品規格"
@@ -273,6 +347,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <!-- Create/update -->
     <el-dialog
       v-model="dialogVisible"
+      :close-on-click-modal="false"
       :title="formData.id === undefined ? '🌟新增產品' : '✏️編輯產品'"
       @closed="resetForm"
       width="50%"
@@ -282,8 +357,35 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
         <el-form-item prop="productName" label="產品名稱">
           <el-input v-model="formData.productName" placeholder="輸入產品名稱" clearable />
         </el-form-item>
-        <el-form-item prop="brandTypeId" label="品牌類型">
-          <el-input v-model="formData.brandTypeId" placeholder="輸入品牌類型" clearable />
+        <el-form-item prop="brandId" label="品牌">
+          <el-select
+            v-model="formData.brandName"
+            filterable
+            remote
+            :remote-method="fetchBrandOptions"
+            :loading="loading"
+            placeholder="輸入品牌"
+            clearable
+            remote-show-suffix
+          >
+            <el-option v-for="item in brandOptions" :key="item.brandName" :label="item.brandName" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="brandTypeId" label="品牌種類">
+          <el-select
+            v-model="formData.brandTypeId"
+            :loading="loading"
+            placeholder="輸入品牌種類"
+            clearable
+            :disabled="!formData.brandId"
+          >
+            <el-option
+              v-for="item in brandTypeOptions"
+              :key="item.brandTypeName"
+              :label="item.brandTypeName"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item prop="specification" label="規格">
           <el-input v-model="formData.specification" placeholder="輸入規格" clearable />

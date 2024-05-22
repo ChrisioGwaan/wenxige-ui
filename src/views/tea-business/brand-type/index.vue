@@ -33,6 +33,7 @@ const { paginationData, handleCurrentChange, handleSizeChange } = usePagination(
 // #region create
 const DEFAULT_FORM_DATA: CreateOrUpdateBrandTypeRequestData = {
   id: undefined,
+  brandName: "",
   brandId: undefined,
   brandTypeName: "",
   comment: ""
@@ -42,7 +43,7 @@ const formRef = ref<FormInstance | null>(null)
 const formData = ref<CreateOrUpdateBrandTypeRequestData>(JSON.parse(JSON.stringify(DEFAULT_FORM_DATA)))
 const formRules: FormRules<CreateOrUpdateBrandTypeRequestData> = {
   brandId: [{ required: true, trigger: "blur", message: "請選擇一個品牌！" }],
-  brandTypeName: [{ required: true, trigger: "blur", message: "品牌創立年份不能為空！" }],
+  brandTypeName: [{ required: true, trigger: "blur", message: "請輸入種類名稱！" }],
   comment: [{ required: false, trigger: "blur", message: "備註不能為空！" }]
 }
 const handleCreateOrUpdate = () => {
@@ -175,9 +176,7 @@ const handleSelectionChange = (selection: GetTableData[]) => {
 }
 
 const brandOptions = ref<Brand[]>([])
-
 const fetchBrandOptions = (args: string) => {
-  console.log(args)
   loading.value = true
   dropDownList(args)
     .then((response) => {
@@ -198,6 +197,14 @@ const fetchBrandOptions = (args: string) => {
 
 /** Watch if queries are different based on the page results */
 watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, { immediate: true })
+watch(
+  () => formData.value.brandId,
+  () => {
+    if (!formData.value.brandId) {
+      brandOptions.value = [] // Clear options if brandId is null
+    }
+  }
+)
 </script>
 
 <template>
@@ -247,7 +254,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true">新增品牌種類</el-button>
+          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true">新增種類</el-button>
           <el-button type="danger" :icon="Delete" @click="handleBatchDelete">批量刪除</el-button>
         </div>
         <!--        <div>-->
@@ -264,7 +271,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
           <el-table-column type="selection" width="100" align="center" />
           <el-table-column type="index" label="序号" width="80px" align="center" />
           <el-table-column prop="brandName" label="品牌名稱" align="center" width="300px" />
-          <el-table-column prop="brandTypeName" label="品牌種類名稱" align="center" width="300px" />
+          <el-table-column prop="brandTypeName" label="種類名稱" align="center" width="300px" />
           <el-table-column prop="createTime" label="創建時間" align="center" width="200px" />
           <el-table-column prop="modifiedTime" label="更新時間" align="center" width="200px" />
           <el-table-column prop="isLock" label="狀態" align="center" width="200px">
@@ -303,7 +310,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <!-- Create/update -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '🌟新增品牌種類' : '✏️編輯品牌種類'"
+      :close-on-click-modal="false"
+      :title="formData.id === undefined ? '🌟新增種類' : '✏️編輯種類'"
       @closed="resetForm"
       width="50%"
     >
@@ -311,7 +319,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="150px" label-position="left">
         <el-form-item prop="brandId" label="品牌名稱" style="width: 100%">
           <el-select
-            v-model="formData.brandId"
+            v-model="formData.brandName"
             filterable
             remote
             :remote-method="fetchBrandOptions"
@@ -320,11 +328,11 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
             clearable
             remote-show-suffix
           >
-            <el-option v-for="item in brandOptions" :key="item.brandName" :label="item.brandName" :value="item.id" />
+            <el-option v-for="item in brandOptions" :label="item.brandName" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item prop="brandTypeName" label="品牌種類名稱">
-          <el-input v-model="formData.brandTypeName" placeholder="輸入品牌種類名稱" clearable />
+        <el-form-item prop="brandTypeName" label="種類名稱">
+          <el-input v-model="formData.brandTypeName" placeholder="輸入種類名稱" clearable />
         </el-form-item>
         <el-form-item prop="comment" label="備註">
           <el-input

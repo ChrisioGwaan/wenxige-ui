@@ -274,6 +274,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <!-- Create/update -->
     <el-dialog
       v-model="dialogVisible"
+      :close-on-click-modal="false"
       :title="formData.id === undefined ? '🌟新增品牌' : '✏️編輯品牌'"
       @closed="resetForm"
       width="50%"

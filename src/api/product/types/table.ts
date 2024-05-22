@@ -28,7 +28,10 @@ export interface GetTableRequestData {
 
 export interface CreateOrUpdateProductRequestData {
   id?: string
-  brandTypeId: number
+  brandId: string
+  brandName?: string
+  brandTypeId: string
+  brandTypeName: string
   productName: string
   specification: string
   manufactureDate: string
