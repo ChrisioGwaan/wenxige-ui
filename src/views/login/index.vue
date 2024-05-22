@@ -3,36 +3,27 @@ import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { type FormInstance, type FormRules, ElNotification } from "element-plus"
-import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
-import { getLoginCodeApi } from "@/api/login"
+import { User, Key } from "@element-plus/icons-vue"
 import { type LoginRequestData } from "@/api/login/types/login"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 
 const router = useRouter()
-
-/** 登录表单元素的引用 */
 const loginFormRef = ref<FormInstance | null>(null)
-
-/** 登录按钮 Loading */
 const loading = ref(false)
-// /** 验证码图片 URL */
 // const codeUrl = ref("")
-/** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
   username: "",
   password: "",
   code: ""
 })
-/** Validation */
 const loginFormRules: FormRules = {
-  username: [{ required: true, message: "Please enter your username", trigger: "blur" }],
+  username: [{ required: true, message: "請輸入用戶名", trigger: "blur" }],
   password: [
-    { required: true, message: "Please enter your password", trigger: "blur" },
-    { min: 8, max: 16, message: "The length of password should be between 8 and 16.", trigger: "blur" }
+    { required: true, message: "請輸入密碼", trigger: "blur" },
+    { min: 8, max: 16, message: "密碼長度至少為八個字符", trigger: "blur" }
   ],
   code: [{ required: false, message: "Please enter verification code", trigger: "blur" }]
 }
-/** Login Algorithm */
 const handleLogin = () => {
   loginFormRef.value?.validate((valid: boolean, fields) => {
     if (valid) {
@@ -66,18 +57,14 @@ const handleLogin = () => {
     }
   })
 }
-// /** 创建验证码 */
 // const createCode = () => {
-//   // 先清空验证码的输入
 //   loginFormData.code = ""
-//   // 获取验证码
 //   codeUrl.value = ""
 //   getLoginCodeApi().then((res) => {
 //     codeUrl.value = res.data
 //   })
 // }
 
-// /** 初始化验证码 */
 // createCode()
 </script>
 
@@ -91,7 +78,7 @@ const handleLogin = () => {
       </div>
       <div class="content">
         <h2>
-          <el-icon class="is-loading"><Sugar /></el-icon> <span style="color: #8cfa9e">Cevia </span>Login
+          <el-icon class="is-loading"><Sugar /></el-icon> <span style="color: #8cfa9e">Wenxige </span>Login
         </h2>
         <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
           <el-form-item prop="username">
