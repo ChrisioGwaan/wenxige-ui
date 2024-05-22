@@ -1,4 +1,5 @@
 import { request } from "@/utils/service"
+import { batchDeleteTableRequestData } from "@/api/brand-type/types/table"
 
 export function getTableDataPage(params: any) {
   return request({
@@ -38,7 +39,7 @@ export function getBrandTypeById(id: string) {
   })
 }
 
-export function batchDeleteBrandType(data: any) {
+export function batchDeleteBrandType(data: batchDeleteTableRequestData) {
   return request({
     url: `brandType/batchDelete`,
     method: "delete",
