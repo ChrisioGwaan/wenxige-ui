@@ -4,10 +4,6 @@ import routeSettings from "@/config/route"
 
 const Layouts = () => import("@/layouts/index.vue")
 
-/**
- * 常驻路由
- * 除了 redirect/403/404/login 等隐藏页面，其他页面建议设置 Name 属性
- */
 export const constantRoutes: RouteRecordRaw[] = [
   {
     path: "/redirect",
@@ -104,6 +100,9 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/unocss",
     component: Layouts,
     redirect: "/unocss/index",
+    meta: {
+      hidden: true
+    },
     children: [
       {
         path: "index",
@@ -149,7 +148,8 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: "Table",
     meta: {
       title: "Table",
-      elIcon: "Grid"
+      elIcon: "Grid",
+      hidden: true
     },
     children: [
       {
@@ -294,11 +294,6 @@ export const constantRoutes: RouteRecordRaw[] = [
   }
 ]
 
-/**
- * 动态路由
- * 用来放置有权限 (Roles 属性) 的路由
- * 必须带有 Name 属性
- */
 export const asyncRoutes: RouteRecordRaw[] = [
   {
     path: "/permission",
@@ -308,8 +303,8 @@ export const asyncRoutes: RouteRecordRaw[] = [
     meta: {
       title: "Permission",
       svgIcon: "lock",
-      roles: ["admin", "editor"], // 可以在根路由中设置角色
-      alwaysShow: true, // 将始终显示根菜单
+      roles: ["admin", "editor"],
+      alwaysShow: true,
       hidden: true
     },
     children: [
@@ -319,7 +314,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
         name: "PagePermission",
         meta: {
           title: "Page",
-          roles: ["admin"] // 或者在子导航中设置角色
+          roles: ["admin"]
         }
       },
       {
@@ -327,13 +322,13 @@ export const asyncRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/permission/directive.vue"),
         name: "DirectivePermission",
         meta: {
-          title: "Command" // 如果未设置角色，则表示：该页面不需要权限，但会继承根路由的角色
+          title: "Command"
         }
       }
     ]
   },
   {
-    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
+    path: "/:pathMatch(.*)*",
     redirect: "/404",
     name: "ErrorPage",
     meta: {
@@ -347,9 +342,7 @@ const router = createRouter({
   routes: routeSettings.thirdLevelRouteCache ? flatMultiLevelRoutes(constantRoutes) : constantRoutes
 })
 
-/** 重置路由 */
 export function resetRouter() {
-  // 注意：所有动态路由路由必须带有 Name 属性，否则可能会不能完全重置干净
   try {
     router.getRoutes().forEach((route) => {
       const { name, meta } = route
@@ -358,7 +351,6 @@ export function resetRouter() {
       }
     })
   } catch {
-    // 强制刷新浏览器也行，只是交互体验不是很好
     window.location.reload()
   }
 }
