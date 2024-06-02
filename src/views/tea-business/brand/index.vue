@@ -233,8 +233,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       <div class="table-wrapper">
         <el-table :data="tableData" v-loading="loading" style="width: 100%" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="100" align="center" />
-          <el-table-column type="index" label="序号" width="150px" align="center" />
-          <el-table-column prop="brandName" label="品牌名稱" align="center" width="450px" />
+          <el-table-column type="index" label="序号" width="120px" align="center" />
+          <el-table-column prop="brandName" label="品牌名稱" align="center" width="350px" />
           <el-table-column prop="originYear" label="品牌創立年份" align="center" width="200px" />
           <el-table-column prop="createTime" label="創建時間" align="center" width="200px" />
           <el-table-column prop="modifiedTime" label="更新時間" align="center" width="200px" />

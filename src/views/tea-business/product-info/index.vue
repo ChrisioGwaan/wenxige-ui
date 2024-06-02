@@ -51,14 +51,86 @@ const formData = ref<CreateOrUpdateProductRequestData>(JSON.parse(JSON.stringify
 const formRules: FormRules<CreateOrUpdateProductRequestData> = {
   brandId: [{ required: true, trigger: "blur", message: "品牌不能為空！" }],
   brandTypeId: [{ required: true, trigger: "blur", message: "品牌不能為空！" }],
-  productName: [{ required: true, trigger: "blur", message: "產品名稱不能為空！" }],
-  specification: [{ required: true, trigger: "blur", message: "產品規格不能為空！" }],
+  productName: [
+    { required: true, trigger: "blur", message: "產品名稱不能為空！" },
+    {
+      validator: (rule, value, callback) => {
+        if (value.length > 128) {
+          callback(new Error("產品名稱長度不能超過128個字符！"))
+        } else {
+          callback()
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  specification: [
+    { required: true, trigger: "blur", message: "產品規格不能為空！" },
+    {
+      validator: (rule, value, callback) => {
+        if (value.length > 128) {
+          callback(new Error("產品規格不能超過128個字符！"))
+        } else {
+          callback()
+        }
+      },
+      trigger: "blur"
+    }
+  ],
   manufactureDate: [{ required: true, trigger: "blur", message: "製造日期不能為空！" }],
-  retailPrice: [{ required: true, trigger: "blur", message: "全國統一零售價格不能為空！" }],
-  sellPrice: [{ required: false, trigger: "blur", message: "銷售價格不能為空！" }],
+  retailPrice: [
+    { required: true, trigger: "blur", message: "全國統一零售價格不能為空！" },
+    {
+      validator: (rule, value, callback) => {
+        if (value < 0) {
+          callback(new Error("全國統一零售價格不能小於0！"))
+        } else {
+          callback()
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  sellPrice: [
+    { required: false, trigger: "blur", message: "銷售價格不能為空！" },
+    {
+      validator: (rule, value, callback) => {
+        if (value < 0) {
+          callback(new Error("銷售價格不能小於0！"))
+        } else {
+          callback()
+        }
+      },
+      trigger: "blur"
+    }
+  ],
   unitType: [{ required: true, trigger: "blur", message: "單位不能為空！" }],
-  currentQuantity: [{ required: true, trigger: "blur", message: "現有貨存數不能為空！" }],
-  comment: [{ required: false, trigger: "blur", message: "備註不能為空！" }]
+  currentQuantity: [
+    { required: true, trigger: "blur", message: "現有貨存數不能為空！" },
+    {
+      validator: (rule, value, callback) => {
+        if (value < 0) {
+          callback(new Error("現有貨存數不能小於0！"))
+        } else {
+          callback()
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  comment: [
+    { required: false, trigger: "blur", message: "備註不能為空！" },
+    {
+      validator: (rule, value, callback) => {
+        if (value.length > 512) {
+          callback(new Error("備註不能超過512個字符！"))
+        } else {
+          callback()
+        }
+      },
+      trigger: "blur"
+    }
+  ]
 }
 const handleCreateOrUpdate = () => {
   formRef.value?.validate((valid: boolean, fields) => {
@@ -214,7 +286,6 @@ const fetchBrandOptions = (args: string) => {
 const brandTypeOptions = ref<BrandType[]>([])
 
 const fetchBrandTypeByBrandId = () => {
-  console.log("sds", formData.value.brandId)
   if (formData.value.brandId === "") {
     return
   }
@@ -359,7 +430,7 @@ watch(
         </el-form-item>
         <el-form-item prop="brandId" label="品牌">
           <el-select
-            v-model="formData.brandName"
+            v-model="formData.brandId"
             filterable
             remote
             :remote-method="fetchBrandOptions"
@@ -368,7 +439,7 @@ watch(
             clearable
             remote-show-suffix
           >
-            <el-option v-for="item in brandOptions" :key="item.brandName" :label="item.brandName" :value="item.id" />
+            <el-option v-for="item in brandOptions" :key="item.id" :label="item.brandName" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item prop="brandTypeId" label="品牌種類">
@@ -379,12 +450,7 @@ watch(
             clearable
             :disabled="!formData.brandId"
           >
-            <el-option
-              v-for="item in brandTypeOptions"
-              :key="item.brandTypeName"
-              :label="item.brandTypeName"
-              :value="item.id"
-            />
+            <el-option v-for="item in brandTypeOptions" :key="item.id" :label="item.brandTypeName" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item prop="specification" label="規格">
