@@ -1,5 +1,4 @@
-# Git 会忽略的文件
-
+# Ignore node_modules
 .DS_Store
 node_modules
 dist
@@ -20,9 +19,9 @@ lerna-debug.log*
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/*.code-snippets
+.vscode/extensions.json
+.vscode/settings.json
+.vscode/*.code-snippets
 .idea
 *.suo
 *.ntvs*
