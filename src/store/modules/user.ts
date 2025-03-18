@@ -23,6 +23,15 @@ export const useUserStore = defineStore("user", () => {
   /** 登录 */
   const login = async ({ username, password, code }: LoginRequestData) => {
     // const { data } = await loginApi({ username, password, code })
+
+    // test only login
+    if (username === "test" && password === "12345678") {
+      localStorage.setItem("displayname", username)
+      setToken("token")
+      token.value = "token"
+      return
+    }
+
     const { data } = await authenticate({ username, password, code })
     localStorage.setItem("displayname", username)
     setToken(data.token)
