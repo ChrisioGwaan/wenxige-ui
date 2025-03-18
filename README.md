@@ -8,6 +8,11 @@
 
 </div>
 
+## Test Account (Preview)
+
+- **Username**: test
+- **Password**: 12345678
+
 ## Git Branch
 
 - **feature**: For release version only.
