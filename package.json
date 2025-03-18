@@ -1,5 +1,5 @@
 {
-  "name": "ce-fe",
+  "name": "@ChrisioGwaan/wenxige-admin",
   "version": "0.1.0",
   "description": "Vue3, TypeScript, Element Plus, Pinia and Vite",
   "author": {
@@ -95,5 +95,5 @@
     "ts",
     "typescript"
   ],
-  "license": "MIT"
+  "license": "Apache-2.0"
 }
