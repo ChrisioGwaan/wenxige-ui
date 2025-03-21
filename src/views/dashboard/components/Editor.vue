@@ -33,14 +33,17 @@ onUnmounted(() => {
 })
 
 const format = (percentage) => (percentage === 100 ? "Full" : `${percentage}%`)
+
+// <el-icon class="is-loading"><MilkTea /></el-icon> Welcome to <span style="color: #8cfa9e">C </span>&
+//         <span style="color: #ff91b5">E </span>admin system! Development in progress...
+
 </script>
 
 <template>
   <div class="app-container">
     <el-card v-loading="loading" shadow="always" class="search-wrapper">
       <h1>
-        <el-icon class="is-loading"><MilkTea /></el-icon> Welcome to <span style="color: #8cfa9e">C </span>&
-        <span style="color: #ff91b5">E </span>admin system! Development in progress...
+        <el-icon class="is-loading"><MilkTea /></el-icon> Welcome to Wenxige admin system! Development in progress...
       </h1>
     </el-card>
     <el-card v-loading="loading" shadow="always" class="search-wrapper">
