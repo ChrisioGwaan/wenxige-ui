@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="100" src="src/assets/readme/green-tea.png" alt="Spotube Logo">
+  <img width="100" src="saas-platform/src/assets/readme/green-tea.png" alt="Spotube Logo">
 
 <p>广州文熙阁贸易有限公司管理系统</p>
 <p>Guangzhou Wenxige Trading Co., Ltd. Admin Management System</p>
