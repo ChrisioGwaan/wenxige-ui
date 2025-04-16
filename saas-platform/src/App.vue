@@ -4,6 +4,7 @@ import { ElNotification } from "element-plus"
 // Element Plus language setup
 // import zhCn from "element-plus/es/locale/lang/zh-cn"
 import zhCn from "element-plus/es/locale/lang/zh-tw"
+import { Analytics } from '@vercel/analytics/vue';
 // import en from "element-plus/es/locale/lang/en"
 
 const { initTheme } = useTheme()
@@ -24,6 +25,7 @@ initTheme()
 </script>
 
 <template>
+  <Analytics />
   <el-config-provider :locale="zhCn">
     <router-view />
   </el-config-provider>
