@@ -5,6 +5,8 @@ export interface LoginRequestData {
   password: string
   /** 验证码 */
   code: string
+  /** 是否记住我 */
+  rememberMe: boolean
 }
 
 export type LoginCodeResponseData = ApiResponseData<string>
