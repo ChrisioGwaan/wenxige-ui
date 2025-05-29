@@ -47,7 +47,7 @@ const formRules: FormRules<CreateOrUpdateBrandTypeRequestData> = {
   comment: [{ required: false, trigger: "blur", message: "備註不能為空！" }]
 }
 const handleCreateOrUpdate = () => {
-  formRef.value?.validate((valid: boolean, fields) => {
+  formRef.value?.validate((valid: boolean) => {
     if (valid) {
       loading.value = true
       const api = formData.value.id === undefined ? createBrandType : updateBrandType
@@ -138,7 +138,7 @@ const handleUpdate = (row: GetTableData) => {
 const tableData = ref<GetTableData[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 
-let searchData = reactive({
+const searchData = reactive({
   brandId: "",
   dataRange: []
 })
@@ -328,7 +328,7 @@ watch(
             clearable
             remote-show-suffix
           >
-            <el-option v-for="item in brandOptions" :label="item.brandName" :value="item.id" />
+            <el-option v-for="item in brandOptions" :key="item.id" :label="item.brandName" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item prop="brandTypeName" label="種類名稱">

@@ -5,10 +5,11 @@ import { useTagsViewStore } from "./tags-view"
 import { useSettingsStore } from "./settings"
 import { getToken, removeToken, setToken } from "@/utils/cache/cookies"
 import { resetRouter } from "@/router"
-import { loginApi, getUserInfoApi, authenticate } from "@/api/login"
+// import { loginApi, getUserInfoApi, authenticate } from "@/api/login"
+import { authenticate } from "@/api/login"
 import { type LoginRequestData } from "@/api/login/types/login"
 import routeSettings from "@/config/route"
-import Cookies from "js-cookie"
+// import Cookies from "js-cookie"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(getToken() || "")
@@ -18,7 +19,7 @@ export const useUserStore = defineStore("user", () => {
   const tagsViewStore = useTagsViewStore()
   const settingsStore = useSettingsStore()
 
-  const displayname = ref<string>("")
+  // const displayname = ref<string>("")
 
   /** 登录 */
   const login = async ({ username, password, code }: LoginRequestData) => {

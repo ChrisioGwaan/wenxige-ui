@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { useTheme } from "@/hooks/useTheme"
-import { ElNotification } from "element-plus"
+// import { ElNotification } from "element-plus"
 // Element Plus language setup
 // import zhCn from "element-plus/es/locale/lang/zh-cn"
 import zhCn from "element-plus/es/locale/lang/zh-tw"
-import { Analytics } from '@vercel/analytics/vue';
+import { Analytics } from "@vercel/analytics/vue"
 // import en from "element-plus/es/locale/lang/en"
 
 const { initTheme } = useTheme()

@@ -38,7 +38,7 @@ const formRules: FormRules<CreateOrUpdateBrandRequestData> = {
   comment: [{ required: false, trigger: "blur", message: "備註不能為空！" }]
 }
 const handleCreateOrUpdate = () => {
-  formRef.value?.validate((valid: boolean, fields) => {
+  formRef.value?.validate((valid: boolean) => {
     if (valid) {
       loading.value = true
       const api = formData.value.id === undefined ? createBrand : updateBrand
@@ -129,7 +129,7 @@ const handleUpdate = (row: GetTableData) => {
 const tableData = ref<GetTableData[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 
-let searchData = reactive({
+const searchData = reactive({
   brandName: "",
   originYear: "",
   dataRange: []

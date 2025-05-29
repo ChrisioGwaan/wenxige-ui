@@ -36,7 +36,6 @@ const format = (percentage) => (percentage === 100 ? "Full" : `${percentage}%`)
 
 // <el-icon class="is-loading"><MilkTea /></el-icon> Welcome to <span style="color: #8cfa9e">C </span>&
 //         <span style="color: #ff91b5">E </span>admin system! Development in progress...
-
 </script>
 
 <template>

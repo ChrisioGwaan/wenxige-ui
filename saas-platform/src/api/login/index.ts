@@ -1,6 +1,6 @@
 import { request } from "@/utils/service"
 import type * as Login from "./types/login"
-import { s } from "vitest/dist/reporters-1evA5lom.js"
+// import { s } from "vitest/dist/reporters-1evA5lom.js"
 
 /** 获取登录验证码 */
 export function getLoginCodeApi() {
@@ -27,7 +27,7 @@ export function getUserInfoApi() {
   })
 }
 
-export function authenticate(data: Login.LoginRequestData) {
+export function authenticate(data: { username: string; password: string; code: string }) {
   return request<Login.LoginResponseData>({
     url: "auth/authenticate",
     method: "post",
