@@ -131,7 +131,7 @@ const handleLogin = () => {
 .login-bg {
   min-height: 100vh;
   width: 100vw;
-  background: linear-gradient(120deg, #cdffd7 0%, #66ae60 100%);
+  background: linear-gradient(0deg, #cdffd7 0%, #66ae60 80%);
   display: flex;
   align-items: center;
   justify-content: center;
