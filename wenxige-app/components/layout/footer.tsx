@@ -1,19 +1,17 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Separator } from "@/components/ui/separator";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/contact", label: "Contact" },
-];
+const navKeys = ["home", "about", "services", "contact"] as const;
+const navPaths = ["/", "/about", "/services", "/contact"] as const;
 
-const legalLinks = [
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/terms", label: "Terms of Service" },
-];
+const legalKeys = ["privacyPolicy", "termsOfService"] as const;
+const legalPaths = ["/privacy", "/terms"] as const;
 
 export function Footer() {
+  const t = useTranslations("common");
   const currentYear = new Date().getFullYear();
 
   return (
@@ -28,35 +26,35 @@ export function Footer() {
               <span className="text-xl font-bold">Wenxige</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Delivering excellence through innovation and dedication.
+              {t("tagline")}
             </p>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Navigation</h3>
+            <h3 className="text-sm font-semibold">{t("navigation")}</h3>
             <nav className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
+              {navKeys.map((key, index) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={key}
+                  href={navPaths[index]}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {link.label}
+                  {t(key)}
                 </Link>
               ))}
             </nav>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Legal</h3>
+            <h3 className="text-sm font-semibold">{t("legal")}</h3>
             <nav className="flex flex-col space-y-2">
-              {legalLinks.map((link) => (
+              {legalKeys.map((key, index) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={key}
+                  href={legalPaths[index]}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {link.label}
+                  {t(key)}
                 </Link>
               ))}
             </nav>
@@ -66,9 +64,9 @@ export function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Wenxige. All rights reserved.</p>
+          <p>&copy; {currentYear} Wenxige. {t("allRightsReserved")}</p>
           <p className="text-xs">
-            Disclaimer: The information provided on this website is for general informational purposes only.
+            {t("disclaimer")}
           </p>
         </div>
       </div>

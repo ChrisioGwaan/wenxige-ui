@@ -1,20 +1,18 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
+import { Link, usePathname } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/contact", label: "Contact" },
-];
+const navKeys = ["home", "about", "services", "contact"] as const;
+const navPaths = ["/", "/about", "/services", "/contact"] as const;
 
 export function Header() {
+  const t = useTranslations("common");
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -29,49 +27,52 @@ export function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6">
-          {navLinks.map((link) => (
+          {navKeys.map((key, index) => (
             <Link
-              key={link.href}
-              href={link.href}
+              key={key}
+              href={navPaths[index]}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                pathname === link.href
+                pathname === navPaths[index]
                   ? "text-primary"
                   : "text-muted-foreground"
               )}
             >
-              {link.label}
+              {t(key)}
             </Link>
           ))}
         </nav>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        <div className="flex items-center space-x-2">
+          <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
 
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border/40">
           <nav className="container mx-auto flex flex-col space-y-4 px-4 py-4">
-            {navLinks.map((link) => (
+            {navKeys.map((key, index) => (
               <Link
-                key={link.href}
-                href={link.href}
+                key={key}
+                href={navPaths[index]}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === link.href
+                  pathname === navPaths[index]
                     ? "text-primary"
                     : "text-muted-foreground"
                 )}
               >
-                {link.label}
+                {t(key)}
               </Link>
             ))}
           </nav>

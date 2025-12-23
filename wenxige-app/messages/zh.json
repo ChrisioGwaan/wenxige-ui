@@ -1,0 +1,130 @@
+{
+  "common": {
+    "home": "首页",
+    "about": "关于我们",
+    "services": "服务",
+    "contact": "联系我们",
+    "navigation": "导航",
+    "legal": "法律条款",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款",
+    "allRightsReserved": "版权所有。",
+    "disclaimer": "免责声明：本网站提供的信息仅供一般参考目的。",
+    "tagline": "通过创新和奉献提供卓越服务。"
+  },
+  "language": {
+    "english": "English",
+    "chinese": "中文",
+    "switchLanguage": "切换语言"
+  },
+  "home": {
+    "hero": {
+      "title": "欢迎来到",
+      "brand": "文熙阁",
+      "subtitle": "我们通过创新和奉献提供卓越服务。与我们合作，将您的愿景变为现实。"
+    },
+    "cta": {
+      "ourServices": "我们的服务",
+      "contactUs": "联系我们"
+    },
+    "stats": {
+      "projectsCompleted": "已完成项目",
+      "happyClients": "满意客户",
+      "yearsExperience": "年经验"
+    }
+  },
+  "about": {
+    "title": "关于我们",
+    "subtitle": "了解更多关于我们是谁以及我们前进的动力。",
+    "story": {
+      "title": "我们的故事",
+      "paragraph1": "文熙阁成立的使命很简单：通过创新和奉献提供卓越的成果。多年来，我们从一个小团队发展成为各行各业企业值得信赖的合作伙伴。",
+      "paragraph2": "我们的专家团队汇集了多样化的技能和视角，使我们能够应对复杂的挑战并提供超出预期的解决方案。我们相信与客户建立基于信任、透明和共同成功的持久关系。"
+    },
+    "companyImage": "公司图片",
+    "values": {
+      "title": "我们的价值观",
+      "mission": {
+        "title": "使命",
+        "description": "通过创新解决方案赋能企业，推动增长并为所有利益相关者创造持久价值。"
+      },
+      "vision": {
+        "title": "愿景",
+        "description": "成为寻求卓越、创新和可持续增长的企业的首选合作伙伴。"
+      },
+      "values": {
+        "title": "价值观",
+        "description": "诚信、创新、协作和对卓越的承诺指导着我们所做的一切。"
+      }
+    }
+  },
+  "services": {
+    "title": "我们的服务",
+    "subtitle": "我们提供全面的服务，帮助您的企业在数字时代蓬勃发展。",
+    "items": {
+      "webDevelopment": {
+        "title": "网站开发",
+        "description": "使用现代技术构建的定制网络应用程序，满足您独特的业务需求。"
+      },
+      "uiuxDesign": {
+        "title": "UI/UX 设计",
+        "description": "美观、直观的界面，增强用户体验并提高参与度。"
+      },
+      "digitalMarketing": {
+        "title": "数字营销",
+        "description": "战略性营销解决方案，提升您的在线形象并扩大受众群体。"
+      },
+      "securitySolutions": {
+        "title": "安全解决方案",
+        "description": "全面的安全措施，保护您的数字资产和客户数据。"
+      },
+      "consulting": {
+        "title": "咨询服务",
+        "description": "专业指导，帮助您驾驭数字化转型并优化运营。"
+      },
+      "performanceOptimization": {
+        "title": "性能优化",
+        "description": "加速您的应用程序并提高效率，以获得更好的用户满意度。"
+      }
+    },
+    "cta": {
+      "title": "准备好开始了吗？",
+      "subtitle": "立即联系我们，讨论我们如何帮助您的企业转型。",
+      "button": "联系我们"
+    }
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "有问题或想与我们合作？我们很乐意听取您的意见。",
+    "form": {
+      "title": "给我们留言",
+      "name": "姓名",
+      "namePlaceholder": "您的姓名",
+      "email": "电子邮件",
+      "emailPlaceholder": "your@email.com",
+      "subject": "主题",
+      "subjectPlaceholder": "我们能帮您什么？",
+      "message": "留言",
+      "messagePlaceholder": "您的留言...",
+      "submit": "发送消息",
+      "successMessage": "感谢您的留言！我们会尽快回复您。"
+    },
+    "info": {
+      "title": "联系信息",
+      "email": "电子邮件",
+      "phone": "电话",
+      "address": "地址"
+    },
+    "hours": {
+      "title": "营业时间",
+      "mondayFriday": "周一至周五",
+      "saturday": "周六",
+      "sunday": "周日",
+      "closed": "休息"
+    }
+  },
+  "metadata": {
+    "title": "文熙阁",
+    "description": "通过创新和奉献提供卓越服务。"
+  }
+}
