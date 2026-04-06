@@ -1,0 +1,162 @@
+name: Code Quality Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  FLUTTER_VERSION: '3.24.0'
+
+jobs:
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🔍 Check code formatting
+      run: |
+        dart format --output=none --set-exit-if-changed .
+        echo "✅ Code formatting check passed"
+        
+    - name: 📊 Run static analysis
+      run: |
+        dart analyze --fatal-infos --fatal-warnings
+        echo "✅ Static analysis passed"
+        
+    - name: 🧪 Run tests with coverage
+      run: |
+        flutter test --coverage
+        echo "✅ Tests passed"
+        
+    - name: 📈 Generate coverage report
+      run: |
+        if [ -f "coverage/lcov.info" ]; then
+          # Install lcov for processing coverage
+          sudo apt-get update
+          sudo apt-get install -y lcov
+          
+          # Generate HTML report
+          genhtml coverage/lcov.info -o coverage/html
+          
+          # Calculate coverage percentage
+          COVERAGE=$(lcov --summary coverage/lcov.info 2>&1 | grep -oP 'lines......: \K[0-9.]+(?=%)')
+          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
+          
+          echo "📊 Test Coverage: $COVERAGE%"
+        fi
+        
+    - name: 💬 Coverage Comment
+      uses: actions/github-script@v7
+      if: env.COVERAGE
+      with:
+        script: |
+          const coverage = process.env.COVERAGE;
+          const coverageFloat = parseFloat(coverage);
+          
+          let coverageEmoji = '🔴';
+          let coverageStatus = 'Poor';
+          
+          if (coverageFloat >= 80) {
+            coverageEmoji = '🟢';
+            coverageStatus = 'Excellent';
+          } else if (coverageFloat >= 60) {
+            coverageEmoji = '🟡';
+            coverageStatus = 'Good';
+          } else if (coverageFloat >= 40) {
+            coverageEmoji = '🟠';
+            coverageStatus = 'Fair';
+          }
+          
+          const comment = `## ${coverageEmoji} Test Coverage Report
+          
+          **Coverage:** ${coverage}% (${coverageStatus})
+          
+          ### Coverage Breakdown
+          - **Minimum Required:** 60%
+          - **Current Coverage:** ${coverage}%
+          - **Status:** ${coverageFloat >= 60 ? '✅ Passed' : '❌ Below Threshold'}
+          
+          ${coverageFloat < 60 ? '⚠️ **Warning:** Coverage is below the minimum required threshold of 60%.' : ''}
+          
+          *Generated automatically by Code Quality Check*`;
+          
+          // Find existing comment
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const existingComment = comments.find(comment => 
+            comment.body.includes('Test Coverage Report')
+          );
+          
+          if (existingComment) {
+            // Update existing comment
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body: comment
+            });
+          } else {
+            // Create new comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+          }
+          
+    - name: 🔒 Security scan
+      run: |
+        # Check for hardcoded secrets
+        if grep -r "api[_-]key\|secret\|password\|token" lib/ --include="*.dart" --exclude-dir=test | grep -v "// ignore: " | head -5; then
+          echo "⚠️ Warning: Potential hardcoded secrets found"
+        else
+          echo "✅ No hardcoded secrets detected"
+        fi
+        
+        # Check for TODO/FIXME comments
+        TODO_COUNT=$(grep -r "TODO\|FIXME" lib/ --include="*.dart" | wc -l || echo "0")
+        echo "📝 Found $TODO_COUNT TODO/FIXME comments"
+        
+        if [ "$TODO_COUNT" -gt 10 ]; then
+          echo "⚠️ Warning: High number of TODO/FIXME comments ($TODO_COUNT)"
+        fi
+        
+    - name: 📊 Code Complexity Check
+      run: |
+        # Simple complexity check using line count per file
+        echo "📏 Code Complexity Analysis:"
+        find lib/ -name "*.dart" -exec wc -l {} + | sort -n | tail -10 | while read lines file; do
+          if [ "$lines" -gt 200 ]; then
+            echo "⚠️ Large file detected: $file ($lines lines)"
+          fi
+        done
+        
+    - name: ✅ Quality Gate
+      run: |
+        COVERAGE=${COVERAGE:-0}
+        if [ $(echo "$COVERAGE >= 60" | bc -l) -eq 1 ]; then
+          echo "🎉 Quality gate passed! Coverage: $COVERAGE%"
+        else
+          echo "❌ Quality gate failed! Coverage: $COVERAGE% (minimum: 60%)"
+          exit 1
+        fi

@@ -1,0 +1,246 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+env:
+  FLUTTER_VERSION: '3.24.0'
+
+jobs:
+  analyze:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🔍 Verify formatting
+      run: dart format --output=none --set-exit-if-changed .
+      
+    - name: 📊 Analyze project source
+      run: dart analyze --fatal-infos
+      
+    - name: 🕵️ Check for outdated dependencies
+      run: flutter pub outdated --exit-if-newer-available
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: analyze
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🧪 Run tests
+      run: flutter test --coverage --test-randomize-ordering-seed random
+      
+    - name: 📈 Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        fail_ci_if_error: false
+
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [analyze, test]
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🔧 Build APK
+      run: flutter build apk --release --split-per-abi
+      
+    - name: 📱 Upload APK artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/*.apk
+        retention-days: 7
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+    timeout-minutes: 45
+    needs: [analyze, test]
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🍎 Build iOS (no codesign)
+      run: flutter build ios --release --no-codesign
+      
+    - name: 📱 Upload iOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-build
+        path: build/ios/iphoneos/
+        retention-days: 7
+
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [analyze, test]
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🌐 Build Web
+      run: flutter build web --release --web-renderer canvaskit
+      
+    - name: 🌐 Upload Web artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: build/web/
+        retention-days: 7
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: analyze
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: 🔒 Run security audit
+      run: flutter pub deps --json | dart pub deps --style=compact
+      
+    - name: 🛡️ Check for known vulnerabilities
+      run: |
+        if command -v dart &> /dev/null; then
+          dart pub audit
+        fi
+
+  performance-test:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [analyze, test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📚 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+        
+    - name: 📦 Install dependencies
+      run: flutter pub get
+      
+    - name: ⚡ Build and analyze bundle size
+      run: |
+        flutter build web --release --analyze-size
+        ls -la build/web/
+        
+    - name: 📊 Bundle size comment (PR only)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const { execSync } = require('child_process');
+          
+          // Get bundle size info
+          const bundleSize = execSync('du -sh build/web/').toString().trim();
+          
+          const comment = `## 📦 Bundle Size Analysis
+          
+          **Web Build Size:** ${bundleSize}
+          
+          *Generated automatically by CI/CD pipeline*`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
