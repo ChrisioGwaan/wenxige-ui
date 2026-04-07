@@ -9,7 +9,7 @@ import '../../features/cart/cart_page.dart';
 import '../../features/contact/contact_page.dart';
 import '../../features/gallery/gallery_page.dart';
 import '../../features/landing/landing_page.dart';
-import '../../features/profile/profile_page.dart';
+import '../../features/profile/profile_settings_page.dart';
 import '../../features/shop/shop_page.dart';
 
 class AppRouter {
@@ -55,7 +55,8 @@ class AppRouter {
       ),
       GoRoute(
         path: '/profile',
-        pageBuilder: (context, state) => _fade(state, const ProfilePage()),
+        pageBuilder: (context, state) =>
+            _fade(state, const ProfileSettingsPage()),
       ),
     ],
   );
