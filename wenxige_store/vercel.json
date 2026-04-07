@@ -1,0 +1,5 @@
+{
+  "buildCommand": "chmod +x build.sh && ./build.sh",
+  "outputDirectory": "build/web",
+  "framework": null
+}
