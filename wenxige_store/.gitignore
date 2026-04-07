@@ -146,9 +146,10 @@ secret_key
 test/coverage/
 test/reports/
 
-# Debugging and profiling
+# Debugging and profiling (exclude build profile directories, not source code)
 debug/
-profile/
+**/android/app/profile
+**/ios/**/profile
 
 # Platform specific build outputs
 *.apk
