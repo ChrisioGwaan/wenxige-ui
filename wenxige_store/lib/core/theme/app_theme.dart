@@ -7,14 +7,14 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     final base = ThemeData.light();
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: seedColor,
-    );
+    final colorScheme = ColorScheme.fromSeed(seedColor: seedColor);
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      textTheme: GoogleFonts.interTextTheme(base.textTheme),
+      // Use Poppins font (closest alternative to Google Sans)
+      textTheme: GoogleFonts.poppinsTextTheme(base.textTheme),
+      fontFamilyFallback: const ['Roboto', 'Arial', 'sans-serif'],
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),

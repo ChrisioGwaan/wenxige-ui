@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
+  # cupertino_icons: ^1.0.8  # Removed - not used in the app
   go_router: ^17.2.0
   google_fonts: ^8.0.2
   flutter_web_plugins:
@@ -74,7 +74,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # assets:
+  # assets: (removed - .env should not be bundled in web builds for security)
     # DO NOT include .env in web builds - it exposes secrets!
     # Use environment variables at build time instead
 
