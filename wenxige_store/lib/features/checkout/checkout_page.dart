@@ -415,12 +415,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
             Expanded(
               child: DropdownButtonFormField<String>(
                 value: _shippingCountry,
+                isExpanded: true,
                 decoration: const InputDecoration(
                   labelText: 'Country *',
                   border: OutlineInputBorder(),
                 ),
                 items: ShippingCountries.countries.map((c) {
-                  return DropdownMenuItem(value: c, child: Text(c));
+                  return DropdownMenuItem(
+                    value: c,
+                    child: Text(c, overflow: TextOverflow.ellipsis),
+                  );
                 }).toList(),
                 onChanged: (v) =>
                     setState(() => _shippingCountry = v ?? 'China'),
@@ -504,12 +508,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
               Expanded(
                 child: DropdownButtonFormField<String>(
                   value: _billingCountry,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Country *',
                     border: OutlineInputBorder(),
                   ),
                   items: ShippingCountries.countries.map((c) {
-                    return DropdownMenuItem(value: c, child: Text(c));
+                    return DropdownMenuItem(
+                      value: c,
+                      child: Text(c, overflow: TextOverflow.ellipsis),
+                    );
                   }).toList(),
                   onChanged: (v) =>
                       setState(() => _billingCountry = v ?? 'China'),
