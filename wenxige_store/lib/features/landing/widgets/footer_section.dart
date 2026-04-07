@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_constants.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
 
 class FooterSection extends StatelessWidget {
   const FooterSection({super.key});
@@ -46,8 +46,7 @@ class FooterSection extends StatelessWidget {
 
 class _DesktopFooterContent extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(flex: 3, child: _BrandColumn()),
@@ -59,15 +58,13 @@ class _DesktopFooterContent extends StatelessWidget {
         Expanded(flex: 3, child: _NewsletterColumn()),
       ],
     );
-  }
 }
 
 // ─── Mobile stack ─────────────────────────────────────────────────────────────
 
 class _MobileFooterContent extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _BrandColumn(),
@@ -84,7 +81,6 @@ class _MobileFooterContent extends StatelessWidget {
         _NewsletterColumn(),
       ],
     );
-  }
 }
 
 // ─── Column widgets ───────────────────────────────────────────────────────────
@@ -138,12 +134,12 @@ class _BrandColumn extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        Row(
+        const Row(
           children: [
             _SocialBtn('IG'),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             _SocialBtn('TW'),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             _SocialBtn('WB'),
           ],
         ),
@@ -162,8 +158,7 @@ class _LinksColumn extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _FooterHeading('Quick Links'),
@@ -174,7 +169,6 @@ class _LinksColumn extends StatelessWidget {
         ],
       ],
     );
-  }
 }
 
 class _SupportColumn extends StatelessWidget {
@@ -187,8 +181,7 @@ class _SupportColumn extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _FooterHeading('Support'),
@@ -199,13 +192,11 @@ class _SupportColumn extends StatelessWidget {
         ],
       ],
     );
-  }
 }
 
 class _NewsletterColumn extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _FooterHeading('Stay in the Loop'),
@@ -272,15 +263,13 @@ class _NewsletterColumn extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 // ─── Bottom copyright bar ─────────────────────────────────────────────────────
 
 class _BottomBar extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Wrap(
+  Widget build(BuildContext context) => Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 16,
       runSpacing: 8,
@@ -301,18 +290,16 @@ class _BottomBar extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 // ─── Reusable footer primitives ───────────────────────────────────────────────
 
 class _FooterHeading extends StatelessWidget {
-  final String text;
   const _FooterHeading(this.text);
+  final String text;
 
   @override
-  Widget build(BuildContext context) {
-    return Text(
+  Widget build(BuildContext context) => Text(
       text,
       style: const TextStyle(
         color: Colors.white,
@@ -321,13 +308,12 @@ class _FooterHeading extends StatelessWidget {
         letterSpacing: 0.2,
       ),
     );
-  }
 }
 
 class _FooterLink extends StatefulWidget {
+  const _FooterLink({required this.label, required this.path});
   final String label;
   final String path;
-  const _FooterLink({required this.label, required this.path});
 
   @override
   State<_FooterLink> createState() => _FooterLinkState();
@@ -337,8 +323,7 @@ class _FooterLinkState extends State<_FooterLink> {
   bool _hovered = false;
 
   @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
+  Widget build(BuildContext context) => MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -353,12 +338,11 @@ class _FooterLinkState extends State<_FooterLink> {
         ),
       ),
     );
-  }
 }
 
 class _SocialBtn extends StatefulWidget {
-  final String label;
   const _SocialBtn(this.label);
+  final String label;
 
   @override
   State<_SocialBtn> createState() => _SocialBtnState();

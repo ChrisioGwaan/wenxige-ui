@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../shared/widgets/animated_gradient_background.dart';
-import '../../shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/shared/widgets/animated_gradient_background.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -37,7 +37,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     try {
       await Supabase.instance.client.auth.resetPasswordForEmail(
         _emailController.text.trim(),
-        redirectTo: null, // Supabase will use default redirect
       );
 
       if (mounted) {
@@ -204,7 +203,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'No worries! Enter your email and we\'ll send you reset instructions.',
+                    "No worries! Enter your email and we'll send you reset instructions.",
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

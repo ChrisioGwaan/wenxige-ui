@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/user_profile_model.dart';
+import 'package:wenxige_store/shared/models/user_profile_model.dart';
 
 /// Service for managing extended user profile data in Supabase
 class UserProfileService extends ChangeNotifier {
-  static final UserProfileService _instance = UserProfileService._internal();
   factory UserProfileService() => _instance;
   UserProfileService._internal();
+  static final UserProfileService _instance = UserProfileService._internal();
 
   SupabaseClient get _client => Supabase.instance.client;
 
@@ -57,6 +57,13 @@ class UserProfileService extends ChangeNotifier {
       debugPrint('Error saving user profile: $e');
       rethrow;
     }
+  }
+
+  /// Get current user profile
+  Future<UserProfile?> getProfile() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
+    return loadProfile(user.id);
   }
 
   /// Delete user profile

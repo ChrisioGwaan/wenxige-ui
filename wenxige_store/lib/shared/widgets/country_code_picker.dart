@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 
 /// Country data with dial code and flag emoji
 class Country {
-  final String name;
-  final String code;
-  final String dialCode;
-  final String flag;
 
   const Country({
     required this.name,
@@ -13,6 +9,10 @@ class Country {
     required this.dialCode,
     required this.flag,
   });
+  final String name;
+  final String code;
+  final String dialCode;
+  final String flag;
 
   String get displayText => '$flag $dialCode';
 
@@ -61,24 +61,22 @@ class Country {
     Country(name: 'Vietnam', code: 'VN', dialCode: '+84', flag: '🇻🇳'),
   ];
 
-  static Country findByCode(String code) {
-    return all.firstWhere(
+  static Country findByCode(String code) => all.firstWhere(
       (c) => c.code == code,
       orElse: () => all.firstWhere((c) => c.code == 'AU'),
     );
-  }
 }
 
 /// A dropdown picker for country codes
 class CountryCodePicker extends StatelessWidget {
-  final Country selectedCountry;
-  final ValueChanged<Country> onChanged;
 
   const CountryCodePicker({
     required this.selectedCountry,
     required this.onChanged,
     super.key,
   });
+  final Country selectedCountry;
+  final ValueChanged<Country> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -136,13 +134,13 @@ class CountryCodePicker extends StatelessWidget {
 }
 
 class _CountryPickerSheet extends StatefulWidget {
-  final Country selectedCountry;
-  final ValueChanged<Country> onSelected;
 
   const _CountryPickerSheet({
     required this.selectedCountry,
     required this.onSelected,
   });
+  final Country selectedCountry;
+  final ValueChanged<Country> onSelected;
 
   @override
   State<_CountryPickerSheet> createState() => _CountryPickerSheetState();
@@ -164,11 +162,9 @@ class _CountryPickerSheetState extends State<_CountryPickerSheet> {
         _filteredCountries = Country.all;
       } else {
         final lowerQuery = query.toLowerCase();
-        _filteredCountries = Country.all.where((c) {
-          return c.name.toLowerCase().contains(lowerQuery) ||
+        _filteredCountries = Country.all.where((c) => c.name.toLowerCase().contains(lowerQuery) ||
               c.dialCode.contains(query) ||
-              c.code.toLowerCase().contains(lowerQuery);
-        }).toList();
+              c.code.toLowerCase().contains(lowerQuery)).toList();
       }
     });
   }
@@ -183,8 +179,7 @@ class _CountryPickerSheetState extends State<_CountryPickerSheet> {
       minChildSize: 0.5,
       maxChildSize: 0.9,
       expand: false,
-      builder: (context, scrollController) {
-        return Padding(
+      builder: (context, scrollController) => Padding(
           padding: EdgeInsets.only(bottom: bottomPadding),
           child: Column(
             children: [
@@ -266,8 +261,7 @@ class _CountryPickerSheetState extends State<_CountryPickerSheet> {
               ),
             ],
           ),
-        );
-      },
+        ),
     );
   }
 }

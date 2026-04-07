@@ -1,4 +1,4 @@
-import '../models/user_model.dart';
+import 'package:wenxige_store/shared/models/user_model.dart';
 
 /// Mock authentication state.
 /// Replace with Supabase auth integration when backend is ready.

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_constants.dart';
-import '../../../shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 /// Full-viewport hero section with animated entrance, gradient background,
 /// floating decorative shapes, headline, and CTAs.
@@ -30,7 +30,7 @@ class _HeroSectionState extends State<HeroSection>
 
     _eyebrowFade = CurvedAnimation(
       parent: _ctrl,
-      curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+      curve: const Interval(0, 0.4, curve: Curves.easeOut),
     );
     _fade = CurvedAnimation(
       parent: _ctrl,
@@ -121,7 +121,7 @@ class _HeroSectionState extends State<HeroSection>
 
           // ── Main content ─────────────────────────────────────────────────
           Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               top: AppNavBar.height,
               left: AppConstants.pageHorizontalPadding,
               right: AppConstants.pageHorizontalPadding,
@@ -282,13 +282,12 @@ class _HeroSectionState extends State<HeroSection>
 // ─── Decorative helpers ───────────────────────────────────────────────────────
 
 class _GlowCircle extends StatelessWidget {
+  const _GlowCircle({required this.size, required this.color});
   final double size;
   final Color color;
-  const _GlowCircle({required this.size, required this.color});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
@@ -296,7 +295,6 @@ class _GlowCircle extends StatelessWidget {
         color: color,
       ),
     );
-  }
 }
 
 class _GridPainter extends CustomPainter {

@@ -1,8 +1,4 @@
 class UserModel {
-  final String id;
-  final String displayName;
-  final String email;
-  final String? avatarUrl;
 
   const UserModel({
     required this.id,
@@ -10,6 +6,10 @@ class UserModel {
     required this.email,
     this.avatarUrl,
   });
+  final String id;
+  final String displayName;
+  final String email;
+  final String? avatarUrl;
 
   String get initials {
     final parts = displayName.trim().split(' ');

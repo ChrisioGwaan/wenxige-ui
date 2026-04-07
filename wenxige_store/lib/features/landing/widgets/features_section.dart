@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_constants.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
 
 class FeaturesSection extends StatelessWidget {
   const FeaturesSection({super.key});
@@ -46,7 +46,7 @@ class FeaturesSection extends StatelessWidget {
               const BoxConstraints(maxWidth: AppConstants.maxContentWidth),
           child: Column(
             children: [
-              _SectionLabel(
+              const _SectionLabel(
                 eyebrow: 'Why Choose Us',
                 headline: 'Everything you need,\nnone of the compromise.',
               ),
@@ -81,10 +81,10 @@ class FeaturesSection extends StatelessWidget {
 // ─── Section header ──────────────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
-  final String eyebrow;
-  final String headline;
 
   const _SectionLabel({required this.eyebrow, required this.headline});
+  final String eyebrow;
+  final String headline;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +98,7 @@ class _SectionLabel extends StatelessWidget {
             color: theme.colorScheme.primary,
             fontSize: 12,
             fontWeight: FontWeight.w700,
-            letterSpacing: 2.0,
+            letterSpacing: 2,
           ),
         ),
         const SizedBox(height: 14),
@@ -121,8 +121,8 @@ class _SectionLabel extends StatelessWidget {
 // ─── Feature card ─────────────────────────────────────────────────────────────
 
 class _FeatureCard extends StatefulWidget {
-  final _FeatureItem item;
   const _FeatureCard({required this.item});
+  final _FeatureItem item;
 
   @override
   State<_FeatureCard> createState() => _FeatureCardState();
@@ -132,8 +132,7 @@ class _FeatureCardState extends State<_FeatureCard> {
   bool _hovered = false;
 
   @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
+  Widget build(BuildContext context) => MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
@@ -187,14 +186,9 @@ class _FeatureCardState extends State<_FeatureCard> {
         ),
       ),
     );
-  }
 }
 
 class _FeatureItem {
-  final IconData icon;
-  final String title;
-  final String body;
-  final Color accent;
 
   const _FeatureItem({
     required this.icon,
@@ -202,4 +196,8 @@ class _FeatureItem {
     required this.body,
     required this.accent,
   });
+  final IconData icon;
+  final String title;
+  final String body;
+  final Color accent;
 }

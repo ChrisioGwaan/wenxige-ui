@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_constants.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
 
 class CategoriesSection extends StatelessWidget {
   const CategoriesSection({super.key});
@@ -54,7 +54,7 @@ class CategoriesSection extends StatelessWidget {
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 2.0,
+                      letterSpacing: 2,
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -73,9 +73,9 @@ class CategoriesSection extends StatelessWidget {
               ),
               const SizedBox(height: 56),
               if (isDesktop)
-                _DesktopGrid(categories: _categories)
+                const _DesktopGrid(categories: _categories)
               else
-                _MobileGrid(categories: _categories),
+                const _MobileGrid(categories: _categories),
             ],
           ),
         ),
@@ -87,12 +87,11 @@ class CategoriesSection extends StatelessWidget {
 // ─── Desktop: 2-column asymmetric layout ─────────────────────────────────────
 
 class _DesktopGrid extends StatelessWidget {
-  final List<_Category> categories;
   const _DesktopGrid({required this.categories});
+  final List<_Category> categories;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Left column: one tall tile
@@ -123,18 +122,16 @@ class _DesktopGrid extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 // ─── Mobile: 2×2 grid ────────────────────────────────────────────────────────
 
 class _MobileGrid extends StatelessWidget {
-  final List<_Category> categories;
   const _MobileGrid({required this.categories});
+  final List<_Category> categories;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       children: [
         Row(
           children: [
@@ -153,15 +150,14 @@ class _MobileGrid extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 // ─── Individual tile ──────────────────────────────────────────────────────────
 
 class _CategoryTile extends StatefulWidget {
+  const _CategoryTile({required this.category, required this.height});
   final _Category category;
   final double height;
-  const _CategoryTile({required this.category, required this.height});
 
   @override
   State<_CategoryTile> createState() => _CategoryTileState();
@@ -171,8 +167,7 @@ class _CategoryTileState extends State<_CategoryTile> {
   bool _hovered = false;
 
   @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
+  Widget build(BuildContext context) => MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -257,17 +252,16 @@ class _CategoryTileState extends State<_CategoryTile> {
         ),
       ),
     );
-  }
 }
 
 class _Category {
-  final String label;
-  final String sub;
-  final List<Color> gradientColors;
 
   const _Category({
     required this.label,
     required this.sub,
     required this.gradientColors,
   });
+  final String label;
+  final String sub;
+  final List<Color> gradientColors;
 }

@@ -6,12 +6,6 @@ part 'user_profile_model.g.dart';
 /// (separate from auth.users metadata)
 @JsonSerializable()
 class UserProfile {
-  final String userId;
-  final String? gender;
-  final Address? billingAddress;
-  final Address? shippingAddress;
-  final bool useBillingAsShipping;
-  final DateTime? updatedAt;
 
   const UserProfile({
     required this.userId,
@@ -24,6 +18,12 @@ class UserProfile {
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
       _$UserProfileFromJson(json);
+  final String userId;
+  final String? gender;
+  final Address? billingAddress;
+  final Address? shippingAddress;
+  final bool useBillingAsShipping;
+  final DateTime? updatedAt;
 
   Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 
@@ -34,8 +34,7 @@ class UserProfile {
     Address? shippingAddress,
     bool? useBillingAsShipping,
     DateTime? updatedAt,
-  }) {
-    return UserProfile(
+  }) => UserProfile(
       userId: userId ?? this.userId,
       gender: gender ?? this.gender,
       billingAddress: billingAddress ?? this.billingAddress,
@@ -43,16 +42,10 @@ class UserProfile {
       useBillingAsShipping: useBillingAsShipping ?? this.useBillingAsShipping,
       updatedAt: updatedAt ?? this.updatedAt,
     );
-  }
 }
 
 @JsonSerializable()
 class Address {
-  final String? street;
-  final String? city;
-  final String? state;
-  final String? postalCode;
-  final String country;
 
   const Address({
     this.street,
@@ -64,6 +57,11 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> json) =>
       _$AddressFromJson(json);
+  final String? street;
+  final String? city;
+  final String? state;
+  final String? postalCode;
+  final String country;
 
   Map<String, dynamic> toJson() => _$AddressToJson(this);
 
@@ -73,25 +71,21 @@ class Address {
     String? state,
     String? postalCode,
     String? country,
-  }) {
-    return Address(
+  }) => Address(
       street: street ?? this.street,
       city: city ?? this.city,
       state: state ?? this.state,
       postalCode: postalCode ?? this.postalCode,
       country: country ?? this.country,
     );
-  }
 
-  bool get isComplete {
-    return street != null &&
+  bool get isComplete => street != null &&
         street!.isNotEmpty &&
         city != null &&
         city!.isNotEmpty &&
         postalCode != null &&
         postalCode!.isNotEmpty &&
         country.isNotEmpty;
-  }
 }
 
 /// Common shipping countries for tea business starting from China
@@ -128,7 +122,5 @@ class ShippingCountries {
     'Finland',
   ];
 
-  static bool isSupported(String country) {
-    return countries.contains(country);
-  }
+  static bool isSupported(String country) => countries.contains(country);
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/constants/app_constants.dart';
-import '../models/user_model.dart';
-import '../providers/auth_service.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
+import 'package:wenxige_store/shared/models/user_model.dart';
+import 'package:wenxige_store/shared/providers/auth_service.dart';
 
 /// Sticky navigation bar that implements [PreferredSizeWidget] so it can be
 /// used as a [Scaffold.appBar].
@@ -12,11 +12,11 @@ import '../providers/auth_service.dart';
 /// pages whose hero fills the screen) and transitions to an opaque surface as
 /// the user scrolls.  Without a [scrollController] it is always opaque.
 class AppNavBar extends StatefulWidget implements PreferredSizeWidget {
+
+  const AppNavBar({this.scrollController, super.key});
   final ScrollController? scrollController;
 
   static const double height = AppConstants.navBarHeight;
-
-  const AppNavBar({this.scrollController, super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(height);
@@ -75,7 +75,6 @@ class _AppNavBarState extends State<AppNavBar> {
             : Border(
                 bottom: BorderSide(
                   color: Colors.black.withValues(alpha: 0.06),
-                  width: 1,
                 ),
               ),
       ),
@@ -94,10 +93,10 @@ class _AppNavBarState extends State<AppNavBar> {
 // ─── Desktop ────────────────────────────────────────────────────────────────
 
 class _DesktopNavRow extends StatelessWidget {
-  final bool isLight;
-  final String currentPath;
 
   const _DesktopNavRow({required this.isLight, required this.currentPath});
+  final bool isLight;
+  final String currentPath;
 
   static const _links = [
     ('Home', '/'),
@@ -108,8 +107,7 @@ class _DesktopNavRow extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _Logo(isLight: isLight),
@@ -127,20 +125,18 @@ class _DesktopNavRow extends StatelessWidget {
         _AuthArea(isLight: isLight),
       ],
     );
-  }
 }
 
 // ─── Mobile ─────────────────────────────────────────────────────────────────
 
 class _MobileNavRow extends StatelessWidget {
+
+  const _MobileNavRow({required this.isLight, required this.currentPath});
   final bool isLight;
   final String currentPath;
 
-  const _MobileNavRow({required this.isLight, required this.currentPath});
-
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       children: [
         _Logo(isLight: isLight),
         const Spacer(),
@@ -149,14 +145,13 @@ class _MobileNavRow extends StatelessWidget {
         _HamburgerButton(isLight: isLight, currentPath: currentPath),
       ],
     );
-  }
 }
 
 // ─── Shared sub-widgets ──────────────────────────────────────────────────────
 
 class _Logo extends StatelessWidget {
-  final bool isLight;
   const _Logo({required this.isLight});
+  final bool isLight;
 
   @override
   Widget build(BuildContext context) {
@@ -204,10 +199,6 @@ class _Logo extends StatelessWidget {
 }
 
 class _NavLink extends StatefulWidget {
-  final String label;
-  final String path;
-  final bool isActive;
-  final bool isLight;
 
   const _NavLink({
     required this.label,
@@ -215,6 +206,10 @@ class _NavLink extends StatefulWidget {
     required this.isActive,
     required this.isLight,
   });
+  final String label;
+  final String path;
+  final bool isActive;
+  final bool isLight;
 
   @override
   State<_NavLink> createState() => _NavLinkState();
@@ -272,12 +267,11 @@ class _NavLinkState extends State<_NavLink> {
 }
 
 class _CartButton extends StatelessWidget {
-  final bool isLight;
   const _CartButton({required this.isLight});
+  final bool isLight;
 
   @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
+  Widget build(BuildContext context) => MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => context.go('/cart'),
@@ -291,12 +285,11 @@ class _CartButton extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class _AuthArea extends StatelessWidget {
-  final bool isLight;
   const _AuthArea({required this.isLight});
+  final bool isLight;
 
   @override
   Widget build(BuildContext context) {
@@ -329,9 +322,9 @@ class _AuthArea extends StatelessWidget {
 }
 
 class _UserChip extends StatefulWidget {
+  const _UserChip({required this.user, required this.isLight});
   final UserModel user;
   final bool isLight;
-  const _UserChip({required this.user, required this.isLight});
 
   @override
   State<_UserChip> createState() => _UserChipState();
@@ -379,7 +372,7 @@ class _UserChipState extends State<_UserChip> {
                   ? CircleAvatar(
                       radius: 17,
                       backgroundImage: NetworkImage(widget.user.avatarUrl!),
-                      onBackgroundImageError: (_, __) {},
+                      onBackgroundImageError: (_, _) {},
                       backgroundColor: theme.colorScheme.primaryContainer,
                       child: widget.user.avatarUrl == null
                           ? Text(
@@ -413,14 +406,14 @@ class _UserChipState extends State<_UserChip> {
 }
 
 class _TextNavButton extends StatefulWidget {
-  final String label;
-  final bool isLight;
-  final VoidCallback onTap;
   const _TextNavButton({
     required this.label,
     required this.isLight,
     required this.onTap,
   });
+  final String label;
+  final bool isLight;
+  final VoidCallback onTap;
 
   @override
   State<_TextNavButton> createState() => _TextNavButtonState();
@@ -430,8 +423,7 @@ class _TextNavButtonState extends State<_TextNavButton> {
   bool _hovered = false;
 
   @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
+  Widget build(BuildContext context) => MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -448,19 +440,17 @@ class _TextNavButtonState extends State<_TextNavButton> {
         ),
       ),
     );
-  }
 }
 
 // ─── Mobile hamburger + full-screen drawer ───────────────────────────────────
 
 class _HamburgerButton extends StatelessWidget {
+  const _HamburgerButton({required this.isLight, required this.currentPath});
   final bool isLight;
   final String currentPath;
-  const _HamburgerButton({required this.isLight, required this.currentPath});
 
   @override
-  Widget build(BuildContext context) {
-    return IconButton(
+  Widget build(BuildContext context) => IconButton(
       icon: Icon(
         Icons.menu,
         color: isLight ? Colors.white : const Color(0xFF2D2D2D),
@@ -472,12 +462,11 @@ class _HamburgerButton extends StatelessWidget {
         );
       },
     );
-  }
 }
 
 class _MobileNavDialog extends StatelessWidget {
-  final String currentPath;
   const _MobileNavDialog({required this.currentPath});
+  final String currentPath;
 
   static const _links = [
     (Icons.home_outlined, 'Home', '/'),

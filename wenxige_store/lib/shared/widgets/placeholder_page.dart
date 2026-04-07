@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'app_nav_bar.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 /// Generic placeholder scaffold used by unimplemented feature pages.
 class PlaceholderPage extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final String description;
-  final Color accentColor;
 
   const PlaceholderPage({
     required this.title,
@@ -17,6 +13,10 @@ class PlaceholderPage extends StatelessWidget {
     this.accentColor = const Color(0xFF6B4EFF),
     super.key,
   });
+  final String title;
+  final IconData icon;
+  final String description;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {

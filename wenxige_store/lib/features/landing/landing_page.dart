@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../shared/widgets/app_nav_bar.dart';
-import 'widgets/categories_section.dart';
-import 'widgets/features_section.dart';
-import 'widgets/footer_section.dart';
-import 'widgets/hero_section.dart';
-import 'widgets/promo_section.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/features/landing/widgets/categories_section.dart';
+import 'package:wenxige_store/features/landing/widgets/features_section.dart';
+import 'package:wenxige_store/features/landing/widgets/footer_section.dart';
+import 'package:wenxige_store/features/landing/widgets/hero_section.dart';
+import 'package:wenxige_store/features/landing/widgets/promo_section.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -24,8 +24,7 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       // extendBodyBehindAppBar lets the hero section fill the full screen
       // while the transparent nav bar floats over it.
       extendBodyBehindAppBar: true,
@@ -44,5 +43,4 @@ class _LandingPageState extends State<LandingPage> {
         ),
       ),
     );
-  }
 }

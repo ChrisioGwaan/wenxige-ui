@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_constants.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
 
 class PromoSection extends StatelessWidget {
   const PromoSection({super.key});
@@ -71,8 +71,7 @@ class PromoSection extends StatelessWidget {
 
 class _PromoText extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -117,7 +116,6 @@ class _PromoText extends StatelessWidget {
         _PromoButton(),
       ],
     );
-  }
 }
 
 class _PromoButton extends StatefulWidget {
@@ -129,8 +127,7 @@ class _PromoButtonState extends State<_PromoButton> {
   bool _hovered = false;
 
   @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
+  Widget build(BuildContext context) => MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -174,13 +171,11 @@ class _PromoButtonState extends State<_PromoButton> {
         ),
       ),
     );
-  }
 }
 
 class _PromoDecoration extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
+  Widget build(BuildContext context) => SizedBox(
       width: 200,
       height: 180,
       child: Stack(
@@ -206,20 +201,18 @@ class _PromoDecoration extends StatelessWidget {
         ],
       ),
     );
-  }
 }
 
 class _FloatingBadge extends StatelessWidget {
+
+  const _FloatingBadge(
+      {required this.label, required this.icon, required this.offset});
   final String label;
   final IconData icon;
   final int offset;
 
-  const _FloatingBadge(
-      {required this.label, required this.icon, required this.offset});
-
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.12),
@@ -242,5 +235,4 @@ class _FloatingBadge extends StatelessWidget {
         ],
       ),
     );
-  }
 }

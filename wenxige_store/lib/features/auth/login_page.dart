@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../shared/providers/auth_service.dart';
-import '../../shared/widgets/animated_gradient_background.dart';
-import '../../shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/shared/providers/auth_service.dart';
+import 'package:wenxige_store/shared/widgets/animated_gradient_background.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

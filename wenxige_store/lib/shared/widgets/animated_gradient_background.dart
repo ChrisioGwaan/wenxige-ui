@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 /// An animated gradient background with floating shapes for auth pages.
 /// Optimized for performance with RepaintBoundary and reduced complexity.
 class AnimatedGradientBackground extends StatefulWidget {
-  final Widget child;
-  final List<Color>? colors;
-  final bool showFloatingShapes;
 
   const AnimatedGradientBackground({
     required this.child,
@@ -15,6 +12,9 @@ class AnimatedGradientBackground extends StatefulWidget {
     this.showFloatingShapes = true,
     super.key,
   });
+  final Widget child;
+  final List<Color>? colors;
+  final bool showFloatingShapes;
 
   @override
   State<AnimatedGradientBackground> createState() =>
@@ -35,7 +35,7 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
     )..repeat();
 
     // Fewer shapes for better performance
-    _shapes = List.generate(4, (i) => _FloatingShape.random(i));
+    _shapes = List.generate(4, _FloatingShape.random);
   }
 
   @override
@@ -74,8 +74,7 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
           RepaintBoundary(
             child: AnimatedBuilder(
               animation: _controller,
-              builder: (context, _) {
-                return CustomPaint(
+              builder: (context, _) => CustomPaint(
                   painter: _ShapesPainter(
                     shapes: _shapes,
                     progress: _controller.value,
@@ -86,8 +85,7 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
                   size: Size.infinite,
                   isComplex: true,
                   willChange: true,
-                );
-              },
+                ),
             ),
           ),
 
@@ -99,11 +97,6 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
 }
 
 class _FloatingShape {
-  final double startX;
-  final double startY;
-  final double size;
-  final double speedMultiplier;
-  final int shapeType;
 
   _FloatingShape({
     required this.startX,
@@ -123,18 +116,23 @@ class _FloatingShape {
       shapeType: random.nextInt(3),
     );
   }
+  final double startX;
+  final double startY;
+  final double size;
+  final double speedMultiplier;
+  final int shapeType;
 }
 
 class _ShapesPainter extends CustomPainter {
-  final List<_FloatingShape> shapes;
-  final double progress;
-  final Color primaryColor;
 
   _ShapesPainter({
     required this.shapes,
     required this.progress,
     required this.primaryColor,
   });
+  final List<_FloatingShape> shapes;
+  final double progress;
+  final Color primaryColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -193,9 +191,9 @@ class _ShapesPainter extends CustomPainter {
 
 /// A simpler wave background for signup page - optimized
 class AnimatedWaveBackground extends StatefulWidget {
-  final Widget child;
 
   const AnimatedWaveBackground({required this.child, super.key});
+  final Widget child;
 
   @override
   State<AnimatedWaveBackground> createState() => _AnimatedWaveBackgroundState();
@@ -245,8 +243,7 @@ class _AnimatedWaveBackgroundState extends State<AnimatedWaveBackground>
         RepaintBoundary(
           child: AnimatedBuilder(
             animation: _controller,
-            builder: (context, _) {
-              return CustomPaint(
+            builder: (context, _) => CustomPaint(
                 painter: _WavePainter(
                   progress: _controller.value,
                   colors: [
@@ -257,8 +254,7 @@ class _AnimatedWaveBackgroundState extends State<AnimatedWaveBackground>
                 size: Size.infinite,
                 isComplex: true,
                 willChange: true,
-              );
-            },
+              ),
           ),
         ),
 
@@ -270,15 +266,15 @@ class _AnimatedWaveBackgroundState extends State<AnimatedWaveBackground>
 }
 
 class _WavePainter extends CustomPainter {
-  final double progress;
-  final List<Color> colors;
 
   _WavePainter({required this.progress, required this.colors});
+  final double progress;
+  final List<Color> colors;
 
   @override
   void paint(Canvas canvas, Size size) {
     // Only 2 waves, fewer points
-    for (int i = 0; i < colors.length; i++) {
+    for (var i = 0; i < colors.length; i++) {
       final paint = Paint()
         ..color = colors[i]
         ..style = PaintingStyle.fill;

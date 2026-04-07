@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/user_model.dart';
+import 'package:wenxige_store/shared/models/user_model.dart';
 
 /// Supabase authentication service.
 class AuthService extends ChangeNotifier {
-  static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
+  static final AuthService _instance = AuthService._internal();
 
   SupabaseClient get _client => Supabase.instance.client;
 
@@ -50,7 +50,7 @@ class AuthService extends ChangeNotifier {
       email: email,
       password: password,
       data: {
-        if (displayName != null) 'display_name': displayName,
+        'display_name': ?displayName,
         if (phone != null && phone.isNotEmpty) 'phone': phone,
       },
     );

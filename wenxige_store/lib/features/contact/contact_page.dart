@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../core/constants/app_constants.dart';
-import '../../shared/widgets/app_nav_bar.dart';
-import '../landing/widgets/footer_section.dart';
+import 'package:wenxige_store/core/constants/app_constants.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/features/landing/widgets/footer_section.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
@@ -239,13 +239,12 @@ class _ContactPageState extends State<ContactPage> {
 }
 
 class _ContactHero extends StatelessWidget {
-  final ThemeData theme;
 
   const _ContactHero({required this.theme});
+  final ThemeData theme;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
         AppConstants.pageHorizontalPadding,
@@ -298,17 +297,15 @@ class _ContactHero extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class _HeroCopy extends StatelessWidget {
-  final ThemeData theme;
 
   const _HeroCopy({required this.theme});
+  final ThemeData theme;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -349,17 +346,15 @@ class _HeroCopy extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 class _HeroHighlight extends StatelessWidget {
-  final ThemeData theme;
 
   const _HeroHighlight({required this.theme});
+  final ThemeData theme;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.1),
@@ -398,17 +393,15 @@ class _HeroHighlight extends StatelessWidget {
         ],
       ),
     );
-  }
 }
 
 class _HeroBullet extends StatelessWidget {
-  final String text;
 
   const _HeroBullet({required this.text});
+  final String text;
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
+  Widget build(BuildContext context) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -433,17 +426,15 @@ class _HeroBullet extends StatelessWidget {
         ),
       ],
     );
-  }
 }
 
 class _ContactInfoCard extends StatelessWidget {
-  final ThemeData theme;
 
   const _ContactInfoCard({required this.theme});
+  final ThemeData theme;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F5FF),
@@ -488,19 +479,18 @@ class _ContactInfoCard extends StatelessWidget {
         ],
       ),
     );
-  }
 }
 
 class _InfoTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
 
   const _InfoTile({
     required this.icon,
     required this.title,
     required this.description,
   });
+  final IconData icon;
+  final String title;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -547,20 +537,6 @@ class _InfoTile extends StatelessWidget {
 }
 
 class _ContactFormCard extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final TextEditingController emailController;
-  final TextEditingController phoneController;
-  final TextEditingController commentController;
-  final bool isSubmitting;
-  final bool submissionSucceeded;
-  final String? errorMessage;
-  final VoidCallback onSubmit;
-  final String? Function(String?, String) validateName;
-  final String? Function(String?) validateEmail;
-  final String? Function(String?) validatePhone;
-  final String? Function(String?) validateComment;
 
   const _ContactFormCard({
     required this.formKey,
@@ -578,6 +554,20 @@ class _ContactFormCard extends StatelessWidget {
     required this.validatePhone,
     required this.validateComment,
   });
+  final GlobalKey<FormState> formKey;
+  final TextEditingController firstNameController;
+  final TextEditingController lastNameController;
+  final TextEditingController emailController;
+  final TextEditingController phoneController;
+  final TextEditingController commentController;
+  final bool isSubmitting;
+  final bool submissionSucceeded;
+  final String? errorMessage;
+  final VoidCallback onSubmit;
+  final String? Function(String?, String) validateName;
+  final String? Function(String?) validateEmail;
+  final String? Function(String?) validatePhone;
+  final String? Function(String?) validateComment;
 
   @override
   Widget build(BuildContext context) {
@@ -630,10 +620,10 @@ class _ContactFormCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            _StatusBanner(
+            const _StatusBanner(
               icon: Icons.verified_user_outlined,
-              backgroundColor: const Color(0xFFE7F8EE),
-              foregroundColor: const Color(0xFF0B6B3A),
+              backgroundColor: Color(0xFFE7F8EE),
+              foregroundColor: Color(0xFF0B6B3A),
               message:
                   'Your details have been securely saved in Supabase.',
             ),
@@ -821,17 +811,6 @@ class _ContactFormCard extends StatelessWidget {
 }
 
 class _ContactTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final String? hintText;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  final TextCapitalization textCapitalization;
-  final Widget? prefixIcon;
-  final int? maxLines;
-  final int? minLines;
-  final List<TextInputFormatter>? inputFormatters;
-  final String? Function(String?)? validator;
 
   const _ContactTextField({
     required this.controller,
@@ -846,10 +825,20 @@ class _ContactTextField extends StatelessWidget {
     this.inputFormatters,
     this.validator,
   });
+  final TextEditingController controller;
+  final String label;
+  final String? hintText;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final TextCapitalization textCapitalization;
+  final Widget? prefixIcon;
+  final int? maxLines;
+  final int? minLines;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? Function(String?)? validator;
 
   @override
-  Widget build(BuildContext context) {
-    return TextFormField(
+  Widget build(BuildContext context) => TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
@@ -878,14 +867,9 @@ class _ContactTextField extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class _StatusBanner extends StatelessWidget {
-  final IconData icon;
-  final Color backgroundColor;
-  final Color foregroundColor;
-  final String message;
 
   const _StatusBanner({
     required this.icon,
@@ -893,10 +877,13 @@ class _StatusBanner extends StatelessWidget {
     required this.foregroundColor,
     required this.message,
   });
+  final IconData icon;
+  final Color backgroundColor;
+  final Color foregroundColor;
+  final String message;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -920,5 +907,4 @@ class _StatusBanner extends StatelessWidget {
         ],
       ),
     );
-  }
 }

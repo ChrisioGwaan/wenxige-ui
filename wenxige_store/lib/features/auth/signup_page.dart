@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../shared/providers/auth_service.dart';
-import '../../shared/widgets/animated_gradient_background.dart';
-import '../../shared/widgets/app_nav_bar.dart';
-import '../../shared/widgets/country_code_picker.dart';
+import 'package:wenxige_store/shared/providers/auth_service.dart';
+import 'package:wenxige_store/shared/widgets/animated_gradient_background.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/shared/widgets/country_code_picker.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

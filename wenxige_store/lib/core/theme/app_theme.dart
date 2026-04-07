@@ -9,7 +9,6 @@ class AppTheme {
     final base = ThemeData.light();
     final colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
-      brightness: Brightness.light,
     );
 
     return ThemeData(
