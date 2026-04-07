@@ -8,9 +8,9 @@ import 'package:wenxige_store/shared/widgets/animated_gradient_background.dart';
 import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 class ProductDetailPage extends StatefulWidget {
-  final String productId;
 
   const ProductDetailPage({super.key, required this.productId});
+  final String productId;
 
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
@@ -80,9 +80,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return Scaffold(
-        appBar: const AppNavBar(),
-        body: const Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        appBar: AppNavBar(),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -136,8 +136,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildDesktopLayout(ThemeData theme) {
-    return Row(
+  Widget _buildDesktopLayout(ThemeData theme) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(child: _buildImageGallery(theme)),
@@ -145,10 +144,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         Expanded(child: _buildProductInfo(theme)),
       ],
     );
-  }
 
-  Widget _buildMobileLayout(ThemeData theme) {
-    return Column(
+  Widget _buildMobileLayout(ThemeData theme) => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildImageGallery(theme),
@@ -156,7 +153,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         _buildProductInfo(theme),
       ],
     );
-  }
 
   Widget _buildImageGallery(ThemeData theme) {
     final images = _product!.imageUrls.isNotEmpty ? _product!.imageUrls : [''];
@@ -169,7 +165,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           children: [
             AspectRatio(
               aspectRatio: 1,
-              child: Container(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
@@ -180,7 +176,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         child: Image.network(
                           images[_selectedImageIndex],
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, _, _) =>
                               const Icon(Icons.image_not_supported, size: 120),
                         ),
                       )
@@ -213,7 +209,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         child: Image.network(
                           images[index],
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, _, _) =>
                               const Icon(Icons.image_not_supported),
                         ),
                       ),
@@ -228,8 +224,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildProductInfo(ThemeData theme) {
-    return Card(
+  Widget _buildProductInfo(ThemeData theme) => Card(
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -384,10 +379,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
       ),
     );
-  }
 
-  Widget _buildInfoRow(ThemeData theme, String label, String value) {
-    return Padding(
+  Widget _buildInfoRow(ThemeData theme, String label, String value) => Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
@@ -407,5 +400,4 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ],
       ),
     );
-  }
 }

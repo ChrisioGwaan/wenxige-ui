@@ -4,15 +4,6 @@ part 'cart_model.g.dart';
 
 @JsonSerializable()
 class CartItem {
-  final String productId;
-  final String productName;
-  final String? productImageUrl;
-  final double unitPrice;
-  final String? unit;
-  final int quantity;
-  final int minOrderQuantity;
-  final int? maxOrderQuantity;
-  final int stockQuantity;
 
   CartItem({
     required this.productId,
@@ -25,6 +16,18 @@ class CartItem {
     this.maxOrderQuantity,
     required this.stockQuantity,
   });
+
+  factory CartItem.fromJson(Map<String, dynamic> json) =>
+      _$CartItemFromJson(json);
+  final String productId;
+  final String productName;
+  final String? productImageUrl;
+  final double unitPrice;
+  final String? unit;
+  final int quantity;
+  final int minOrderQuantity;
+  final int? maxOrderQuantity;
+  final int stockQuantity;
 
   double get totalPrice => unitPrice * quantity;
 
@@ -47,8 +50,7 @@ class CartItem {
     int? minOrderQuantity,
     int? maxOrderQuantity,
     int? stockQuantity,
-  }) {
-    return CartItem(
+  }) => CartItem(
       productId: productId ?? this.productId,
       productName: productName ?? this.productName,
       productImageUrl: productImageUrl ?? this.productImageUrl,
@@ -59,19 +61,17 @@ class CartItem {
       maxOrderQuantity: maxOrderQuantity ?? this.maxOrderQuantity,
       stockQuantity: stockQuantity ?? this.stockQuantity,
     );
-  }
-
-  factory CartItem.fromJson(Map<String, dynamic> json) =>
-      _$CartItemFromJson(json);
   Map<String, dynamic> toJson() => _$CartItemToJson(this);
 }
 
 @JsonSerializable()
 class Cart {
-  final List<CartItem> items;
-  final DateTime? lastUpdated;
 
   Cart({this.items = const [], this.lastUpdated});
+
+  factory Cart.fromJson(Map<String, dynamic> json) => _$CartFromJson(json);
+  final List<CartItem> items;
+  final DateTime? lastUpdated;
 
   double get subtotal => items.fold(0, (sum, item) => sum + item.totalPrice);
 
@@ -81,13 +81,9 @@ class Cart {
 
   bool get isEmpty => items.isEmpty;
 
-  Cart copyWith({List<CartItem>? items, DateTime? lastUpdated}) {
-    return Cart(
+  Cart copyWith({List<CartItem>? items, DateTime? lastUpdated}) => Cart(
       items: items ?? this.items,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
-  }
-
-  factory Cart.fromJson(Map<String, dynamic> json) => _$CartFromJson(json);
   Map<String, dynamic> toJson() => _$CartToJson(this);
 }

@@ -4,9 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wenxige_store/shared/models/product_model.dart';
 
 class ProductService extends ChangeNotifier {
-  static final ProductService _instance = ProductService._internal();
   factory ProductService() => _instance;
   ProductService._internal();
+  static final ProductService _instance = ProductService._internal();
 
   SupabaseClient get _client => Supabase.instance.client;
 
@@ -22,7 +22,7 @@ class ProductService extends ChangeNotifier {
     int offset = 0,
   }) async {
     try {
-      PostgrestFilterBuilder<PostgrestList> query = _client
+      var query = _client
           .from('products')
           .select();
 
@@ -131,8 +131,7 @@ class ProductService extends ChangeNotifier {
     }
   }
 
-  Map<String, dynamic> _convertFromSnakeCase(Map<String, dynamic> json) {
-    return {
+  Map<String, dynamic> _convertFromSnakeCase(Map<String, dynamic> json) => {
       'id': json['id'],
       'name': json['name'],
       'description': json['description'],
@@ -155,5 +154,4 @@ class ProductService extends ChangeNotifier {
       'displayOrder': json['display_order'],
       'logoUrl': json['logo_url'],
     };
-  }
 }

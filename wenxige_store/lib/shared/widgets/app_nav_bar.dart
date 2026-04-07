@@ -108,7 +108,6 @@ class _DesktopNavRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _Logo(isLight: isLight),
         const Spacer(),

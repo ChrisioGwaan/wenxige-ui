@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 import 'package:wenxige_store/features/landing/widgets/categories_section.dart';
 import 'package:wenxige_store/features/landing/widgets/features_section.dart';
 import 'package:wenxige_store/features/landing/widgets/footer_section.dart';
 import 'package:wenxige_store/features/landing/widgets/hero_section.dart';
 import 'package:wenxige_store/features/landing/widgets/promo_section.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});

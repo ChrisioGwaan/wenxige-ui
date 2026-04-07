@@ -87,14 +87,12 @@ class AppRouter {
         key: state.pageKey,
         child: child,
         transitionDuration: const Duration(milliseconds: 220),
-        transitionsBuilder: (context, animation, _, child) {
-          return FadeTransition(
+        transitionsBuilder: (context, animation, _, child) => FadeTransition(
             opacity: CurvedAnimation(
               parent: animation,
               curve: Curves.easeInOut,
             ),
             child: child,
-          );
-        },
+          ),
       );
 }

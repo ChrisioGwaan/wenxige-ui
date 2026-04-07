@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:wenxige_store/shared/widgets/app_scaffold.dart';
 
 class OrderConfirmationPage extends StatelessWidget {
-  final String orderNumber;
 
   const OrderConfirmationPage({super.key, required this.orderNumber});
+  final String orderNumber;
 
   @override
   Widget build(BuildContext context) {

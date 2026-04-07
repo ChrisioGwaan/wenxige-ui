@@ -46,11 +46,10 @@ class UserProfile {
 @JsonSerializable()
 class Address {
   const Address({
-    this.street,
+    required this.country, this.street,
     this.city,
     this.state,
     this.postalCode,
-    required this.country,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) =>

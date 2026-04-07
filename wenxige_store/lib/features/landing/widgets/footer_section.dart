@@ -223,7 +223,7 @@ class _NewsletterColumn extends StatelessWidget {
                     filled: true,
                     fillColor: Colors.white.withValues(alpha: 0.07),
                     contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 0),
+                        horizontal: 16),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide:
@@ -269,12 +269,12 @@ class _NewsletterColumn extends StatelessWidget {
 
 class _BottomBar extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Wrap(
+  Widget build(BuildContext context) => const Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 16,
       runSpacing: 8,
       children: [
-        const Text(
+        Text(
           '© 2026 Wenxige Store. All rights reserved.',
           style: TextStyle(color: Colors.white24, fontSize: 12),
         ),
@@ -282,9 +282,9 @@ class _BottomBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _FooterLink(label: 'Terms', path: '/contact'),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             _FooterLink(label: 'Privacy', path: '/contact'),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             _FooterLink(label: 'Cookies', path: '/contact'),
           ],
         ),

@@ -182,8 +182,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildCheckoutForm(ThemeData theme) {
-    return SingleChildScrollView(
+  Widget _buildCheckoutForm(ThemeData theme) => SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,10 +198,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ],
       ),
     );
-  }
 
-  Widget _buildCheckoutSteps(ThemeData theme) {
-    return Form(
+  Widget _buildCheckoutSteps(ThemeData theme) => Form(
       key: _formKey,
       child: Stepper(
         currentStep: _currentStep,
@@ -274,10 +271,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ],
       ),
     );
-  }
 
-  Widget _buildContactAndShippingStep(ThemeData theme) {
-    return Column(
+  Widget _buildContactAndShippingStep(ThemeData theme) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (_isGuest) ...[
@@ -434,10 +429,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ],
     );
-  }
 
-  Widget _buildBillingStep(ThemeData theme) {
-    return Column(
+  Widget _buildBillingStep(ThemeData theme) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CheckboxListTile(
@@ -528,10 +521,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ],
       ],
     );
-  }
 
-  Widget _buildPaymentStep(ThemeData theme) {
-    return Column(
+  Widget _buildPaymentStep(ThemeData theme) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Select Payment Method', style: theme.textTheme.titleMedium),
@@ -573,7 +564,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ],
     );
-  }
 
   Widget _buildPaymentOption(
     ThemeData theme,
@@ -635,8 +625,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildOrderSummaryCard(ThemeData theme, Cart cart) {
-    return Card(
+  Widget _buildOrderSummaryCard(ThemeData theme, Cart cart) => Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -674,10 +663,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ),
     );
-  }
 
-  Widget _buildOrderItem(ThemeData theme, CartItem item) {
-    return Padding(
+  Widget _buildOrderItem(ThemeData theme, CartItem item) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
@@ -724,15 +711,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ],
       ),
     );
-  }
 
   Widget _buildSummaryRow(
     ThemeData theme,
     String label,
     String value, {
     bool isTotal = false,
-  }) {
-    return Row(
+  }) => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
@@ -754,7 +739,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ],
     );
-  }
 
   void _onStepContinue() {
     if (_currentStep == 0) {

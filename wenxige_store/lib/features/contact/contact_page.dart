@@ -379,15 +379,15 @@ class _HeroHighlight extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          _HeroBullet(
+          const _HeroBullet(
             text: 'Ask about loose-leaf teas, brewing guidance, and teaware.',
           ),
           const SizedBox(height: 10),
-          _HeroBullet(
+          const _HeroBullet(
             text: 'Phone is optional if you prefer to be contacted by email only.',
           ),
           const SizedBox(height: 10),
-          _HeroBullet(
+          const _HeroBullet(
             text: 'Your message is securely saved in Supabase for our team to review.',
           ),
         ],

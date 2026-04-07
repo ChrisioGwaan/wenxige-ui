@@ -52,8 +52,7 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget _buildEmptyCart(ThemeData theme) {
-    return Center(
+  Widget _buildEmptyCart(ThemeData theme) => Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -95,10 +94,8 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
     );
-  }
 
-  Widget _buildCartContent(ThemeData theme, Cart cart) {
-    return LayoutBuilder(
+  Widget _buildCartContent(ThemeData theme, Cart cart) => LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 900;
 
@@ -125,10 +122,8 @@ class _CartPageState extends State<CartPage> {
         );
       },
     );
-  }
 
-  Widget _buildCartItems(ThemeData theme, Cart cart) {
-    return SingleChildScrollView(
+  Widget _buildCartItems(ThemeData theme, Cart cart) => SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,20 +150,16 @@ class _CartPageState extends State<CartPage> {
         ],
       ),
     );
-  }
 
-  Widget _buildCartItemsList(ThemeData theme, Cart cart) {
-    return ListView.separated(
+  Widget _buildCartItemsList(ThemeData theme, Cart cart) => ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: cart.items.length,
       separatorBuilder: (_, __) => const Divider(height: 32),
       itemBuilder: (context, index) => _buildCartItem(theme, cart.items[index]),
     );
-  }
 
-  Widget _buildCartItem(ThemeData theme, CartItem item) {
-    return Row(
+  Widget _buildCartItem(ThemeData theme, CartItem item) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Product image
@@ -242,10 +233,8 @@ class _CartPageState extends State<CartPage> {
         ),
       ],
     );
-  }
 
-  Widget _buildQuantitySelector(ThemeData theme, CartItem item) {
-    return Container(
+  Widget _buildQuantitySelector(ThemeData theme, CartItem item) => Container(
       decoration: BoxDecoration(
         border: Border.all(
           color: theme.colorScheme.outline.withValues(alpha: 0.3),
@@ -284,10 +273,8 @@ class _CartPageState extends State<CartPage> {
         ],
       ),
     );
-  }
 
-  Widget _buildOrderSummary(ThemeData theme, Cart cart) {
-    return Card(
+  Widget _buildOrderSummary(ThemeData theme, Cart cart) => Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -341,15 +328,13 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
     );
-  }
 
   Widget _buildSummaryRow(
     ThemeData theme,
     String label,
     String value, {
     bool isTotal = false,
-  }) {
-    return Row(
+  }) => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
@@ -373,7 +358,6 @@ class _CartPageState extends State<CartPage> {
         ),
       ],
     );
-  }
 
   void _updateQuantity(String productId, int quantity) {
     _cartService.updateQuantity(productId, quantity);

@@ -105,7 +105,7 @@ class _PromoText extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         const Text(
-          'Fresh drops from our curators — be the first to discover\nwhat\'s new in the collection.',
+          "Fresh drops from our curators — be the first to discover\nwhat's new in the collection.",
           style: TextStyle(
             color: Colors.white70,
             fontSize: 15,
@@ -175,7 +175,7 @@ class _PromoButtonState extends State<_PromoButton> {
 
 class _PromoDecoration extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => SizedBox(
+  Widget build(BuildContext context) => const SizedBox(
       width: 200,
       height: 180,
       child: Stack(

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../shared/models/product_model.dart';
-import '../../shared/services/product_service.dart';
-import '../../shared/widgets/animated_gradient_background.dart';
-import '../../shared/widgets/app_nav_bar.dart';
+import 'package:wenxige_store/shared/models/product_model.dart';
+import 'package:wenxige_store/shared/services/product_service.dart';
+import 'package:wenxige_store/shared/widgets/animated_gradient_background.dart';
+import 'package:wenxige_store/shared/widgets/app_nav_bar.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -120,8 +120,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildSearchBar(ThemeData theme) {
-    return Container(
+  Widget _buildSearchBar(ThemeData theme) => Container(
       padding: const EdgeInsets.all(16),
       color: theme.colorScheme.surface.withValues(alpha: 0.9),
       child: Row(
@@ -163,7 +162,6 @@ class _ShopPageState extends State<ShopPage> {
         ],
       ),
     );
-  }
 
   Widget _buildFilters(ThemeData theme) {
     final hasActiveFilters =
@@ -221,13 +219,11 @@ class _ShopPageState extends State<ShopPage> {
     required String label,
     required VoidCallback onTap,
     bool selected = false,
-  }) {
-    return FilterChip(
+  }) => FilterChip(
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
     );
-  }
 
   void _showProductTypeFilter(ThemeData theme) {
     showModalBottomSheet(
@@ -376,7 +372,7 @@ class _ShopPageState extends State<ShopPage> {
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Min Price',
-                prefixText: '\$',
+                prefixText: r'$',
               ),
             ),
             const SizedBox(height: 16),
@@ -385,7 +381,7 @@ class _ShopPageState extends State<ShopPage> {
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Max Price',
-                prefixText: '\$',
+                prefixText: r'$',
               ),
             ),
           ],
@@ -411,8 +407,7 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildGridView(ThemeData theme) {
-    return GridView.builder(
+  Widget _buildGridView(ThemeData theme) => GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 300,
@@ -424,19 +419,15 @@ class _ShopPageState extends State<ShopPage> {
       itemBuilder: (context, index) =>
           _buildProductCard(_products[index], theme),
     );
-  }
 
-  Widget _buildListView(ThemeData theme) {
-    return ListView.builder(
+  Widget _buildListView(ThemeData theme) => ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _products.length,
       itemBuilder: (context, index) =>
           _buildProductListItem(_products[index], theme),
     );
-  }
 
-  Widget _buildProductCard(Product product, ThemeData theme) {
-    return Card(
+  Widget _buildProductCard(Product product, ThemeData theme) => Card(
       elevation: 2,
       child: InkWell(
         onTap: () => context.go('/product/${product.id}'),
@@ -518,10 +509,8 @@ class _ShopPageState extends State<ShopPage> {
         ),
       ),
     );
-  }
 
-  Widget _buildProductListItem(Product product, ThemeData theme) {
-    return Card(
+  Widget _buildProductListItem(Product product, ThemeData theme) => Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () => context.go('/product/${product.id}'),
@@ -611,10 +600,8 @@ class _ShopPageState extends State<ShopPage> {
         ),
       ),
     );
-  }
 
-  Widget _buildEmptyState(ThemeData theme) {
-    return Center(
+  Widget _buildEmptyState(ThemeData theme) => Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -635,5 +622,4 @@ class _ShopPageState extends State<ShopPage> {
         ],
       ),
     );
-  }
 }
