@@ -74,8 +74,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  assets:
-    - .env
+  # assets:
+    # DO NOT include .env in web builds - it exposes secrets!
+    # Use environment variables at build time instead
 
   # To add assets to your application, add an assets section, like this:
   # assets:
