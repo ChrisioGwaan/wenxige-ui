@@ -61,9 +61,13 @@ class ProductService extends ChangeNotifier {
       final response = await query
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
-          
+
       return (response as List)
-          .map((json) => Product.fromJson(_convertFromSnakeCase(json as Map<String, dynamic>)))
+          .map(
+            (json) => Product.fromJson(
+              _convertFromSnakeCase(json as Map<String, dynamic>),
+            ),
+          )
           .toList();
     } catch (e) {
       debugPrint('Error fetching products: $e');
@@ -95,7 +99,11 @@ class ProductService extends ChangeNotifier {
           .order('display_order', ascending: true);
 
       return (response as List)
-          .map((json) => TeaCategory.fromJson(_convertFromSnakeCase(json as Map<String, dynamic>)))
+          .map(
+            (json) => TeaCategory.fromJson(
+              _convertFromSnakeCase(json as Map<String, dynamic>),
+            ),
+          )
           .toList();
     } catch (e) {
       debugPrint('Error fetching categories: $e');
@@ -111,7 +119,11 @@ class ProductService extends ChangeNotifier {
           .order('name', ascending: true);
 
       return (response as List)
-          .map((json) => Brand.fromJson(_convertFromSnakeCase(json as Map<String, dynamic>)))
+          .map(
+            (json) => Brand.fromJson(
+              _convertFromSnakeCase(json as Map<String, dynamic>),
+            ),
+          )
           .toList();
     } catch (e) {
       debugPrint('Error fetching brands: $e');

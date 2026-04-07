@@ -109,10 +109,10 @@ class _ShopPageState extends State<ShopPage> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _products.isEmpty
-                      ? _buildEmptyState(theme)
-                      : _isGridView
-                          ? _buildGridView(theme)
-                          : _buildListView(theme),
+                  ? _buildEmptyState(theme)
+                  : _isGridView
+                  ? _buildGridView(theme)
+                  : _buildListView(theme),
             ),
           ],
         ),
@@ -166,7 +166,8 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Widget _buildFilters(ThemeData theme) {
-    final hasActiveFilters = _selectedProductType != null ||
+    final hasActiveFilters =
+        _selectedProductType != null ||
         _selectedCategory != null ||
         _selectedBrand != null ||
         _minPrice != null ||
@@ -239,17 +240,19 @@ class _ShopPageState extends State<ShopPage> {
           children: [
             Text('Product Type', style: theme.textTheme.titleLarge),
             const SizedBox(height: 16),
-            ...ProductType.values.map((type) => ListTile(
-                  title: Text(type.displayName),
-                  trailing: _selectedProductType == type.name
-                      ? const Icon(Icons.check)
-                      : null,
-                  onTap: () {
-                    setState(() => _selectedProductType = type.name);
-                    Navigator.pop(context);
-                    _applyFilters();
-                  },
-                )),
+            ...ProductType.values.map(
+              (type) => ListTile(
+                title: Text(type.displayName),
+                trailing: _selectedProductType == type.name
+                    ? const Icon(Icons.check)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedProductType = type.name);
+                  Navigator.pop(context);
+                  _applyFilters();
+                },
+              ),
+            ),
             ListTile(
               title: const Text('All Types'),
               trailing: _selectedProductType == null
@@ -278,20 +281,22 @@ class _ShopPageState extends State<ShopPage> {
           children: [
             Text('Tea Category', style: theme.textTheme.titleLarge),
             const SizedBox(height: 16),
-            ..._categories.map((category) => ListTile(
-                  title: Text(category.name),
-                  subtitle: category.description != null
-                      ? Text(category.description!)
-                      : null,
-                  trailing: _selectedCategory == category.name
-                      ? const Icon(Icons.check)
-                      : null,
-                  onTap: () {
-                    setState(() => _selectedCategory = category.name);
-                    Navigator.pop(context);
-                    _applyFilters();
-                  },
-                )),
+            ..._categories.map(
+              (category) => ListTile(
+                title: Text(category.name),
+                subtitle: category.description != null
+                    ? Text(category.description!)
+                    : null,
+                trailing: _selectedCategory == category.name
+                    ? const Icon(Icons.check)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedCategory = category.name);
+                  Navigator.pop(context);
+                  _applyFilters();
+                },
+              ),
+            ),
             ListTile(
               title: const Text('All Categories'),
               trailing: _selectedCategory == null
@@ -320,25 +325,25 @@ class _ShopPageState extends State<ShopPage> {
           children: [
             Text('Brand', style: theme.textTheme.titleLarge),
             const SizedBox(height: 16),
-            ..._brands.map((brand) => ListTile(
-                  title: Text(brand.name),
-                  subtitle: brand.description != null
-                      ? Text(brand.description!)
-                      : null,
-                  trailing: _selectedBrand == brand.name
-                      ? const Icon(Icons.check)
-                      : null,
-                  onTap: () {
-                    setState(() => _selectedBrand = brand.name);
-                    Navigator.pop(context);
-                    _applyFilters();
-                  },
-                )),
+            ..._brands.map(
+              (brand) => ListTile(
+                title: Text(brand.name),
+                subtitle: brand.description != null
+                    ? Text(brand.description!)
+                    : null,
+                trailing: _selectedBrand == brand.name
+                    ? const Icon(Icons.check)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedBrand = brand.name);
+                  Navigator.pop(context);
+                  _applyFilters();
+                },
+              ),
+            ),
             ListTile(
               title: const Text('All Brands'),
-              trailing: _selectedBrand == null
-                  ? const Icon(Icons.check)
-                  : null,
+              trailing: _selectedBrand == null ? const Icon(Icons.check) : null,
               onTap: () {
                 setState(() => _selectedBrand = null);
                 Navigator.pop(context);
@@ -352,8 +357,12 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   void _showPriceFilter(ThemeData theme) {
-    final minController = TextEditingController(text: _minPrice?.toString() ?? '');
-    final maxController = TextEditingController(text: _maxPrice?.toString() ?? '');
+    final minController = TextEditingController(
+      text: _minPrice?.toString() ?? '',
+    );
+    final maxController = TextEditingController(
+      text: _maxPrice?.toString() ?? '',
+    );
 
     showDialog(
       context: context,
@@ -412,7 +421,8 @@ class _ShopPageState extends State<ShopPage> {
         mainAxisSpacing: 16,
       ),
       itemCount: _products.length,
-      itemBuilder: (context, index) => _buildProductCard(_products[index], theme),
+      itemBuilder: (context, index) =>
+          _buildProductCard(_products[index], theme),
     );
   }
 
@@ -420,7 +430,8 @@ class _ShopPageState extends State<ShopPage> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _products.length,
-      itemBuilder: (context, index) => _buildProductListItem(_products[index], theme),
+      itemBuilder: (context, index) =>
+          _buildProductListItem(_products[index], theme),
     );
   }
 
@@ -437,13 +448,16 @@ class _ShopPageState extends State<ShopPage> {
               child: Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                 ),
                 child: product.imageUrls.isNotEmpty
                     ? Image.network(
                         product.imageUrls.first,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported, size: 64),
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.image_not_supported, size: 64),
                       )
                     : const Icon(Icons.image_not_supported, size: 64),
               ),
@@ -529,7 +543,8 @@ class _ShopPageState extends State<ShopPage> {
                         child: Image.network(
                           product.imageUrls.first,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.image_not_supported),
                         ),
                       )
                     : const Icon(Icons.image_not_supported),
@@ -609,10 +624,7 @@ class _ShopPageState extends State<ShopPage> {
             color: theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 16),
-          Text(
-            'No products found',
-            style: theme.textTheme.titleLarge,
-          ),
+          Text('No products found', style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             'Try adjusting your filters',

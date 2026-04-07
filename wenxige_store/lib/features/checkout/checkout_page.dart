@@ -77,10 +77,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
     if (user != null) {
       // Get data from user metadata
       final metadata = user.userMetadata;
-      _firstNameController.text = metadata?['first_name'] ?? '';
-      _lastNameController.text = metadata?['last_name'] ?? '';
+      _firstNameController.text = (metadata?['first_name'] as String?) ?? '';
+      _lastNameController.text = (metadata?['last_name'] as String?) ?? '';
       _emailController.text = user.email ?? '';
-      _phoneController.text = metadata?['phone'] ?? '';
+      _phoneController.text = (metadata?['phone'] as String?) ?? '';
 
       // Get extended profile (addresses)
       final profile = await _profileService.getProfile();
@@ -88,7 +88,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         _shippingStreetController.text = profile.shippingAddress!.street ?? '';
         _shippingCityController.text = profile.shippingAddress!.city ?? '';
         _shippingStateController.text = profile.shippingAddress!.state ?? '';
-        _shippingPostalCodeController.text = profile.shippingAddress!.postalCode ?? '';
+        _shippingPostalCodeController.text =
+            profile.shippingAddress!.postalCode ?? '';
         _shippingCountry = profile.shippingAddress!.country;
       }
     }

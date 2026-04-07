@@ -6,7 +6,6 @@ part 'user_profile_model.g.dart';
 /// (separate from auth.users metadata)
 @JsonSerializable()
 class UserProfile {
-
   const UserProfile({
     required this.userId,
     this.gender,
@@ -35,18 +34,17 @@ class UserProfile {
     bool? useBillingAsShipping,
     DateTime? updatedAt,
   }) => UserProfile(
-      userId: userId ?? this.userId,
-      gender: gender ?? this.gender,
-      billingAddress: billingAddress ?? this.billingAddress,
-      shippingAddress: shippingAddress ?? this.shippingAddress,
-      useBillingAsShipping: useBillingAsShipping ?? this.useBillingAsShipping,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
+    userId: userId ?? this.userId,
+    gender: gender ?? this.gender,
+    billingAddress: billingAddress ?? this.billingAddress,
+    shippingAddress: shippingAddress ?? this.shippingAddress,
+    useBillingAsShipping: useBillingAsShipping ?? this.useBillingAsShipping,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 }
 
 @JsonSerializable()
 class Address {
-
   const Address({
     this.street,
     this.city,
@@ -72,20 +70,21 @@ class Address {
     String? postalCode,
     String? country,
   }) => Address(
-      street: street ?? this.street,
-      city: city ?? this.city,
-      state: state ?? this.state,
-      postalCode: postalCode ?? this.postalCode,
-      country: country ?? this.country,
-    );
+    street: street ?? this.street,
+    city: city ?? this.city,
+    state: state ?? this.state,
+    postalCode: postalCode ?? this.postalCode,
+    country: country ?? this.country,
+  );
 
-  bool get isComplete => street != null &&
-        street!.isNotEmpty &&
-        city != null &&
-        city!.isNotEmpty &&
-        postalCode != null &&
-        postalCode!.isNotEmpty &&
-        country.isNotEmpty;
+  bool get isComplete =>
+      street != null &&
+      street!.isNotEmpty &&
+      city != null &&
+      city!.isNotEmpty &&
+      postalCode != null &&
+      postalCode!.isNotEmpty &&
+      country.isNotEmpty;
 }
 
 /// Common shipping countries for tea business starting from China
