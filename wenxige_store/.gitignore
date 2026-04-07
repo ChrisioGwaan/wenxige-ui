@@ -129,7 +129,7 @@ secret_key
 *.sqlite3
 
 # SQL schema folder (if contains generated/temp files)
-/sql_schema/
+/supabase_sql_schema/
 
 # IDE and editor related
 *.bin
