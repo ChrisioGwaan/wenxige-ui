@@ -20,8 +20,8 @@ const { Header } = Layout;
 
 const langOptions: { value: Language; label: string }[] = [
   { value: 'en', label: 'EN' },
-  { value: 'zh-TW', label: '繁' },
-  { value: 'zh-CN', label: '简' },
+  { value: 'zh-CN-TRADITIONAL', label: '繁' },
+  { value: 'zh-CN-SIMPLIFIED', label: '简' },
 ];
 
 export default function StoreHeader() {

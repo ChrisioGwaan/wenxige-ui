@@ -2,13 +2,13 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import en from './locales/en';
-import zhTW from './locales/zh-TW';
-import zhCN from './locales/zh-CN';
+import zhTW from './locales/zh-CN-TRADITIONAL';
+import zhCN from './locales/zh-CN-SIMPLIFIED';
 import type { Translations } from './locales/en';
 
-export type Language = 'en' | 'zh-TW' | 'zh-CN';
+export type Language = 'en' | 'zh-CN-TRADITIONAL' | 'zh-CN-SIMPLIFIED';
 
-const locales: Record<Language, Translations> = { en, 'zh-TW': zhTW, 'zh-CN': zhCN };
+const locales: Record<Language, Translations> = { en, 'zh-CN-TRADITIONAL': zhTW, 'zh-CN-SIMPLIFIED': zhCN };
 
 const STORAGE_KEY = 'wenxige-lang';
 
