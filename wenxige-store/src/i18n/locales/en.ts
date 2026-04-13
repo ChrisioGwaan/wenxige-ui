@@ -260,6 +260,8 @@ const en = {
       '📚 Educational resources for tea enthusiasts of all levels',
     ],
     contactInformation: 'Contact Information',
+    ourLocation: 'Our Location',
+    locationSubtitle: 'Guangzhou, Guangdong, China',
     cards: {
       ourAddress: 'Our Address',
       phone: 'Phone',

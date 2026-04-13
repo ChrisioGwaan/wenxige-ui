@@ -252,6 +252,8 @@ const zhCN: Translations = {
       '📚 为各级茶爱好者提供教育资源',
     ],
     contactInformation: '联系信息',
+    ourLocation: '我们的位置',
+    locationSubtitle: '中国广东省广州市',
     cards: {
       ourAddress: '我们的地址',
       phone: '电话',

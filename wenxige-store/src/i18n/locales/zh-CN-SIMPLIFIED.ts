@@ -252,6 +252,8 @@ const zhTW: Translations = {
       '📚 為各級茶愛好者提供教育資源',
     ],
     contactInformation: '聯繫資訊',
+    ourLocation: '我們的位置',
+    locationSubtitle: '中國廣東省廣州市',
     cards: {
       ourAddress: '我們的地址',
       phone: '電話',

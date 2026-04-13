@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import StoreMap from '@/components/shared/StoreMap';
 import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph, Text } = Typography;
@@ -92,6 +93,15 @@ export default function InformationPage() {
       </AnimatedSection>
 
       <AnimatedSection delay={0.15}>
+        <Card
+          style={{ borderRadius: 16, marginBottom: 40, border: '1px solid #f0f0f0' }}
+          styles={{ body: { padding: 32 } }}
+        >
+          <StoreMap />
+        </Card>
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.2}>
         <Title level={3} style={{ marginBottom: 24 }}>
           {t.information.contactInformation}
         </Title>
