@@ -199,6 +199,7 @@ const en = {
     sendMessage: 'Send Message',
     successMessage:
       "Thank you! Your message has been sent. We'll get back to you soon.",
+    errorMessage: 'Something went wrong. Please try again later.',
     namePlaceholder: 'John Doe',
     emailPlaceholder: 'john@example.com',
     subjectPlaceholder: 'How can we help?',

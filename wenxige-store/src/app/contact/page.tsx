@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Typography, Form, Input, Button, Row, Col, Card, Space, message } from 'antd';
 import {
   MailOutlined,
@@ -13,14 +14,23 @@ import { Breadcrumb } from 'antd';
 import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
 import { useTranslation } from '@/i18n';
+import { supabase } from '@/lib/supabase';
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
+
+interface ContactFormValues {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
 
 export default function ContactPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [submitting, setSubmitting] = useState(false);
 
   const contactInfo = [
     {
@@ -45,9 +55,27 @@ export default function ContactPage() {
     },
   ];
 
-  const onFinish = () => {
-    messageApi.success(t.contactPage.successMessage);
-    form.resetFields();
+  const onFinish = async (values: ContactFormValues) => {
+    setSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('contact_inquiry')
+        .insert({
+          name: values.name,
+          email: values.email,
+          subject: values.subject,
+          message: values.message,
+        });
+
+      if (error) throw error;
+
+      messageApi.success(t.contactPage.successMessage);
+      form.resetFields();
+    } catch {
+      messageApi.error(t.contactPage.errorMessage ?? 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -120,6 +148,7 @@ export default function ContactPage() {
                     htmlType="submit"
                     shape="round"
                     icon={<SendOutlined />}
+                    loading={submitting}
                     style={{ paddingInline: 32 }}
                   >
                     {t.contactPage.sendMessage}

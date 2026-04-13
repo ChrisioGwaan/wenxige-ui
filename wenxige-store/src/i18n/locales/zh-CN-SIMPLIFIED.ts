@@ -193,6 +193,7 @@ const zhTW: Translations = {
     message: '訊息內容',
     sendMessage: '發送訊息',
     successMessage: '感謝您！您的訊息已發送。我們會盡快回覆您。',
+    errorMessage: '發送失敗，請稍後重試。',
     namePlaceholder: '張三',
     emailPlaceholder: 'john@example.com',
     subjectPlaceholder: '我們能如何幫助您？',

@@ -193,6 +193,7 @@ const zhCN: Translations = {
     message: '消息内容',
     sendMessage: '发送消息',
     successMessage: '感谢您！您的消息已发送。我们会尽快回复您。',
+    errorMessage: '发送失败，请稍后重试。',
     namePlaceholder: '张三',
     emailPlaceholder: 'john@example.com',
     subjectPlaceholder: '我们能如何帮助您？',
