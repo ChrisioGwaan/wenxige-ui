@@ -54,7 +54,15 @@ main {
   display: flex !important;
 }
 
+.store-desktop-actions {
+  display: flex !important;
+}
+
 .store-mobile-menu-btn {
+  display: none !important;
+}
+
+.store-mobile-cart-btn {
   display: none !important;
 }
 
@@ -62,11 +70,14 @@ main {
   .store-desktop-nav {
     display: none !important;
   }
+  .store-desktop-actions {
+    display: none !important;
+  }
   .store-mobile-menu-btn {
     display: inline-flex !important;
   }
-  .store-shop-btn {
-    display: none !important;
+  .store-mobile-cart-btn {
+    display: inline-flex !important;
   }
 }
 

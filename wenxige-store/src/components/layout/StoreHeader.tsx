@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Layout, Menu, Button, Drawer, Badge, Input, Select } from 'antd';
+import { Layout, Menu, Button, Drawer, Badge, Input, Select, type InputRef } from 'antd';
 import {
   MenuOutlined,
   ShoppingOutlined,
@@ -33,7 +33,16 @@ export default function StoreHeader() {
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [mobileSearchValue, setMobileSearchValue] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const searchInputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    if (searchOpen) {
+      const timer = setTimeout(() => searchInputRef.current?.focus(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [searchOpen]);
 
   const navItems = [
     { key: '/', label: t.nav.home },
@@ -70,7 +79,7 @@ export default function StoreHeader() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 48px',
+          padding: '0 clamp(16px, 4vw, 48px)',
           background: scrolled ? 'rgba(255,255,255,0.97)' : '#fff',
           backdropFilter: scrolled ? 'blur(10px)' : 'none',
           boxShadow: scrolled ? '0 2px 12px rgba(0,0,0,0.06)' : 'none',
@@ -79,6 +88,7 @@ export default function StoreHeader() {
           borderBottom: scrolled ? 'none' : '1px solid #f0f0f0',
         }}
       >
+        {/* Logo */}
         <Link
           href="/"
           style={{
@@ -102,6 +112,7 @@ export default function StoreHeader() {
           </span>
         </Link>
 
+        {/* Desktop nav links */}
         <Menu
           mode="horizontal"
           selectedKeys={[selectedKey]}
@@ -119,8 +130,8 @@ export default function StoreHeader() {
           className="store-desktop-nav"
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-          {/* Language switcher */}
+        {/* Desktop actions: language, search, cart, shop now */}
+        <div className="store-desktop-actions" style={{ alignItems: 'center', gap: 4, flexShrink: 0 }}>
           <Select
             value={language}
             onChange={setLanguage}
@@ -131,32 +142,46 @@ export default function StoreHeader() {
             popupMatchSelectWidth={false}
           />
 
-          {/* Search toggle */}
-          {searchOpen ? (
-            <Input
-              placeholder={t.nav.searchPlaceholder}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onPressEnter={handleSearch}
-              suffix={
-                <CloseOutlined
-                  style={{ cursor: 'pointer', color: '#999' }}
-                  onClick={() => { setSearchOpen(false); setSearchValue(''); }}
-                />
-              }
-              autoFocus
-              style={{ width: 200, borderRadius: 999 }}
-            />
-          ) : (
+          {/* Search with smooth expand */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               type="text"
               icon={<SearchOutlined style={{ fontSize: 18 }} />}
-              onClick={() => setSearchOpen(true)}
+              onClick={() => {
+                if (searchOpen) {
+                  handleSearch();
+                } else {
+                  setSearchOpen(true);
+                }
+              }}
               aria-label={t.nav.search}
+              style={{ zIndex: 1 }}
             />
-          )}
+            <div
+              style={{
+                overflow: 'hidden',
+                width: searchOpen ? 200 : 0,
+                opacity: searchOpen ? 1 : 0,
+                transition: 'width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease',
+              }}
+            >
+              <Input
+                ref={searchInputRef}
+                placeholder={t.nav.searchPlaceholder}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onPressEnter={handleSearch}
+                suffix={
+                  <CloseOutlined
+                    style={{ cursor: 'pointer', color: '#999', transition: 'color 0.2s' }}
+                    onClick={() => { setSearchOpen(false); setSearchValue(''); }}
+                  />
+                }
+                style={{ width: 200, borderRadius: 999 }}
+              />
+            </div>
+          </div>
 
-          {/* Cart */}
           <Badge count={totalItems} size="small" offset={[-4, 4]}>
             <Button
               type="text"
@@ -166,19 +191,24 @@ export default function StoreHeader() {
             />
           </Badge>
 
-          {/* Shop Now */}
           <Link href="/products">
-            <Button
-              type="primary"
-              shape="round"
-              icon={<ShoppingOutlined />}
-              className="store-shop-btn"
-            >
+            <Button type="primary" shape="round" icon={<ShoppingOutlined />}>
               {t.nav.shopNow}
             </Button>
           </Link>
+        </div>
 
-          {/* Mobile menu */}
+        {/* Mobile actions: cart + hamburger only */}
+        <div style={{ alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          <Badge count={totalItems} size="small" offset={[-4, 4]}>
+            <Button
+              type="text"
+              icon={<ShoppingCartOutlined style={{ fontSize: 20 }} />}
+              onClick={() => setCartOpen(true)}
+              className="store-mobile-cart-btn"
+              aria-label="Shopping cart"
+            />
+          </Badge>
           <Button
             type="text"
             icon={<MenuOutlined style={{ fontSize: 20 }} />}
@@ -188,7 +218,7 @@ export default function StoreHeader() {
           />
         </div>
 
-        {/* Mobile nav drawer */}
+        {/* Mobile nav drawer — contains everything */}
         <Drawer
           title={
             <span style={{ color: '#2D5016', fontWeight: 700 }}>
@@ -213,7 +243,27 @@ export default function StoreHeader() {
             }))}
             style={{ border: 'none' }}
           />
-          <div style={{ padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+          {/* Drawer search */}
+          <div style={{ padding: '16px 0 8px' }}>
+            <Input
+              placeholder={t.nav.searchPlaceholder}
+              value={mobileSearchValue}
+              onChange={(e) => setMobileSearchValue(e.target.value)}
+              onPressEnter={() => {
+                if (mobileSearchValue.trim()) {
+                  router.push(`/search?q=${encodeURIComponent(mobileSearchValue.trim())}`);
+                  setDrawerOpen(false);
+                  setMobileSearchValue('');
+                }
+              }}
+              prefix={<SearchOutlined style={{ color: '#999' }} />}
+              allowClear
+              style={{ borderRadius: 999 }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 8 }}>
             <Select
               value={language}
               onChange={setLanguage}
@@ -226,22 +276,10 @@ export default function StoreHeader() {
                 {t.nav.shopNow}
               </Button>
             </Link>
-            <Button
-              block
-              shape="round"
-              icon={<SearchOutlined />}
-              onClick={() => {
-                setDrawerOpen(false);
-                router.push('/search');
-              }}
-            >
-              {t.nav.search}
-            </Button>
           </div>
         </Drawer>
       </Header>
 
-      {/* Cart drawer */}
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
