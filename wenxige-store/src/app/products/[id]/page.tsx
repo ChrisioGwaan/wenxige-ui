@@ -29,6 +29,7 @@ import { motion } from 'framer-motion';
 import AnimatedSection from '@/components/shared/AnimatedSection';
 import { products, teaEmojis } from '@/data/products';
 import { useCart } from '@/components/cart/CartContext';
+import { useTranslation } from '@/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -36,6 +37,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const { id } = use(params);
   const router = useRouter();
   const { addItem, isInCart } = useCart();
+  const { t, language } = useTranslation();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [msgApi, contextHolder] = message.useMessage();
@@ -45,10 +47,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   if (!product) {
     return (
       <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-        <Title level={3}>Tea not found</Title>
-        <Paragraph type="secondary">The tea you&apos;re looking for doesn&apos;t exist.</Paragraph>
+        <Title level={3}>{t.productDetail.notFound}</Title>
+        <Paragraph type="secondary">{t.productDetail.notFoundDesc}</Paragraph>
         <Link href="/products">
-          <Button type="primary" shape="round">Browse All Teas</Button>
+          <Button type="primary" shape="round">{t.productDetail.browseAllTeas}</Button>
         </Link>
       </div>
     );
@@ -62,7 +64,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   const handleAddToCart = () => {
     addItem(product, quantity);
-    msgApi.success({ content: `${product.name} added to cart!`, duration: 2 });
+    msgApi.success({ content: `${language === 'en' ? product.name : product.nameZh} ${t.productDetail.addedToCart}`, duration: 2 });
   };
 
   return (
@@ -72,9 +74,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: <Link href="/products">Tea Collection</Link> },
-            { title: product.name },
+            { title: <Link href="/"><HomeOutlined /> {t.common.home}</Link> },
+            { title: <Link href="/products">{t.productDetail.teaCollection}</Link> },
+            { title: language === 'en' ? product.name : product.nameZh },
           ]}
           style={{ marginBottom: 24 }}
         />
@@ -87,7 +89,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           onClick={() => router.back()}
           style={{ marginBottom: 16, paddingLeft: 0 }}
         >
-          Back
+          {t.productDetail.back}
         </Button>
       </AnimatedSection>
 
@@ -154,14 +156,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               {product.tags.map((tag) => (
                 <Tag key={tag} color="green">{tag}</Tag>
               ))}
-              {!product.inStock && <Tag color="default">Out of Stock</Tag>}
+              {!product.inStock && <Tag color="default">{t.productDetail.outOfStock}</Tag>}
             </div>
 
             <Title level={2} style={{ marginBottom: 0 }}>
-              {product.name}
+              {language === 'en' ? product.name : product.nameZh}
             </Title>
             <Text type="secondary" style={{ fontSize: 18, display: 'block', marginBottom: 16 }}>
-              {product.nameZh}
+              {language === 'en' ? product.nameZh : product.name}
             </Text>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 24 }}>
@@ -175,7 +177,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               )}
               {product.originalPrice && (
                 <Tag color="red">
-                  Save ${(product.originalPrice - product.price).toFixed(2)}
+                  {t.productDetail.save} ${(product.originalPrice - product.price).toFixed(2)}
                 </Tag>
               )}
             </div>
@@ -188,12 +190,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             <Row gutter={[16, 12]} style={{ marginBottom: 24 }}>
               <Col span={12}>
-                <Text type="secondary"><EnvironmentOutlined /> Origin</Text>
+                <Text type="secondary"><EnvironmentOutlined /> {t.productDetail.origin}</Text>
                 <br />
                 <Text strong>{product.origin}</Text>
               </Col>
               <Col span={12}>
-                <Text type="secondary"><GiftOutlined /> Net Weight</Text>
+                <Text type="secondary"><GiftOutlined /> {t.productDetail.netWeight}</Text>
                 <br />
                 <Text strong>{product.weight}</Text>
               </Col>
@@ -209,7 +211,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   border: '1px solid rgba(45,80,22,0.1)',
                 }}
               >
-                <Text strong style={{ color: '#2D5016' }}>🍵 Brewing Tip</Text>
+                <Text strong style={{ color: '#2D5016' }}>🍵 {t.productDetail.brewingTip}</Text>
                 <br />
                 <Text type="secondary">{product.brewingTip}</Text>
               </div>
@@ -234,18 +236,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 disabled={!product.inStock}
                 style={{ flex: 1 }}
               >
-                {inCart ? 'Add More to Cart' : 'Add to Cart'}
+                {inCart ? t.productDetail.addMoreToCart : t.productDetail.addToCart}
               </Button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <Text type="secondary" style={{ fontSize: 13 }}>
                 <CheckCircleFilled style={{ color: '#52c41a', marginRight: 6 }} />
-                Free shipping on orders over $50
+                {t.productDetail.freeShipping}
               </Text>
               <Text type="secondary" style={{ fontSize: 13 }}>
                 <SafetyCertificateOutlined style={{ color: '#2D5016', marginRight: 6 }} />
-                100% authentic tea guaranteed
+                {t.productDetail.authenticGuarantee}
               </Text>
             </div>
           </AnimatedSection>
@@ -260,7 +262,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           items={[
             {
               key: 'details',
-              label: 'Details',
+              label: t.productDetail.details,
               children: (
                 <Paragraph style={{ fontSize: 15, lineHeight: 2, maxWidth: 800, whiteSpace: 'pre-line' }}>
                   {product.longDescription ?? product.description}
@@ -269,26 +271,26 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             },
             {
               key: 'brewing',
-              label: 'Brewing Guide',
+              label: t.productDetail.brewingGuide,
               children: (
                 <div style={{ maxWidth: 600 }}>
                   <Paragraph style={{ fontSize: 15, lineHeight: 2 }}>
-                    {product.brewingTip ?? 'Brewing instructions coming soon.'}
+                    {product.brewingTip ?? t.productDetail.brewingComingSoon}
                   </Paragraph>
                   <Divider />
                   <Row gutter={[24, 16]}>
                     <Col span={8}>
-                      <Text type="secondary">Water Temp</Text>
+                      <Text type="secondary">{t.productDetail.waterTemp}</Text>
                       <br />
                       <Text strong>80–95°C</Text>
                     </Col>
                     <Col span={8}>
-                      <Text type="secondary">Steep Time</Text>
+                      <Text type="secondary">{t.productDetail.steepTime}</Text>
                       <br />
                       <Text strong>1–5 min</Text>
                     </Col>
                     <Col span={8}>
-                      <Text type="secondary">Leaf Amount</Text>
+                      <Text type="secondary">{t.productDetail.leafAmount}</Text>
                       <br />
                       <Text strong>3–5g / 150ml</Text>
                     </Col>
@@ -304,7 +306,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       {relatedProducts.length > 0 && (
         <AnimatedSection delay={0.3}>
           <Divider />
-          <Title level={4} style={{ marginBottom: 20 }}>You May Also Like</Title>
+          <Title level={4} style={{ marginBottom: 20 }}>{t.productDetail.youMayAlsoLike}</Title>
           <Row gutter={[20, 20]}>
             {relatedProducts.map((rp) => {
               const rpEmoji = teaEmojis[rp.category] ?? '🍵';
@@ -329,8 +331,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       >
                         <span style={{ fontSize: 42 }}>{rpEmoji}</span>
                       </div>
-                      <Text strong style={{ display: 'block', fontSize: 14 }}>{rp.name}</Text>
-                      <Text type="secondary" style={{ fontSize: 12 }}>{rp.nameZh}</Text>
+                      <Text strong style={{ display: 'block', fontSize: 14 }}>{language === 'en' ? rp.name : rp.nameZh}</Text>
+                      <Text type="secondary" style={{ fontSize: 12 }}>{language === 'en' ? rp.nameZh : rp.name}</Text>
                       <br />
                       <Text strong style={{ color: '#2D5016' }}>${rp.price}</Text>
                     </Card>

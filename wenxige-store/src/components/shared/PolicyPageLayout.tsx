@@ -4,15 +4,21 @@ import { Typography, Breadcrumb, Card } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import AnimatedSection from './AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph } = Typography;
 
+type PolicyKey = 'termsOfUse' | 'privacyPolicy' | 'refundPolicy' | 'shippingPolicy' | 'termsAndConditions';
+
 interface PolicyPageLayoutProps {
-  title: string;
+  titleKey: PolicyKey;
   children?: React.ReactNode;
 }
 
-export default function PolicyPageLayout({ title, children }: PolicyPageLayoutProps) {
+export default function PolicyPageLayout({ titleKey, children }: PolicyPageLayoutProps) {
+  const { t } = useTranslation();
+  const title = t.policy[titleKey] as string;
+
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px 80px' }}>
       <AnimatedSection>
@@ -21,7 +27,7 @@ export default function PolicyPageLayout({ title, children }: PolicyPageLayoutPr
             {
               title: (
                 <Link href="/">
-                  <HomeOutlined /> Home
+                  <HomeOutlined /> {t.common.home}
                 </Link>
               ),
             },
@@ -42,7 +48,7 @@ export default function PolicyPageLayout({ title, children }: PolicyPageLayoutPr
             }}
           >
             <Paragraph type="secondary" style={{ fontSize: 16, margin: 0 }}>
-              Content for this page is being prepared. Please check back soon.
+              {t.policy.contentPending}
             </Paragraph>
           </Card>
         )}

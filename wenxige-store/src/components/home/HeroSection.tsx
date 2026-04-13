@@ -4,6 +4,7 @@ import { Typography, Button, Space } from 'antd';
 import { ShoppingOutlined, ReadOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph } = Typography;
 
@@ -22,6 +23,8 @@ const fadeUp = {
 };
 
 export default function HeroSection() {
+  const { t } = useTranslation();
+
   return (
     <section
       style={{
@@ -86,7 +89,7 @@ export default function HeroSection() {
               letterSpacing: 1,
             }}
           >
-            问溪阁 · EST. 2020
+            {t.hero.badge}
           </div>
         </motion.div>
 
@@ -101,9 +104,9 @@ export default function HeroSection() {
               letterSpacing: -1.5,
             }}
           >
-            Discover the Art of
+            {t.hero.titleLine1}
             <br />
-            <span style={{ color: '#2D5016' }}>Premium Chinese Tea</span>
+            <span style={{ color: '#2D5016' }}>{t.hero.titleLine2}</span>
           </Title>
         </motion.div>
 
@@ -117,8 +120,7 @@ export default function HeroSection() {
               lineHeight: 1.7,
             }}
           >
-            From the misty mountains of Fujian to the serene gardens of Hangzhou, we bring
-            you the finest teas handpicked and curated by our master artisans.
+            {t.hero.subtitle}
           </Paragraph>
         </motion.div>
 
@@ -132,7 +134,7 @@ export default function HeroSection() {
                 icon={<ShoppingOutlined />}
                 style={{ height: 52, paddingInline: 32, fontSize: 16, fontWeight: 600 }}
               >
-                Explore Collection
+                {t.hero.exploreCollection}
               </Button>
             </Link>
             <Link href="/information">
@@ -142,7 +144,7 @@ export default function HeroSection() {
                 icon={<ReadOutlined />}
                 style={{ height: 52, paddingInline: 32, fontSize: 16 }}
               >
-                Our Story
+                {t.hero.ourStory}
               </Button>
             </Link>
           </Space>
@@ -151,10 +153,10 @@ export default function HeroSection() {
         <motion.div variants={fadeUp} style={{ marginTop: 60 }}>
           <Space size={48} wrap style={{ justifyContent: 'center' }}>
             {[
-              { value: '50+', label: 'Tea Varieties' },
-              { value: '10K+', label: 'Happy Customers' },
-              { value: '15+', label: 'Tea Regions' },
-              { value: '100%', label: 'Authentic' },
+              { value: '50+', label: t.hero.teaVarieties },
+              { value: '10K+', label: t.hero.happyCustomers },
+              { value: '15+', label: t.hero.teaRegions },
+              { value: '100%', label: t.hero.authentic },
             ].map((stat) => (
               <div key={stat.label} style={{ textAlign: 'center' }}>
                 <div

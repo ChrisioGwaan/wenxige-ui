@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function RefundPolicyPage() {
-  return <PolicyPageLayout title="Refund Policy" />;
+  return <PolicyPageLayout titleKey="refundPolicy" />;
 }

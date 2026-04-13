@@ -30,6 +30,7 @@ import { motion } from 'framer-motion';
 import AnimatedSection from '@/components/shared/AnimatedSection';
 import { useCart } from '@/components/cart/CartContext';
 import { teaEmojis } from '@/data/products';
+import { useTranslation } from '@/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -60,6 +61,7 @@ const uniquePhoneCodes = phoneCodes.filter(
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { t, language } = useTranslation();
   const { items, totalItems, totalPrice, removeItem } = useCart();
   const [form] = Form.useForm();
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -85,7 +87,7 @@ export default function CheckoutPage() {
         router.push('/checkout/failed');
       }
     } catch {
-      msgApi.warning('Please fill in all required fields.');
+      msgApi.warning(t.checkout.fieldsRequired);
     }
   };
 
@@ -96,11 +98,11 @@ export default function CheckoutPage() {
           image={<span style={{ fontSize: 64 }}>🛒</span>}
           description={
             <div>
-              <Title level={4} style={{ marginBottom: 8 }}>Your cart is empty</Title>
-              <Paragraph type="secondary">Add some teas before checking out.</Paragraph>
+              <Title level={4} style={{ marginBottom: 8 }}>{t.checkout.emptyCartTitle}</Title>
+              <Paragraph type="secondary">{t.checkout.emptyCartDesc}</Paragraph>
               <Link href="/products">
                 <Button type="primary" shape="round" icon={<ShoppingOutlined />} size="large">
-                  Browse Teas
+                  {t.checkout.browseTeas}
                 </Button>
               </Link>
             </div>
@@ -117,14 +119,14 @@ export default function CheckoutPage() {
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: <Link href="/products">Products</Link> },
-            { title: 'Checkout' },
+            { title: <Link href="/"><HomeOutlined /> {t.common.home}</Link> },
+            { title: <Link href="/products">{t.common.products}</Link> },
+            { title: t.checkout.title },
           ]}
           style={{ marginBottom: 24 }}
         />
         <Title level={2} style={{ color: '#2D5016', marginBottom: 32 }}>
-          Checkout
+          {t.checkout.title}
         </Title>
       </AnimatedSection>
 
@@ -135,16 +137,16 @@ export default function CheckoutPage() {
             <Form form={form} layout="vertical" requiredMark="optional" size="large">
               {/* Shipping info */}
               <Card
-                title={<Text strong style={{ fontSize: 16 }}>📦 Shipping Information</Text>}
+                title={<Text strong style={{ fontSize: 16 }}>📦 {t.checkout.shippingInfo}</Text>}
                 style={{ borderRadius: 12, marginBottom: 24 }}
               >
                 <Form.Item
                   name="country"
-                  label="Country / Region"
-                  rules={[{ required: true, message: 'Please select a country' }]}
+                  label={t.checkout.countryRegion}
+                  rules={[{ required: true, message: t.checkout.selectCountryMsg }]}
                 >
                   <Select
-                    placeholder="Select country"
+                    placeholder={t.checkout.selectCountry}
                     showSearch
                     optionFilterProp="label"
                     options={shippingCountries}
@@ -155,8 +157,8 @@ export default function CheckoutPage() {
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="firstName"
-                      label="First Name"
-                      rules={[{ required: true, message: 'Required' }]}
+                      label={t.checkout.firstName}
+                      rules={[{ required: true, message: t.checkout.required }]}
                     >
                       <Input placeholder="John" />
                     </Form.Item>
@@ -164,8 +166,8 @@ export default function CheckoutPage() {
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="lastName"
-                      label="Last Name"
-                      rules={[{ required: true, message: 'Required' }]}
+                      label={t.checkout.lastName}
+                      rules={[{ required: true, message: t.checkout.required }]}
                     >
                       <Input placeholder="Doe" />
                     </Form.Item>
@@ -174,25 +176,25 @@ export default function CheckoutPage() {
 
                 <Form.Item
                   name="email"
-                  label="Email"
+                  label={t.checkout.email}
                   rules={[
-                    { required: true, message: 'Required' },
-                    { type: 'email', message: 'Please enter a valid email' },
+                    { required: true, message: t.checkout.required },
+                    { type: 'email', message: t.checkout.validEmail },
                   ]}
                 >
                   <Input placeholder="john@example.com" />
                 </Form.Item>
 
-                <Form.Item label="Contact Number" required>
+                <Form.Item label={t.checkout.contactNumber} required>
                   <Space.Compact block>
                     <Form.Item
                       name="phoneCode"
                       noStyle
-                      rules={[{ required: true, message: 'Code required' }]}
+                      rules={[{ required: true, message: t.checkout.codeRequired }]}
                     >
                       <Select
                         style={{ width: 140 }}
-                        placeholder="Code"
+                        placeholder={t.checkout.codePlaceholder}
                         showSearch
                         optionFilterProp="label"
                         options={uniquePhoneCodes}
@@ -201,50 +203,50 @@ export default function CheckoutPage() {
                     <Form.Item
                       name="phone"
                       noStyle
-                      rules={[{ required: true, message: 'Phone number required' }]}
+                      rules={[{ required: true, message: t.checkout.phoneRequired }]}
                     >
-                      <Input style={{ width: 'calc(100% - 140px)' }} placeholder="Phone number" />
+                      <Input style={{ width: 'calc(100% - 140px)' }} placeholder={t.checkout.phonePlaceholder} />
                     </Form.Item>
                   </Space.Compact>
                 </Form.Item>
 
                 <Form.Item
                   name="address"
-                  label="Address"
-                  rules={[{ required: true, message: 'Required' }]}
+                  label={t.checkout.address}
+                  rules={[{ required: true, message: t.checkout.required }]}
                 >
-                  <Input placeholder="Street address" />
+                  <Input placeholder={t.checkout.addressPlaceholder} />
                 </Form.Item>
 
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="city"
-                      label="City"
-                      rules={[{ required: true, message: 'Required' }]}
+                      label={t.checkout.city}
+                      rules={[{ required: true, message: t.checkout.required }]}
                     >
-                      <Input placeholder="City" />
+                      <Input placeholder={t.checkout.cityPlaceholder} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
-                    <Form.Item name="state" label="State / Province">
-                      <Input placeholder="State / Province" />
+                    <Form.Item name="state" label={t.checkout.stateProvince}>
+                      <Input placeholder={t.checkout.statePlaceholder} />
                     </Form.Item>
                   </Col>
                 </Row>
 
                 <Form.Item
                   name="postalCode"
-                  label="Postal Code"
-                  rules={[{ required: true, message: 'Required' }]}
+                  label={t.checkout.postalCode}
+                  rules={[{ required: true, message: t.checkout.required }]}
                 >
-                  <Input placeholder="Postal code" style={{ maxWidth: 200 }} />
+                  <Input placeholder={t.checkout.postalPlaceholder} style={{ maxWidth: 200 }} />
                 </Form.Item>
               </Card>
 
               {/* Payment method */}
               <Card
-                title={<Text strong style={{ fontSize: 16 }}>💳 Payment Method</Text>}
+                title={<Text strong style={{ fontSize: 16 }}>💳 {t.checkout.paymentMethod}</Text>}
                 style={{ borderRadius: 12 }}
               >
                 <Radio.Group
@@ -255,17 +257,17 @@ export default function CheckoutPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <Radio value="card" style={{ padding: '12px 0' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                        <CreditCardOutlined /> Credit / Debit Card
+                        <CreditCardOutlined /> {t.checkout.creditDebitCard}
                       </span>
                     </Radio>
                     <Radio value="alipay" style={{ padding: '12px 0' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                        💰 Alipay
+                        💰 {t.checkout.alipay}
                       </span>
                     </Radio>
                     <Radio value="wechat" style={{ padding: '12px 0' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                        💬 WeChat Pay
+                        💬 {t.checkout.wechatPay}
                       </span>
                     </Radio>
                   </div>
@@ -280,11 +282,11 @@ export default function CheckoutPage() {
                   >
                     <Form.Item
                       name="cardNumber"
-                      label="Card Number"
-                      rules={[{ required: true, message: 'Required' }]}
+                      label={t.checkout.cardNumber}
+                      rules={[{ required: true, message: t.checkout.required }]}
                     >
                       <Input
-                        placeholder="4242 4242 4242 4242"
+                        placeholder={t.checkout.cardNumberPlaceholder}
                         maxLength={19}
                         prefix={<CreditCardOutlined style={{ color: '#bbb' }} />}
                       />
@@ -293,19 +295,19 @@ export default function CheckoutPage() {
                       <Col span={12}>
                         <Form.Item
                           name="expiry"
-                          label="Expiry"
-                          rules={[{ required: true, message: 'Required' }]}
+                          label={t.checkout.expiry}
+                          rules={[{ required: true, message: t.checkout.required }]}
                         >
-                          <Input placeholder="MM / YY" maxLength={7} />
+                          <Input placeholder={t.checkout.expiryPlaceholder} maxLength={7} />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
                         <Form.Item
                           name="cvc"
-                          label="CVC"
-                          rules={[{ required: true, message: 'Required' }]}
+                          label={t.checkout.cvc}
+                          rules={[{ required: true, message: t.checkout.required }]}
                         >
-                          <Input placeholder="123" maxLength={4} prefix={<LockOutlined style={{ color: '#bbb' }} />} />
+                          <Input placeholder={t.checkout.cvcPlaceholder} maxLength={4} prefix={<LockOutlined style={{ color: '#bbb' }} />} />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -323,7 +325,7 @@ export default function CheckoutPage() {
                 >
                   <Text type="secondary" style={{ fontSize: 12 }}>
                     <LockOutlined style={{ marginRight: 6 }} />
-                    This is a demo checkout. No real payment will be processed.
+                    {t.checkout.demoNotice}
                   </Text>
                 </div>
               </Card>
@@ -335,7 +337,7 @@ export default function CheckoutPage() {
         <Col xs={24} lg={10}>
           <AnimatedSection delay={0.15}>
             <Card
-              title={<Text strong style={{ fontSize: 16 }}>🧾 Order Summary</Text>}
+              title={<Text strong style={{ fontSize: 16 }}>🧾 {t.checkout.orderSummary}</Text>}
               style={{ borderRadius: 12, position: 'sticky', top: 96 }}
             >
               <div style={{ maxHeight: 320, overflowY: 'auto', marginBottom: 16 }}>
@@ -369,10 +371,10 @@ export default function CheckoutPage() {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <Text strong style={{ display: 'block', fontSize: 13 }} ellipsis>
-                          {item.product.name}
+                          {language === 'en' ? item.product.name : item.product.nameZh}
                         </Text>
                         <Text type="secondary" style={{ fontSize: 11 }}>
-                          Qty: {item.quantity} × ${item.product.price.toFixed(2)}
+                          {t.checkout.qty}: {item.quantity} × ${item.product.price.toFixed(2)}
                         </Text>
                       </div>
                       <Text strong style={{ color: '#2D5016', fontSize: 13, whiteSpace: 'nowrap' }}>
@@ -393,23 +395,23 @@ export default function CheckoutPage() {
               <Divider style={{ margin: '12px 0' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <Text type="secondary">Subtotal ({totalItems} items)</Text>
+                <Text type="secondary">{t.checkout.subtotal} ({totalItems} {t.checkout.items})</Text>
                 <Text>${totalPrice.toFixed(2)}</Text>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <Text type="secondary">Shipping</Text>
-                <Text>{shippingFee === 0 ? <span style={{ color: '#52c41a' }}>Free</span> : `$${shippingFee.toFixed(2)}`}</Text>
+                <Text type="secondary">{t.checkout.shipping}</Text>
+                <Text>{shippingFee === 0 ? <span style={{ color: '#52c41a' }}>{t.checkout.free}</span> : `$${shippingFee.toFixed(2)}`}</Text>
               </div>
               {shippingFee > 0 && (
                 <Text type="secondary" style={{ fontSize: 11, display: 'block', marginBottom: 8 }}>
-                  Free shipping on orders over $50
+                  {t.checkout.freeShippingNote}
                 </Text>
               )}
 
               <Divider style={{ margin: '12px 0' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-                <Title level={5} style={{ margin: 0 }}>Total</Title>
+                <Title level={5} style={{ margin: 0 }}>{t.checkout.total}</Title>
                 <Title level={4} style={{ margin: 0, color: '#2D5016' }}>
                   ${orderTotal.toFixed(2)}
                 </Title>
@@ -424,13 +426,13 @@ export default function CheckoutPage() {
                 onClick={handleSubmit}
                 style={{ height: 48, fontSize: 16 }}
               >
-                {processing ? 'Processing...' : `Pay $${orderTotal.toFixed(2)}`}
+                {processing ? t.checkout.processing : `${t.checkout.pay} $${orderTotal.toFixed(2)}`}
               </Button>
 
               <div style={{ textAlign: 'center', marginTop: 12 }}>
                 <Text type="secondary" style={{ fontSize: 12 }}>
                   <LockOutlined style={{ marginRight: 4 }} />
-                  Secure checkout — Demo mode
+                  {t.checkout.secureCheckout}
                 </Text>
               </div>
             </Card>

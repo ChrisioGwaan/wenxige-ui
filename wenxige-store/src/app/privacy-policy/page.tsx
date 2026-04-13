@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  return <PolicyPageLayout title="Privacy Policy" />;
+  return <PolicyPageLayout titleKey="privacyPolicy" />;
 }

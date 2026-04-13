@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import AntdProvider from '@/components/layout/AntdProvider';
 import { CartProvider } from '@/components/cart/CartContext';
+import { LanguageProvider } from '@/i18n';
 import StoreHeader from '@/components/layout/StoreHeader';
 import StoreFooter from '@/components/layout/StoreFooter';
 import './globals.css';
@@ -26,13 +27,15 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth" className={geistSans.variable}>
       <body>
         <AntdProvider>
-          <CartProvider>
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-              <StoreHeader />
-              <main style={{ flex: 1 }}>{children}</main>
-              <StoreFooter />
-            </div>
-          </CartProvider>
+          <LanguageProvider>
+            <CartProvider>
+              <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <StoreHeader />
+                <main style={{ flex: 1 }}>{children}</main>
+                <StoreFooter />
+              </div>
+            </CartProvider>
+          </LanguageProvider>
         </AntdProvider>
       </body>
     </html>

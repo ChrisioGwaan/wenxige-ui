@@ -12,39 +12,41 @@ import {
 import { Breadcrumb } from 'antd';
 import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
 
-const contactInfo = [
-  {
-    icon: <EnvironmentOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
-    title: 'Visit Us',
-    detail: '123 Tea Garden Road, Jing\'an District, Shanghai, China 200040',
-  },
-  {
-    icon: <PhoneOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
-    title: 'Call Us',
-    detail: '+86 21 1234 5678',
-  },
-  {
-    icon: <MailOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
-    title: 'Email Us',
-    detail: 'hello@wenxigetea.com',
-  },
-  {
-    icon: <ClockCircleOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
-    title: 'Business Hours',
-    detail: 'Mon–Sat: 9:00 AM – 6:00 PM (CST)',
-  },
-];
-
 export default function ContactPage() {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
+  const contactInfo = [
+    {
+      icon: <EnvironmentOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
+      title: t.contactPage.visitUs,
+      detail: t.contactPage.visitUsDetail,
+    },
+    {
+      icon: <PhoneOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
+      title: t.contactPage.callUs,
+      detail: t.contactPage.callUsDetail,
+    },
+    {
+      icon: <MailOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
+      title: t.contactPage.emailUs,
+      detail: t.contactPage.emailUsDetail,
+    },
+    {
+      icon: <ClockCircleOutlined style={{ fontSize: 20, color: '#2D5016' }} />,
+      title: t.contactPage.businessHours,
+      detail: t.contactPage.hoursDetail,
+    },
+  ];
+
   const onFinish = () => {
-    messageApi.success('Thank you! Your message has been sent. We\'ll get back to you soon.');
+    messageApi.success(t.contactPage.successMessage);
     form.resetFields();
   };
 
@@ -54,16 +56,16 @@ export default function ContactPage() {
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: 'Contact Us' },
+            { title: <Link href="/"><HomeOutlined /> {t.nav.home}</Link> },
+            { title: t.nav.contact },
           ]}
           style={{ marginBottom: 24 }}
         />
         <Title level={2} style={{ color: '#2D5016', marginBottom: 8 }}>
-          Get in Touch
+          {t.contactPage.title}
         </Title>
         <Paragraph style={{ color: '#6B7280', fontSize: 16, marginBottom: 48 }}>
-          Have a question about our teas or your order? We&apos;d love to hear from you.
+          {t.contactPage.description}
         </Paragraph>
       </AnimatedSection>
 
@@ -72,45 +74,45 @@ export default function ContactPage() {
           <AnimatedSection delay={0.1}>
             <Card style={{ borderRadius: 16, border: '1px solid #f0f0f0' }} styles={{ body: { padding: 32 } }}>
               <Title level={4} style={{ marginBottom: 24 }}>
-                Send Us a Message
+                {t.contactPage.sendUsMessage}
               </Title>
               <Form form={form} layout="vertical" onFinish={onFinish} size="large">
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="name"
-                      label="Your Name"
-                      rules={[{ required: true, message: 'Please enter your name' }]}
+                      label={t.contactPage.yourName}
+                      rules={[{ required: true, message: t.contactPage.nameRequired }]}
                     >
-                      <Input placeholder="John Doe" />
+                      <Input placeholder={t.contactPage.namePlaceholder} />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="email"
-                      label="Email Address"
+                      label={t.contactPage.emailAddress}
                       rules={[
-                        { required: true, message: 'Please enter your email' },
-                        { type: 'email', message: 'Please enter a valid email' },
+                        { required: true, message: t.contactPage.emailRequired },
+                        { type: 'email', message: t.contactPage.emailInvalid },
                       ]}
                     >
-                      <Input placeholder="john@example.com" />
+                      <Input placeholder={t.contactPage.emailPlaceholder} />
                     </Form.Item>
                   </Col>
                 </Row>
                 <Form.Item
                   name="subject"
-                  label="Subject"
-                  rules={[{ required: true, message: 'Please enter a subject' }]}
+                  label={t.contactPage.subject}
+                  rules={[{ required: true, message: t.contactPage.subjectRequired }]}
                 >
-                  <Input placeholder="How can we help?" />
+                  <Input placeholder={t.contactPage.subjectPlaceholder} />
                 </Form.Item>
                 <Form.Item
                   name="message"
-                  label="Message"
-                  rules={[{ required: true, message: 'Please enter your message' }]}
+                  label={t.contactPage.message}
+                  rules={[{ required: true, message: t.contactPage.messageRequired }]}
                 >
-                  <TextArea rows={5} placeholder="Tell us more about your inquiry..." />
+                  <TextArea rows={5} placeholder={t.contactPage.messagePlaceholder} />
                 </Form.Item>
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button
@@ -120,7 +122,7 @@ export default function ContactPage() {
                     icon={<SendOutlined />}
                     style={{ paddingInline: 32 }}
                   >
-                    Send Message
+                    {t.contactPage.sendMessage}
                   </Button>
                 </Form.Item>
               </Form>

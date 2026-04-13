@@ -9,6 +9,7 @@ import {
 import Link from 'next/link';
 import { useCart } from './CartContext';
 import { teaEmojis } from '@/data/products';
+import { useTranslation } from '@/i18n';
 
 const { Text, Title } = Typography;
 
@@ -19,13 +20,14 @@ interface CartDrawerProps {
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, totalItems, totalPrice, removeItem, updateQuantity, clearCart } = useCart();
+  const { t } = useTranslation();
 
   return (
     <Drawer
       title={
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontWeight: 700, fontSize: 18 }}>
-            🛒 Shopping Cart {totalItems > 0 && `(${totalItems})`}
+            🛒 {t.cart.title} {totalItems > 0 && `(${totalItems})`}
           </span>
         </div>
       }
@@ -44,10 +46,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             image={<span style={{ fontSize: 64 }}>🍃</span>}
             description={
               <Space orientation="vertical" size={8} style={{ textAlign: 'center' }}>
-                <Text>Your cart is empty</Text>
+                <Text>{t.cart.empty}</Text>
                 <Link href="/products" onClick={onClose}>
                   <Button type="primary" shape="round" icon={<ShoppingOutlined />}>
-                    Browse Teas
+                    {t.cart.browseTeas}
                   </Button>
                 </Link>
               </Space>
@@ -120,18 +122,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
           <div style={{ padding: '16px 20px', borderTop: '1px solid #f0f0f0', background: '#fafafa' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <Text type="secondary">Subtotal ({totalItems} items)</Text>
+              <Text type="secondary">{t.cart.subtotal} ({totalItems} {t.cart.items})</Text>
               <Title level={5} style={{ margin: 0, color: '#2D5016' }}>
                 ${totalPrice.toFixed(2)}
               </Title>
             </div>
             <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 12 }}>
-              Shipping calculated at checkout
+              {t.cart.shippingNote}
             </Text>
             <Divider style={{ margin: '8px 0' }} />
             <Link href="/checkout" onClick={onClose}>
               <Button type="primary" block shape="round" size="large" style={{ marginBottom: 8 }}>
-                Proceed to Checkout
+                {t.cart.proceedToCheckout}
               </Button>
             </Link>
             <Button
@@ -141,7 +143,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               danger
               onClick={clearCart}
             >
-              Clear Cart
+              {t.cart.clearCart}
             </Button>
           </div>
         </>

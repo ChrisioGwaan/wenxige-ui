@@ -10,43 +10,27 @@ import {
   BookOutlined,
 } from '@ant-design/icons';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph } = Typography;
 
-const features = [
-  {
-    icon: <SafetyCertificateOutlined />,
-    title: 'Premium Quality',
-    description: 'Every tea is sourced from heritage gardens and undergoes rigorous quality testing.',
-  },
-  {
-    icon: <CoffeeOutlined />,
-    title: 'Wide Selection',
-    description: 'From delicate white teas to robust pu-erhs, explore 50+ curated varieties.',
-  },
-  {
-    icon: <ThunderboltOutlined />,
-    title: 'Fresh Harvest',
-    description: 'Direct from garden to your cup — sealed at peak freshness for optimal flavor.',
-  },
-  {
-    icon: <StarOutlined />,
-    title: 'Expert Curated',
-    description: 'Our tea masters personally select each offering for exceptional taste and aroma.',
-  },
-  {
-    icon: <GlobalOutlined />,
-    title: 'Worldwide Shipping',
-    description: 'Carefully packed and shipped globally with tracking from doorstep to doorstep.',
-  },
-  {
-    icon: <BookOutlined />,
-    title: 'Tea Education',
-    description: 'Learn the art of brewing with guides, tasting notes, and preparation tips.',
-  },
+const featuresMeta = [
+  { icon: <SafetyCertificateOutlined /> },
+  { icon: <CoffeeOutlined /> },
+  { icon: <ThunderboltOutlined /> },
+  { icon: <StarOutlined /> },
+  { icon: <GlobalOutlined /> },
+  { icon: <BookOutlined /> },
 ];
 
 export default function FeaturesSection() {
+  const { t } = useTranslation();
+
+  const features = featuresMeta.map((meta, i) => ({
+    ...meta,
+    title: t.features.items[i].title,
+    description: t.features.items[i].description,
+  }));
   return (
     <section style={{ padding: '100px 48px', background: '#fff' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -62,10 +46,10 @@ export default function FeaturesSection() {
                 marginBottom: 12,
               }}
             >
-              Why Choose Us
+              {t.features.subtitle}
             </div>
             <Title level={2} style={{ marginBottom: 16, color: '#1A1A1A' }}>
-              The Wenxige Difference
+              {t.features.title}
             </Title>
             <Paragraph
               style={{
@@ -75,8 +59,7 @@ export default function FeaturesSection() {
                 margin: '0 auto',
               }}
             >
-              We are committed to bringing you an authentic tea experience rooted in centuries
-              of Chinese tradition and craftsmanship.
+              {t.features.description}
             </Paragraph>
           </div>
         </AnimatedSection>

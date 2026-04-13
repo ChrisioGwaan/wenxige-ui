@@ -19,11 +19,13 @@ import { SearchOutlined, ShoppingCartOutlined, HomeOutlined } from '@ant-design/
 import AnimatedSection from '@/components/shared/AnimatedSection';
 import { products, teaEmojis, type Product } from '@/data/products';
 import { useCart } from '@/components/cart/CartContext';
+import { useTranslation } from '@/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
 function ProductCard({ product }: { product: Product }) {
   const { addItem, isInCart } = useCart();
+  const { t, language } = useTranslation();
   const emoji = teaEmojis[product.category] ?? '🍵';
   const inCart = isInCart(product.id);
 
@@ -46,7 +48,7 @@ function ProductCard({ product }: { product: Product }) {
         >
           <span style={{ fontSize: 64 }}>{emoji}</span>
           {!product.inStock && (
-            <Tag color="default" style={{ position: 'absolute', top: 12, right: 12 }}>Out of Stock</Tag>
+            <Tag color="default" style={{ position: 'absolute', top: 12, right: 12 }}>{t.searchPage.outOfStock}</Tag>
           )}
           {product.originalPrice && (
             <Tag color="red" style={{ position: 'absolute', top: 12, left: 12 }}>
@@ -57,8 +59,8 @@ function ProductCard({ product }: { product: Product }) {
         <div style={{ padding: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
             <div>
-              <Text strong style={{ fontSize: 16, display: 'block' }}>{product.name}</Text>
-              <Text type="secondary" style={{ fontSize: 12 }}>{product.nameZh}</Text>
+              <Text strong style={{ fontSize: 16, display: 'block' }}>{language === 'en' ? product.name : product.nameZh}</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>{language === 'en' ? product.nameZh : product.name}</Text>
             </div>
             <div style={{ textAlign: 'right' }}>
               <Text strong style={{ fontSize: 18, color: '#2D5016' }}>${product.price}</Text>
@@ -84,7 +86,7 @@ function ProductCard({ product }: { product: Product }) {
               addItem(product);
             }}
           >
-            {inCart ? 'In Cart' : 'Add to Cart'}
+            {inCart ? t.searchPage.inCart : t.searchPage.addToCart}
           </Button>
         </div>
       </Card>
@@ -104,6 +106,7 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') ?? '';
   const [query, setQuery] = useState(initialQuery);
+  const { t, language } = useTranslation();
 
   const results = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -124,8 +127,8 @@ function SearchContent() {
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: 'Search' },
+            { title: <Link href="/"><HomeOutlined /> {t.common.home}</Link> },
+            { title: t.common.search },
           ]}
           style={{ marginBottom: 24 }}
         />
@@ -134,14 +137,14 @@ function SearchContent() {
       <AnimatedSection delay={0.1}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <Title level={2} style={{ marginBottom: 8 }}>
-            🔍 Search Our Teas
+            🔍 {t.searchPage.title}
           </Title>
           <Paragraph type="secondary" style={{ maxWidth: 500, margin: '0 auto 24px' }}>
-            Find the perfect tea by name, origin, category, or description.
+            {t.searchPage.description}
           </Paragraph>
           <Input
             size="large"
-            placeholder="Search teas..."
+            placeholder={t.searchPage.searchPlaceholder}
             prefix={<SearchOutlined style={{ color: '#bbb' }} />}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -155,7 +158,7 @@ function SearchContent() {
       {query.trim() && (
         <AnimatedSection delay={0.15}>
           <Text type="secondary" style={{ display: 'block', marginBottom: 20 }}>
-            {results.length} result{results.length !== 1 ? 's' : ''} for &quot;{query.trim()}&quot;
+            {results.length} {results.length !== 1 ? t.searchPage.results : t.searchPage.result} {t.searchPage.for} &quot;{query.trim()}&quot;
           </Text>
         </AnimatedSection>
       )}
@@ -165,8 +168,8 @@ function SearchContent() {
           <Empty
             description={
               <span>
-                No teas found for &quot;{query.trim()}&quot;.{' '}
-                <Link href="/products">Browse all teas</Link>
+                {t.searchPage.noResults} &quot;{query.trim()}&quot;.{' '}
+                <Link href="/products">{t.searchPage.browseAllTeas}</Link>
               </span>
             }
           />

@@ -22,10 +22,12 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function TrackOrderPage() {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [tracked, setTracked] = useState(false);
 
@@ -43,8 +45,8 @@ export default function TrackOrderPage() {
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: 'Track Order' },
+            { title: <Link href="/"><HomeOutlined /> {t.nav.home}</Link> },
+            { title: t.nav.trackOrder },
           ]}
           style={{ marginBottom: 24 }}
         />
@@ -64,10 +66,10 @@ export default function TrackOrderPage() {
             <CarOutlined style={{ fontSize: 32, color: '#2D5016' }} />
           </div>
           <Title level={2} style={{ color: '#2D5016', marginBottom: 8 }}>
-            Track Your Order
+            {t.trackOrder.title}
           </Title>
           <Paragraph style={{ color: '#6B7280', fontSize: 16 }}>
-            Enter your order details below to check the current status of your shipment.
+            {t.trackOrder.description}
           </Paragraph>
         </div>
       </AnimatedSection>
@@ -81,22 +83,22 @@ export default function TrackOrderPage() {
             <Form form={form} layout="vertical" onFinish={onFinish} size="large">
               <Form.Item
                 name="orderNumber"
-                label="Order Number"
-                rules={[{ required: true, message: 'Please enter your order number' }]}
+                label={t.trackOrder.orderNumberLabel}
+                rules={[{ required: true, message: t.trackOrder.orderRequired }]}
               >
                 <Input
-                  placeholder="e.g. WXT-20260401-001"
+                  placeholder={t.trackOrder.orderNumberPlaceholder}
                   prefix={<ShoppingOutlined style={{ color: '#9CA3AF' }} />}
                 />
               </Form.Item>
               <Form.Item
                 name="contact"
-                label="Email or Phone Number"
+                label={t.trackOrder.emailOrPhone}
                 rules={[
-                  { required: true, message: 'Please enter your email or phone number' },
+                  { required: true, message: t.trackOrder.contactRequired },
                 ]}
               >
-                <Input placeholder="john@example.com or +1 234 567 8900" />
+                <Input placeholder={t.trackOrder.contactPlaceholder} />
               </Form.Item>
               <Form.Item style={{ marginBottom: 0 }}>
                 <Button
@@ -107,7 +109,7 @@ export default function TrackOrderPage() {
                   block
                   style={{ height: 48, fontSize: 16 }}
                 >
-                  Track My Order
+                  {t.trackOrder.trackMyOrder}
                 </Button>
               </Form.Item>
             </Form>
@@ -121,38 +123,38 @@ export default function TrackOrderPage() {
           >
             <Result
               icon={<InboxOutlined style={{ color: '#C4A35A' }} />}
-              title="Order Tracking — Demo"
-              subTitle="This is a placeholder. Once the backend is connected, real tracking information will appear here."
+              title={t.trackOrder.demoTitle}
+              subTitle={t.trackOrder.demoSubtitle}
             />
             <div style={{ maxWidth: 500, margin: '0 auto' }}>
               <Steps
                 current={1}
                 size="small"
                 items={[
-                  { title: 'Confirmed', icon: <CheckCircleOutlined /> },
-                  { title: 'Shipped', icon: <CarOutlined /> },
-                  { title: 'Delivered', icon: <InboxOutlined /> },
+                  { title: t.trackOrder.confirmed, icon: <CheckCircleOutlined /> },
+                  { title: t.trackOrder.shipped, icon: <CarOutlined /> },
+                  { title: t.trackOrder.delivered, icon: <InboxOutlined /> },
                 ]}
                 style={{ marginBottom: 32 }}
               />
               <Space orientation="vertical" size={8} style={{ width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Text type="secondary">Order Number</Text>
+                  <Text type="secondary">{t.trackOrder.orderNumber}</Text>
                   <Text strong>{form.getFieldValue('orderNumber') || 'WXT-DEMO'}</Text>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Text type="secondary">Status</Text>
-                  <Text strong style={{ color: '#2D5016' }}>In Transit</Text>
+                  <Text type="secondary">{t.trackOrder.status}</Text>
+                  <Text strong style={{ color: '#2D5016' }}>{t.trackOrder.inTransit}</Text>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Text type="secondary">Estimated Delivery</Text>
-                  <Text strong>3–5 business days</Text>
+                  <Text type="secondary">{t.trackOrder.estimatedDelivery}</Text>
+                  <Text strong>{t.trackOrder.businessDays}</Text>
                 </div>
               </Space>
             </div>
             <div style={{ textAlign: 'center', marginTop: 32 }}>
               <Button shape="round" onClick={onReset}>
-                Track Another Order
+                {t.trackOrder.trackAnother}
               </Button>
             </div>
           </Card>
@@ -170,9 +172,9 @@ export default function TrackOrderPage() {
           }}
         >
           <Paragraph type="secondary" style={{ margin: 0 }}>
-            Having trouble tracking your order?{' '}
+            {t.trackOrder.helpText}{' '}
             <Link href="/contact" style={{ color: '#2D5016', fontWeight: 500 }}>
-              Contact our support team
+              {t.trackOrder.contactSupport}
             </Link>
           </Paragraph>
         </div>

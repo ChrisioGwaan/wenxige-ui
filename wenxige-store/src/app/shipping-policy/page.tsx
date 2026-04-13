@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function ShippingPolicyPage() {
-  return <PolicyPageLayout title="Shipping Policy" />;
+  return <PolicyPageLayout titleKey="shippingPolicy" />;
 }

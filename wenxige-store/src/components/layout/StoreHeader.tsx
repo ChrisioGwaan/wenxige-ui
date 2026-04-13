@@ -3,36 +3,45 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Layout, Menu, Button, Drawer, Badge, Input } from 'antd';
+import { Layout, Menu, Button, Drawer, Badge, Input, Select } from 'antd';
 import {
   MenuOutlined,
   ShoppingOutlined,
   SearchOutlined,
   ShoppingCartOutlined,
   CloseOutlined,
+  GlobalOutlined,
 } from '@ant-design/icons';
 import { useCart } from '@/components/cart/CartContext';
+import { useTranslation, type Language } from '@/i18n';
 import CartDrawer from '@/components/cart/CartDrawer';
 
 const { Header } = Layout;
 
-const navItems = [
-  { key: '/', label: 'Home' },
-  { key: '/products', label: 'Products' },
-  { key: '/track-order', label: 'Track Order' },
-  { key: '/contact', label: 'Contact' },
-  { key: '/information', label: 'About' },
+const langOptions: { value: Language; label: string }[] = [
+  { value: 'en', label: 'EN' },
+  { value: 'zh-TW', label: '繁' },
+  { value: 'zh-CN', label: '简' },
 ];
 
 export default function StoreHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const { totalItems } = useCart();
+  const { t, language, setLanguage } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [scrolled, setScrolled] = useState(false);
+
+  const navItems = [
+    { key: '/', label: t.nav.home },
+    { key: '/products', label: t.nav.products },
+    { key: '/track-order', label: t.nav.trackOrder },
+    { key: '/contact', label: t.nav.contact },
+    { key: '/information', label: t.nav.about },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -111,10 +120,21 @@ export default function StoreHeader() {
         />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          {/* Language switcher */}
+          <Select
+            value={language}
+            onChange={setLanguage}
+            options={langOptions}
+            variant="borderless"
+            suffixIcon={<GlobalOutlined style={{ fontSize: 16 }} />}
+            style={{ width: 72 }}
+            popupMatchSelectWidth={false}
+          />
+
           {/* Search toggle */}
           {searchOpen ? (
             <Input
-              placeholder="Search teas…"
+              placeholder={t.nav.searchPlaceholder}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               onPressEnter={handleSearch}
@@ -132,7 +152,7 @@ export default function StoreHeader() {
               type="text"
               icon={<SearchOutlined style={{ fontSize: 18 }} />}
               onClick={() => setSearchOpen(true)}
-              aria-label="Search"
+              aria-label={t.nav.search}
             />
           )}
 
@@ -154,7 +174,7 @@ export default function StoreHeader() {
               icon={<ShoppingOutlined />}
               className="store-shop-btn"
             >
-              Shop Now
+              {t.nav.shopNow}
             </Button>
           </Link>
 
@@ -194,9 +214,16 @@ export default function StoreHeader() {
             style={{ border: 'none' }}
           />
           <div style={{ padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Select
+              value={language}
+              onChange={setLanguage}
+              options={langOptions}
+              style={{ width: '100%' }}
+              suffixIcon={<GlobalOutlined />}
+            />
             <Link href="/products" onClick={() => setDrawerOpen(false)}>
               <Button type="primary" block shape="round" icon={<ShoppingOutlined />}>
-                Shop Now
+                {t.nav.shopNow}
               </Button>
             </Link>
             <Button
@@ -208,7 +235,7 @@ export default function StoreHeader() {
                 router.push('/search');
               }}
             >
-              Search
+              {t.nav.search}
             </Button>
           </div>
         </Drawer>

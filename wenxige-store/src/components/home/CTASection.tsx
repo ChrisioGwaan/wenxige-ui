@@ -4,10 +4,12 @@ import { Typography, Button, Space } from 'antd';
 import { ShoppingOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph } = Typography;
 
 export default function CTASection() {
+  const { t } = useTranslation();
   return (
     <section
       style={{
@@ -54,7 +56,7 @@ export default function CTASection() {
               marginBottom: 16,
             }}
           >
-            Ready to Start Your Tea Journey?
+            {t.cta.title}
           </Title>
           <Paragraph
             style={{
@@ -65,8 +67,7 @@ export default function CTASection() {
               lineHeight: 1.7,
             }}
           >
-            Explore our curated collection of premium Chinese teas and experience the
-            difference that authentic, fresh tea can make.
+            {t.cta.description}
           </Paragraph>
           <Space size={16} wrap style={{ justifyContent: 'center' }}>
             <Link href="/products">
@@ -84,7 +85,7 @@ export default function CTASection() {
                   borderColor: '#C4A35A',
                 }}
               >
-                Browse Collection
+                {t.cta.browseCollection}
               </Button>
             </Link>
             <Link href="/contact">
@@ -101,7 +102,7 @@ export default function CTASection() {
                   borderColor: 'rgba(255,255,255,0.4)',
                 }}
               >
-                Contact Us
+                {t.cta.contactUs}
               </Button>
             </Link>
           </Space>

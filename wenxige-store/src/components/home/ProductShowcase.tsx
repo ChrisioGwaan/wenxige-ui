@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
 import { products, teaEmojis } from '@/data/products';
 import { useCart } from '@/components/cart/CartContext';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -13,6 +14,7 @@ const featured = products.slice(0, 4);
 
 export default function ProductShowcase() {
   const { addItem, isInCart } = useCart();
+  const { t } = useTranslation();
 
   return (
     <section style={{ padding: '100px 48px', background: '#fff' }}>
@@ -39,15 +41,15 @@ export default function ProductShowcase() {
                   marginBottom: 12,
                 }}
               >
-                Featured Collection
+                {t.showcase.subtitle}
               </div>
               <Title level={2} style={{ margin: 0, color: '#1A1A1A' }}>
-                Our Finest Selections
+                {t.showcase.title}
               </Title>
             </div>
             <Link href="/products">
               <Button type="link" style={{ fontSize: 15, fontWeight: 500 }}>
-                View All Products <ArrowRightOutlined />
+                {t.showcase.viewAll} <ArrowRightOutlined />
               </Button>
             </Link>
           </div>

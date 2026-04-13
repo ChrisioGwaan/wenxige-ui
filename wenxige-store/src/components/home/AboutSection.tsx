@@ -3,17 +3,12 @@
 import { Row, Col, Typography, Space } from 'antd';
 import { CheckCircleFilled } from '@ant-design/icons';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph } = Typography;
 
-const highlights = [
-  'Direct sourcing from 15+ tea-producing regions',
-  'Third-generation tea artisan expertise',
-  'Sustainable and ethical farming partnerships',
-  'Freshness guaranteed — sealed within 48 hours of harvest',
-];
-
 export default function AboutSection() {
+  const { t } = useTranslation();
   return (
     <section style={{ padding: '100px 48px', background: '#FDFBF7' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -61,7 +56,7 @@ export default function AboutSection() {
                       letterSpacing: 2,
                     }}
                   >
-                    Since 2020
+                    {t.about.since}
                   </div>
                 </div>
               </div>
@@ -80,28 +75,25 @@ export default function AboutSection() {
                   marginBottom: 12,
                 }}
               >
-                Our Story
+                {t.about.subtitle}
               </div>
               <Title level={2} style={{ marginBottom: 20, color: '#1A1A1A' }}>
-                A Legacy of Tea Mastery
+                {t.about.title}
               </Title>
               <Paragraph
                 style={{ fontSize: 16, color: '#6B7280', lineHeight: 1.8, marginBottom: 24 }}
               >
-                Wenxige Tea was born from a passion to share the richness of Chinese tea
-                culture with the world. Our name, 问溪阁 — &quot;The Pavilion by the
-                Brook&quot; — reflects our philosophy of finding peace and clarity in every cup.
+                {t.about.description1}
               </Paragraph>
               <Paragraph
                 style={{ fontSize: 16, color: '#6B7280', lineHeight: 1.8, marginBottom: 32 }}
               >
-                We partner directly with family-owned tea gardens across China, ensuring every
-                leaf meets our exacting standards for quality, sustainability, and authenticity.
+                {t.about.description2}
               </Paragraph>
               <Space orientation="vertical" size={16}>
-                {highlights.map((item) => (
+                {t.about.highlights.map((item, index) => (
                   <div
-                    key={item}
+                    key={index}
                     style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}
                   >
                     <CheckCircleFilled

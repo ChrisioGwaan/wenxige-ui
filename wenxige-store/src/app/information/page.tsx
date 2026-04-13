@@ -12,59 +12,61 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
+import { useTranslation } from '@/i18n';
 
 const { Title, Paragraph, Text } = Typography;
 
-const infoCards = [
-  {
-    icon: <EnvironmentOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
-    title: 'Our Address',
-    lines: ['123 Tea Garden Road', 'Jing\'an District', 'Shanghai, China 200040'],
-  },
-  {
-    icon: <PhoneOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
-    title: 'Phone',
-    lines: ['Main: +86 21 1234 5678', 'Toll-Free: 400-123-4567'],
-  },
-  {
-    icon: <MailOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
-    title: 'Email',
-    lines: ['General: hello@wenxigetea.com', 'Orders: orders@wenxigetea.com', 'Support: support@wenxigetea.com'],
-  },
-  {
-    icon: <ClockCircleOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
-    title: 'Business Hours',
-    lines: ['Monday–Friday: 9:00 AM – 6:00 PM', 'Saturday: 10:00 AM – 4:00 PM', 'Sunday: Closed'],
-  },
-  {
-    icon: <GlobalOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
-    title: 'Website',
-    lines: ['www.wenxigetea.com'],
-  },
-  {
-    icon: <WechatOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
-    title: 'Social Media',
-    lines: ['WeChat: WenxigeTea', 'Instagram: @wenxigetea', 'Facebook: Wenxige Tea'],
-  },
-];
-
 export default function InformationPage() {
+  const { t } = useTranslation();
+
+  const infoCards = [
+    {
+      icon: <EnvironmentOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
+      title: t.information.cards.ourAddress,
+      lines: t.information.addressLines,
+    },
+    {
+      icon: <PhoneOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
+      title: t.information.cards.phone,
+      lines: t.information.phoneLines,
+    },
+    {
+      icon: <MailOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
+      title: t.information.cards.email,
+      lines: t.information.emailLines,
+    },
+    {
+      icon: <ClockCircleOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
+      title: t.information.cards.businessHours,
+      lines: t.information.hoursLines,
+    },
+    {
+      icon: <GlobalOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
+      title: t.information.cards.website,
+      lines: t.information.websiteLines,
+    },
+    {
+      icon: <WechatOutlined style={{ fontSize: 28, color: '#2D5016' }} />,
+      title: t.information.cards.socialMedia,
+      lines: t.information.socialLines,
+    },
+  ];
+
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 80px' }}>
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: 'About Us' },
+            { title: <Link href="/"><HomeOutlined /> {t.nav.home}</Link> },
+            { title: t.nav.about },
           ]}
           style={{ marginBottom: 24 }}
         />
         <Title level={2} style={{ color: '#2D5016', marginBottom: 8 }}>
-          About Wenxige Tea
+          {t.information.title}
         </Title>
         <Paragraph style={{ color: '#6B7280', fontSize: 16, marginBottom: 16, maxWidth: 700 }}>
-          Wenxige Tea (问溪阁) — &quot;The Pavilion by the Brook&quot; — is a premium Chinese tea
-          purveyor dedicated to sharing the finest teas from across China with the world.
+          {t.information.description}
         </Paragraph>
       </AnimatedSection>
 
@@ -73,38 +75,25 @@ export default function InformationPage() {
           style={{ borderRadius: 16, marginBottom: 40, border: '1px solid #f0f0f0' }}
           styles={{ body: { padding: '40px 32px' } }}
         >
-          <Title level={4} style={{ marginBottom: 16 }}>Our Mission</Title>
+          <Title level={4} style={{ marginBottom: 16 }}>{t.information.ourMission}</Title>
           <Paragraph style={{ fontSize: 15, color: '#374151', lineHeight: 1.8 }}>
-            We believe that a great cup of tea can transform a moment into an experience.
-            Our mission is to connect tea lovers around the world with authentic, premium
-            Chinese teas — sourced directly from heritage gardens, handcrafted by artisan
-            tea masters, and delivered fresh to your doorstep.
+            {t.information.missionText}
           </Paragraph>
           <Divider />
-          <Title level={4} style={{ marginBottom: 16 }}>What Sets Us Apart</Title>
+          <Title level={4} style={{ marginBottom: 16 }}>{t.information.whatSetsUsApart}</Title>
           <Space orientation="vertical" size={8}>
-            <Text style={{ fontSize: 15, color: '#374151' }}>
-              🍃 Direct partnerships with 15+ tea-producing regions across China
-            </Text>
-            <Text style={{ fontSize: 15, color: '#374151' }}>
-              🏔️ Third-generation tea master curation and quality assurance
-            </Text>
-            <Text style={{ fontSize: 15, color: '#374151' }}>
-              📦 Fresh-sealed packaging within 48 hours of harvest
-            </Text>
-            <Text style={{ fontSize: 15, color: '#374151' }}>
-              🌍 Global shipping with careful packaging and tracking
-            </Text>
-            <Text style={{ fontSize: 15, color: '#374151' }}>
-              📚 Educational resources for tea enthusiasts of all levels
-            </Text>
+            {t.information.apart.map((item: string) => (
+              <Text key={item} style={{ fontSize: 15, color: '#374151' }}>
+                {item}
+              </Text>
+            ))}
           </Space>
         </Card>
       </AnimatedSection>
 
       <AnimatedSection delay={0.15}>
         <Title level={3} style={{ marginBottom: 24 }}>
-          Contact Information
+          {t.information.contactInformation}
         </Title>
       </AnimatedSection>
 
@@ -138,7 +127,7 @@ export default function InformationPage() {
                 <Title level={5} style={{ marginBottom: 12 }}>
                   {card.title}
                 </Title>
-                {card.lines.map((line) => (
+                {card.lines.map((line: string) => (
                   <div key={line}>
                     <Text type="secondary" style={{ fontSize: 14 }}>
                       {line}

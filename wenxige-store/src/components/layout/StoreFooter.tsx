@@ -8,25 +8,10 @@ import {
   MailOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from '@/i18n';
 
 const { Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
-
-const quickLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Products', href: '/products' },
-  { label: 'Track Order', href: '/track-order' },
-  { label: 'Contact Us', href: '/contact' },
-  { label: 'About Us', href: '/information' },
-];
-
-const policyLinks = [
-  { label: 'Terms of Use', href: '/terms-of-use' },
-  { label: 'Privacy Policy', href: '/privacy-policy' },
-  { label: 'Refund Policy', href: '/refund-policy' },
-  { label: 'Shipping Policy', href: '/shipping-policy' },
-  { label: 'Terms & Conditions', href: '/terms-and-conditions' },
-];
 
 const linkStyle: React.CSSProperties = {
   color: 'rgba(255,255,255,0.65)',
@@ -35,6 +20,24 @@ const linkStyle: React.CSSProperties = {
 };
 
 export default function StoreFooter() {
+  const { t } = useTranslation();
+
+  const quickLinks = [
+    { label: t.nav.home, href: '/' },
+    { label: t.nav.products, href: '/products' },
+    { label: t.nav.trackOrder, href: '/track-order' },
+    { label: t.common.contactUs, href: '/contact' },
+    { label: t.common.aboutUs, href: '/information' },
+  ];
+
+  const policyLinks = [
+    { label: t.policy.termsOfUse, href: '/terms-of-use' },
+    { label: t.policy.privacyPolicy, href: '/privacy-policy' },
+    { label: t.policy.refundPolicy, href: '/refund-policy' },
+    { label: t.policy.shippingPolicy, href: '/shipping-policy' },
+    { label: t.policy.termsAndConditions, href: '/terms-and-conditions' },
+  ];
+
   return (
     <Footer style={{ background: '#1A1A1A', padding: '64px 48px 32px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -56,14 +59,13 @@ export default function StoreFooter() {
             <Paragraph
               style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 300, lineHeight: 1.8 }}
             >
-              Discover the art of premium Chinese tea. Sourced directly from heritage
-              gardens, curated by our tea masters for your enjoyment.
+              {t.footer.description}
             </Paragraph>
           </Col>
 
           <Col xs={12} sm={12} md={5}>
             <Title level={5} style={{ color: '#C4A35A', marginBottom: 20 }}>
-              Quick Links
+              {t.footer.quickLinks}
             </Title>
             <Space orientation="vertical" size={10}>
               {quickLinks.map((link) => (
@@ -76,7 +78,7 @@ export default function StoreFooter() {
 
           <Col xs={12} sm={12} md={5}>
             <Title level={5} style={{ color: '#C4A35A', marginBottom: 20 }}>
-              Policies
+              {t.footer.policies}
             </Title>
             <Space orientation="vertical" size={10}>
               {policyLinks.map((link) => (
@@ -89,24 +91,24 @@ export default function StoreFooter() {
 
           <Col xs={24} sm={24} md={6}>
             <Title level={5} style={{ color: '#C4A35A', marginBottom: 20 }}>
-              Contact Info
+              {t.footer.contactInfo}
             </Title>
             <Space orientation="vertical" size={14}>
               <div style={{ display: 'flex', gap: 10, color: 'rgba(255,255,255,0.65)' }}>
                 <EnvironmentOutlined style={{ marginTop: 3 }} />
-                <Text style={{ color: 'inherit' }}>123 Tea Garden Road, Shanghai, China</Text>
+                <Text style={{ color: 'inherit' }}>{t.footer.address}</Text>
               </div>
               <div style={{ display: 'flex', gap: 10, color: 'rgba(255,255,255,0.65)' }}>
                 <PhoneOutlined />
-                <Text style={{ color: 'inherit' }}>+86 21 1234 5678</Text>
+                <Text style={{ color: 'inherit' }}>{t.footer.phone}</Text>
               </div>
               <div style={{ display: 'flex', gap: 10, color: 'rgba(255,255,255,0.65)' }}>
                 <MailOutlined />
-                <Text style={{ color: 'inherit' }}>hello@wenxigetea.com</Text>
+                <Text style={{ color: 'inherit' }}>{t.footer.email}</Text>
               </div>
               <div style={{ display: 'flex', gap: 10, color: 'rgba(255,255,255,0.65)' }}>
                 <ClockCircleOutlined />
-                <Text style={{ color: 'inherit' }}>Mon–Sat: 9:00 AM – 6:00 PM</Text>
+                <Text style={{ color: 'inherit' }}>{t.footer.hours}</Text>
               </div>
             </Space>
           </Col>
@@ -124,14 +126,14 @@ export default function StoreFooter() {
           }}
         >
           <Text style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>
-            © 2026 Wenxige Tea (问溪阁). All rights reserved.
+            {t.footer.copyright}
           </Text>
           <Space size={24} style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>
             <Link href="/privacy-policy" style={{ color: 'inherit' }}>
-              Privacy
+              {t.footer.privacy}
             </Link>
             <Link href="/terms-of-use" style={{ color: 'inherit' }}>
-              Terms
+              {t.footer.terms}
             </Link>
           </Space>
         </div>

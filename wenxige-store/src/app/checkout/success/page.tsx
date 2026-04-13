@@ -11,10 +11,12 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useCart } from '@/components/cart/CartContext';
+import { useTranslation } from '@/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
 export default function CheckoutSuccessPage() {
+  const { t } = useTranslation();
   const { clearCart, totalPrice, items } = useCart();
   const [orderNumber] = useState(() => `WXG-${Date.now().toString(36).toUpperCase()}`);
   const [cleared, setCleared] = useState(false);
@@ -52,10 +54,10 @@ export default function CheckoutSuccessPage() {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <Title level={2} style={{ color: '#2D5016', marginBottom: 8 }}>
-          Payment Successful!
+          {t.checkoutSuccess.title}
         </Title>
         <Paragraph type="secondary" style={{ fontSize: 16, marginBottom: 32 }}>
-          Thank you for your order. We&apos;ll start preparing your tea right away.
+          {t.checkoutSuccess.description}
         </Paragraph>
       </motion.div>
 
@@ -73,17 +75,16 @@ export default function CheckoutSuccessPage() {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <Text type="secondary">Order Number</Text>
+            <Text type="secondary">{t.checkoutSuccess.orderNumber}</Text>
             <Text strong copyable style={{ color: '#2D5016' }}>{orderNumber}</Text>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <Text type="secondary">Status</Text>
-            <Text strong style={{ color: '#52c41a' }}>Confirmed</Text>
+            <Text type="secondary">{t.checkoutSuccess.status}</Text>
+            <Text strong style={{ color: '#52c41a' }}>{t.checkoutSuccess.confirmed}</Text>
           </div>
           <Divider style={{ margin: '12px 0' }} />
           <Paragraph type="secondary" style={{ fontSize: 13, marginBottom: 0 }}>
-            A confirmation email has been sent to your email address. You can track
-            your package anytime using the order number above.
+            {t.checkoutSuccess.emailSent}
           </Paragraph>
         </Card>
       </motion.div>
@@ -102,17 +103,17 @@ export default function CheckoutSuccessPage() {
             block
             icon={<FileSearchOutlined />}
           >
-            Track My Order
+            {t.checkoutSuccess.trackMyOrder}
           </Button>
         </Link>
         <Link href="/products">
           <Button shape="round" size="large" block icon={<ShoppingOutlined />}>
-            Continue Shopping
+            {t.checkoutSuccess.continueShopping}
           </Button>
         </Link>
         <Link href="/">
           <Button type="text" block icon={<HomeOutlined />}>
-            Back to Home
+            {t.checkoutSuccess.backToHome}
           </Button>
         </Link>
       </motion.div>

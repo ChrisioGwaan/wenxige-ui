@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfUsePage() {
-  return <PolicyPageLayout title="Terms of Use" />;
+  return <PolicyPageLayout titleKey="termsOfUse" />;
 }

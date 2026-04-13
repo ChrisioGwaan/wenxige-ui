@@ -9,10 +9,13 @@ import {
   HomeOutlined,
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
 export default function CheckoutFailedPage() {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -38,10 +41,10 @@ export default function CheckoutFailedPage() {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <Title level={2} style={{ color: '#1A1A1A', marginBottom: 8 }}>
-          Payment Failed
+          {t.checkoutFailed.title}
         </Title>
         <Paragraph type="secondary" style={{ fontSize: 16, marginBottom: 32 }}>
-          We couldn&apos;t process your payment. Don&apos;t worry — your cart items are still saved.
+          {t.checkoutFailed.description}
         </Paragraph>
       </motion.div>
 
@@ -60,13 +63,13 @@ export default function CheckoutFailedPage() {
           }}
         >
           <Text strong style={{ display: 'block', marginBottom: 8 }}>
-            Common reasons for payment failure:
+            {t.checkoutFailed.commonReasons}
           </Text>
           <ul style={{ margin: 0, paddingLeft: 20, color: '#666' }}>
-            <li><Text type="secondary">Insufficient funds</Text></li>
-            <li><Text type="secondary">Incorrect card details</Text></li>
-            <li><Text type="secondary">Card issuer declined the transaction</Text></li>
-            <li><Text type="secondary">Network connection issue</Text></li>
+            <li><Text type="secondary">{t.checkoutFailed.insufficientFunds}</Text></li>
+            <li><Text type="secondary">{t.checkoutFailed.incorrectCard}</Text></li>
+            <li><Text type="secondary">{t.checkoutFailed.declined}</Text></li>
+            <li><Text type="secondary">{t.checkoutFailed.networkIssue}</Text></li>
           </ul>
         </Card>
       </motion.div>
@@ -85,17 +88,17 @@ export default function CheckoutFailedPage() {
             block
             icon={<ReloadOutlined />}
           >
-            Try Again
+            {t.checkoutFailed.tryAgain}
           </Button>
         </Link>
         <Link href="/contact">
           <Button shape="round" size="large" block icon={<CustomerServiceOutlined />}>
-            Contact Support
+            {t.checkoutFailed.contactSupport}
           </Button>
         </Link>
         <Link href="/">
           <Button type="text" block icon={<HomeOutlined />}>
-            Back to Home
+            {t.checkoutFailed.backToHome}
           </Button>
         </Link>
       </motion.div>

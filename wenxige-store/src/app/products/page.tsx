@@ -24,6 +24,7 @@ import Link from 'next/link';
 import AnimatedSection from '@/components/shared/AnimatedSection';
 import { products, categories, teaEmojis, type Product } from '@/data/products';
 import { useCart } from '@/components/cart/CartContext';
+import { useTranslation } from '@/i18n';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -50,6 +51,7 @@ export default function ProductsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const { addItem, isInCart } = useCart();
+  const { t, language } = useTranslation();
 
   const filtered = useMemo(() => {
     let result = products;
@@ -74,16 +76,16 @@ export default function ProductsPage() {
       <AnimatedSection>
         <Breadcrumb
           items={[
-            { title: <Link href="/"><HomeOutlined /> Home</Link> },
-            { title: 'Products' },
+            { title: <Link href="/"><HomeOutlined /> {t.common.home}</Link> },
+            { title: t.common.products },
           ]}
           style={{ marginBottom: 24 }}
         />
         <Title level={2} style={{ color: '#2D5016', marginBottom: 8 }}>
-          Our Tea Collection
+          {t.productsPage.title}
         </Title>
         <Paragraph style={{ color: '#6B7280', fontSize: 16, marginBottom: 32 }}>
-          Browse our curated selection of premium Chinese teas.
+          {t.productsPage.description}
         </Paragraph>
       </AnimatedSection>
 
@@ -98,7 +100,7 @@ export default function ProductsPage() {
           }}
         >
           <Input
-            placeholder="Search teas..."
+            placeholder={t.productsPage.searchPlaceholder}
             prefix={<SearchOutlined style={{ color: '#9CA3AF' }} />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -111,11 +113,11 @@ export default function ProductsPage() {
             style={{ minWidth: 160 }}
             prefix={<FilterOutlined />}
             options={[
-              { value: 'default', label: 'Default' },
-              { value: 'price-asc', label: 'Price: Low to High' },
-              { value: 'price-desc', label: 'Price: High to Low' },
-              { value: 'rating', label: 'Highest Rated' },
-              { value: 'name', label: 'Name A–Z' },
+              { value: 'default', label: t.productsPage.sortDefault },
+              { value: 'price-asc', label: t.productsPage.sortPriceAsc },
+              { value: 'price-desc', label: t.productsPage.sortPriceDesc },
+              { value: 'rating', label: t.productsPage.sortHighestRated },
+              { value: 'name', label: t.productsPage.sortNameAZ },
             ]}
           />
         </div>
@@ -125,7 +127,7 @@ export default function ProductsPage() {
         <Segmented
           value={activeCategory}
           onChange={(val) => setActiveCategory(val as string)}
-          options={categories.map((c) => ({ label: c.label, value: c.key }))}
+          options={categories.map((c) => ({ label: t.categories[c.key as keyof typeof t.categories], value: c.key }))}
           style={{ marginBottom: 40 }}
           size="large"
         />
@@ -134,7 +136,7 @@ export default function ProductsPage() {
       {filtered.length === 0 ? (
         <AnimatedSection>
           <Empty
-            description="No teas found matching your criteria."
+            description={t.productsPage.noResults}
             style={{ padding: '60px 0' }}
           />
         </AnimatedSection>
@@ -200,16 +202,16 @@ export default function ProductsPage() {
                               borderRadius: 12,
                             }}
                           >
-                            Out of Stock
+                            {t.productsPage.outOfStock}
                           </Tag>
                         )}
                       </div>
                       <div style={{ padding: '16px' }}>
                         <Text type="secondary" style={{ fontSize: 11 }}>
-                          {product.nameZh} · {product.origin}
+                          {language === 'en' ? product.nameZh : product.name} · {product.origin}
                         </Text>
                         <Title level={5} style={{ margin: '4px 0 4px', fontSize: 15 }}>
-                          {product.name}
+                          {language === 'en' ? product.name : product.nameZh}
                         </Title>
                         <Paragraph
                           ellipsis={{ rows: 2 }}
@@ -267,7 +269,7 @@ export default function ProductsPage() {
       <AnimatedSection delay={0.2}>
         <div style={{ textAlign: 'center', marginTop: 48 }}>
           <Paragraph type="secondary">
-            Showing {filtered.length} of {products.length} teas
+            {t.productsPage.showing} {filtered.length} {t.productsPage.of} {products.length} {t.productsPage.teas}
           </Paragraph>
         </div>
       </AnimatedSection>
