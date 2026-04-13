@@ -62,6 +62,7 @@ class ProductService extends ChangeNotifier {
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 
+      if (response == null) return [];
       return (response as List)
           .map(
             (json) => Product.fromJson(
@@ -98,6 +99,7 @@ class ProductService extends ChangeNotifier {
           .select()
           .order('display_order', ascending: true);
 
+      if (response == null) return [];
       return (response as List)
           .map(
             (json) => TeaCategory.fromJson(
@@ -118,6 +120,7 @@ class ProductService extends ChangeNotifier {
           .select()
           .order('name', ascending: true);
 
+      if (response == null) return [];
       return (response as List)
           .map(
             (json) => Brand.fromJson(

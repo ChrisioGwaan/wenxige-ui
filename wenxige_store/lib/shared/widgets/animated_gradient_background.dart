@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// An animated gradient background with floating shapes for auth pages.
+/// An animated gradient background with floating shapes.
 /// Optimized for performance with RepaintBoundary and reduced complexity.
 class AnimatedGradientBackground extends StatefulWidget {
 
@@ -189,7 +189,7 @@ class _ShapesPainter extends CustomPainter {
       oldDelegate.progress != progress;
 }
 
-/// A simpler wave background for signup page - optimized
+/// A simpler wave background variant
 class AnimatedWaveBackground extends StatefulWidget {
 
   const AnimatedWaveBackground({required this.child, super.key});

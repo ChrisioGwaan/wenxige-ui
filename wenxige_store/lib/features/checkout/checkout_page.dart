@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:wenxige_store/shared/models/cart_model.dart';
 import 'package:wenxige_store/shared/models/order_model.dart';
-import 'package:wenxige_store/shared/models/user_profile_model.dart';
 import 'package:wenxige_store/shared/services/cart_service.dart';
 import 'package:wenxige_store/shared/services/order_service.dart';
-import 'package:wenxige_store/shared/services/user_profile_service.dart';
 import 'package:wenxige_store/shared/widgets/app_scaffold.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -19,7 +16,6 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   final CartService _cartService = CartService();
-  final UserProfileService _profileService = UserProfileService();
   final OrderService _orderService = OrderService();
 
   final _formKey = GlobalKey<FormState>();
@@ -51,7 +47,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   bool _isLoading = true;
   bool _isProcessing = false;
-  bool _isGuest = true;
   int _currentStep = 0;
 
   @override
@@ -62,37 +57,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Future<void> _initCheckout() async {
     await _cartService.init();
-
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      _isGuest = false;
-      await _loadUserProfile();
-    }
-
     setState(() => _isLoading = false);
-  }
-
-  Future<void> _loadUserProfile() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      // Get data from user metadata
-      final metadata = user.userMetadata;
-      _firstNameController.text = (metadata?['first_name'] as String?) ?? '';
-      _lastNameController.text = (metadata?['last_name'] as String?) ?? '';
-      _emailController.text = user.email ?? '';
-      _phoneController.text = (metadata?['phone'] as String?) ?? '';
-
-      // Get extended profile (addresses)
-      final profile = await _profileService.getProfile();
-      if (profile != null && profile.shippingAddress != null) {
-        _shippingStreetController.text = profile.shippingAddress!.street ?? '';
-        _shippingCityController.text = profile.shippingAddress!.city ?? '';
-        _shippingStateController.text = profile.shippingAddress!.state ?? '';
-        _shippingPostalCodeController.text =
-            profile.shippingAddress!.postalCode ?? '';
-        _shippingCountry = profile.shippingAddress!.country;
-      }
-    }
   }
 
   @override
@@ -275,37 +240,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget _buildContactAndShippingStep(ThemeData theme) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_isGuest) ...[
-          Card(
-            color: theme.colorScheme.primaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Sign in for a faster checkout experience',
-                      style: TextStyle(
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => context.go('/login'),
-                    child: const Text('Sign In'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-
         Text('Contact Information', style: theme.textTheme.titleMedium),
         const SizedBox(height: 12),
         Row(

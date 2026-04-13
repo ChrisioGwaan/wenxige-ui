@@ -11,22 +11,11 @@ import 'package:wenxige_store/core/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables (only works for native builds, not web)
-  // For web, variables are injected at build time via --dart-define
-  if (!kIsWeb) {
-    await dotenv.load();
-  }
+  await dotenv.load(fileName: '.env');
 
-  // Initialize Supabase
-  // On web: use compile-time constants from --dart-define
-  // On native: use .env file
   await Supabase.initialize(
-    url: kIsWeb
-        ? const String.fromEnvironment('SUPABASE_URL')
-        : dotenv.env['SUPABASE_URL']!,
-    anonKey: kIsWeb
-        ? const String.fromEnvironment('SUPABASE_KEY')
-        : dotenv.env['SUPABASE_KEY']!,
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_KEY']!,
   );
 
   if (kIsWeb) usePathUrlStrategy();

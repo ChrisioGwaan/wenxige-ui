@@ -38,7 +38,6 @@ dependencies:
     sdk: flutter
   supabase_flutter: ^2.0.0
   flutter_dotenv: ^6.0.0
-  image_picker: ^1.0.7
   json_annotation: ^4.9.0
 
 dev_dependencies:
@@ -74,9 +73,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # assets: (removed - .env should not be bundled in web builds for security)
-    # DO NOT include .env in web builds - it exposes secrets!
-    # Use environment variables at build time instead
+  assets:
+    - .env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

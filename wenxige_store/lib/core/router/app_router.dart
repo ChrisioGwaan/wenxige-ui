@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:wenxige_store/features/about/about_page.dart';
-import 'package:wenxige_store/features/auth/forgot_password_page.dart';
-import 'package:wenxige_store/features/auth/login_page.dart';
-import 'package:wenxige_store/features/auth/signup_page.dart';
 import 'package:wenxige_store/features/cart/cart_page.dart';
 import 'package:wenxige_store/features/checkout/checkout_page.dart';
 import 'package:wenxige_store/features/checkout/order_confirmation_page.dart';
 import 'package:wenxige_store/features/contact/contact_page.dart';
 import 'package:wenxige_store/features/gallery/gallery_page.dart';
 import 'package:wenxige_store/features/landing/landing_page.dart';
-import 'package:wenxige_store/features/profile/profile_settings_page.dart';
 import 'package:wenxige_store/features/shop/product_detail_page.dart';
 import 'package:wenxige_store/features/shop/shop_page.dart';
 
@@ -60,24 +56,6 @@ class AppRouter {
           final orderNumber = state.pathParameters['orderNumber']!;
           return _fade(state, OrderConfirmationPage(orderNumber: orderNumber));
         },
-      ),
-      GoRoute(
-        path: '/login',
-        pageBuilder: (context, state) => _fade(state, const LoginPage()),
-      ),
-      GoRoute(
-        path: '/signup',
-        pageBuilder: (context, state) => _fade(state, const SignUpPage()),
-      ),
-      GoRoute(
-        path: '/forgot-password',
-        pageBuilder: (context, state) =>
-            _fade(state, const ForgotPasswordPage()),
-      ),
-      GoRoute(
-        path: '/profile',
-        pageBuilder: (context, state) =>
-            _fade(state, const ProfileSettingsPage()),
       ),
     ],
   );

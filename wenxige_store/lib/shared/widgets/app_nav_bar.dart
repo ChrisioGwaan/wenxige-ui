@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:wenxige_store/core/constants/app_constants.dart';
-import 'package:wenxige_store/shared/models/user_model.dart';
-import 'package:wenxige_store/shared/providers/auth_service.dart';
 
 /// Sticky navigation bar that implements [PreferredSizeWidget] so it can be
 /// used as a [Scaffold.appBar].
@@ -120,8 +118,6 @@ class _DesktopNavRow extends StatelessWidget {
           ),
         const SizedBox(width: 20),
         _CartButton(isLight: isLight),
-        const SizedBox(width: 8),
-        _AuthArea(isLight: isLight),
       ],
     );
 }
@@ -286,161 +282,6 @@ class _CartButton extends StatelessWidget {
     );
 }
 
-class _AuthArea extends StatelessWidget {
-  const _AuthArea({required this.isLight});
-  final bool isLight;
-
-  @override
-  Widget build(BuildContext context) {
-    final user = AuthService().user;
-    if (user != null) return _UserChip(user: user, isLight: isLight);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _TextNavButton(
-          label: 'Log in',
-          isLight: isLight,
-          onTap: () => context.go('/login'),
-        ),
-        const SizedBox(width: 8),
-        FilledButton(
-          onPressed: () => context.go('/signup'),
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            textStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          child: const Text('Sign Up'),
-        ),
-      ],
-    );
-  }
-}
-
-class _UserChip extends StatefulWidget {
-  const _UserChip({required this.user, required this.isLight});
-  final UserModel user;
-  final bool isLight;
-
-  @override
-  State<_UserChip> createState() => _UserChipState();
-}
-
-class _UserChipState extends State<_UserChip> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textColor = widget.isLight ? Colors.white : const Color(0xFF2D2D2D);
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: GestureDetector(
-        onTap: () => context.go('/profile'),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.user.displayName,
-              style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(width: 10),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              padding: EdgeInsets.all(_hovered ? 2 : 0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _hovered
-                      ? theme.colorScheme.primary
-                      : Colors.transparent,
-                  width: 2,
-                ),
-              ),
-              child: widget.user.avatarUrl != null
-                  ? CircleAvatar(
-                      radius: 17,
-                      backgroundImage: NetworkImage(widget.user.avatarUrl!),
-                      onBackgroundImageError: (_, _) {},
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      child: widget.user.avatarUrl == null
-                          ? Text(
-                              widget.user.initials,
-                              style: TextStyle(
-                                color: theme.colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            )
-                          : null,
-                    )
-                  : CircleAvatar(
-                      radius: 17,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      child: Text(
-                        widget.user.initials,
-                        style: TextStyle(
-                          color: theme.colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TextNavButton extends StatefulWidget {
-  const _TextNavButton({
-    required this.label,
-    required this.isLight,
-    required this.onTap,
-  });
-  final String label;
-  final bool isLight;
-  final VoidCallback onTap;
-
-  @override
-  State<_TextNavButton> createState() => _TextNavButtonState();
-}
-
-class _TextNavButtonState extends State<_TextNavButton> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) => MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Text(
-          widget.label,
-          style: TextStyle(
-            color: (widget.isLight ? Colors.white : const Color(0xFF2D2D2D))
-                .withValues(alpha: _hovered ? 0.7 : 1.0),
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    );
-}
-
 // ─── Mobile hamburger + full-screen drawer ───────────────────────────────────
 
 class _HamburgerButton extends StatelessWidget {
@@ -479,7 +320,6 @@ class _MobileNavDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final user = AuthService().user;
 
     return Dialog.fullscreen(
       child: Scaffold(
@@ -545,68 +385,6 @@ class _MobileNavDialog extends StatelessWidget {
                   context.go(path);
                 },
               ),
-            const Divider(indent: 16, endIndent: 16),
-            if (user != null)
-              ListTile(
-                onTap: () {
-                  Navigator.of(context).pop();
-                  context.go('/profile');
-                },
-                leading: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  backgroundImage: user.avatarUrl != null
-                      ? NetworkImage(user.avatarUrl!)
-                      : null,
-                  child: user.avatarUrl == null
-                      ? Text(
-                          user.initials,
-                          style: TextStyle(
-                            color: theme.colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
-                          ),
-                        )
-                      : null,
-                ),
-                title: Text(
-                  user.displayName,
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                subtitle: Text(
-                  user.email,
-                  style: const TextStyle(fontSize: 12),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-              )
-            else ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: FilledButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.go('/login');
-                  },
-                  child: const Text('Log in'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 4,
-                ),
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.go('/signup');
-                  },
-                  child: const Text('Sign Up'),
-                ),
-              ),
-            ],
           ],
         ),
       ),

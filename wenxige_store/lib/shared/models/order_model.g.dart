@@ -79,7 +79,6 @@ Map<String, dynamic> _$OrderItemToJson(OrderItem instance) => <String, dynamic>{
 Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   id: json['id'] as String?,
   orderNumber: json['orderNumber'] as String?,
-  userId: json['userId'] as String?,
   guestCustomerId: json['guestCustomerId'] as String?,
   shippingFirstName: json['shippingFirstName'] as String,
   shippingLastName: json['shippingLastName'] as String,
@@ -129,7 +128,6 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'id': instance.id,
   'orderNumber': instance.orderNumber,
-  'userId': instance.userId,
   'guestCustomerId': instance.guestCustomerId,
   'shippingFirstName': instance.shippingFirstName,
   'shippingLastName': instance.shippingLastName,

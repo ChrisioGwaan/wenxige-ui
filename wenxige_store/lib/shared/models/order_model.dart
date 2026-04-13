@@ -108,7 +108,6 @@ class Order {
   Order({
     this.id,
     this.orderNumber,
-    this.userId,
     this.guestCustomerId,
     required this.shippingFirstName,
     required this.shippingLastName,
@@ -145,7 +144,6 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
   final String? id;
   final String? orderNumber;
-  final String? userId;
   final String? guestCustomerId;
 
   final String shippingFirstName;

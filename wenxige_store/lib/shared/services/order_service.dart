@@ -35,34 +35,29 @@ class OrderService extends ChangeNotifier {
     double discountAmount = 0,
   }) async {
     try {
-      final user = _client.auth.currentUser;
-      String? guestCustomerId;
+      final guestResponse = await _client
+          .from('guest_customers')
+          .insert({
+            'email': email,
+            'first_name': firstName,
+            'last_name': lastName,
+            'phone': phone,
+            'shipping_street': shippingStreet,
+            'shipping_city': shippingCity,
+            'shipping_state': shippingState,
+            'shipping_postal_code': shippingPostalCode,
+            'shipping_country': shippingCountry,
+            'billing_same_as_shipping': billingSameAsShipping,
+            'billing_street': billingStreet,
+            'billing_city': billingCity,
+            'billing_state': billingState,
+            'billing_postal_code': billingPostalCode,
+            'billing_country': billingCountry,
+          })
+          .select()
+          .single();
 
-      if (user == null) {
-        final guestResponse = await _client
-            .from('guest_customers')
-            .insert({
-              'email': email,
-              'first_name': firstName,
-              'last_name': lastName,
-              'phone': phone,
-              'shipping_street': shippingStreet,
-              'shipping_city': shippingCity,
-              'shipping_state': shippingState,
-              'shipping_postal_code': shippingPostalCode,
-              'shipping_country': shippingCountry,
-              'billing_same_as_shipping': billingSameAsShipping,
-              'billing_street': billingStreet,
-              'billing_city': billingCity,
-              'billing_state': billingState,
-              'billing_postal_code': billingPostalCode,
-              'billing_country': billingCountry,
-            })
-            .select()
-            .single();
-
-        guestCustomerId = guestResponse['id'] as String?;
-      }
+      final guestCustomerId = guestResponse['id'] as String?;
 
       final subtotal = cart.subtotal;
       final totalAmount = subtotal + shippingCost + taxAmount - discountAmount;
@@ -70,7 +65,6 @@ class OrderService extends ChangeNotifier {
       final orderResponse = await _client
           .from('orders')
           .insert({
-            'user_id': user?.id,
             'guest_customer_id': guestCustomerId,
             'shipping_first_name': firstName,
             'shipping_last_name': lastName,
@@ -116,7 +110,6 @@ class OrderService extends ChangeNotifier {
       return Order(
         id: orderResponse['id'] as String?,
         orderNumber: orderResponse['order_number'] as String?,
-        userId: orderResponse['user_id'] as String?,
         guestCustomerId: orderResponse['guest_customer_id'] as String?,
         shippingFirstName: firstName,
         shippingLastName: lastName,
@@ -175,32 +168,6 @@ class OrderService extends ChangeNotifier {
     }
   }
 
-  Future<List<Order>> getUserOrders() async {
-    try {
-      final user = _client.auth.currentUser;
-      if (user == null) {
-        return [];
-      }
-
-      final response = await _client
-          .from('orders')
-          .select()
-          .eq('user_id', user.id)
-          .order('created_at', ascending: false);
-
-      return (response as List)
-          .map(
-            (json) => Order.fromJson(
-              _convertFromSnakeCase(json as Map<String, dynamic>),
-            ),
-          )
-          .toList();
-    } on Exception catch (e) {
-      debugPrint('Error fetching orders: $e');
-      return [];
-    }
-  }
-
   Future<Order?> getOrderById(String orderId) async {
     try {
       final response = await _client
@@ -219,7 +186,6 @@ class OrderService extends ChangeNotifier {
   Map<String, dynamic> _convertFromSnakeCase(Map<String, dynamic> json) => {
     'id': json['id'],
     'orderNumber': json['order_number'],
-    'userId': json['user_id'],
     'guestCustomerId': json['guest_customer_id'],
     'shippingFirstName': json['shipping_first_name'],
     'shippingLastName': json['shipping_last_name'],
