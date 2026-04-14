@@ -1,30 +1,22 @@
 'use client'
 
-import { Card, Table, Tag, Button, Input, Space, Typography, Tabs, Row, Col } from 'antd'
+import { useEffect, useState, useMemo } from 'react'
+import { Card, Table, Tag, Button, Input, Space, Typography, Tabs, Row, Col, Spin } from 'antd'
 import { SearchOutlined, MailOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
+import { createClient } from '@/lib/supabase/client'
 
 const { Title, Text } = Typography
 
 interface Inquiry {
-  key: string
-  name: string
-  email: string
-  subject: string
+  id: string
+  name: string | null
+  email: string | null
+  subject: string | null
+  message: string | null
   status: string
   created_at: string
 }
-
-const mockInquiries: Inquiry[] = [
-  { key: '1', name: 'Amelia Scott', email: 'amelia.s@example.com', subject: 'Wholesale pricing for tea sets', status: 'new', created_at: 'Apr 14, 2026' },
-  { key: '2', name: 'James Turner', email: 'jturner@example.com', subject: 'Custom engraving on teapot', status: 'new', created_at: 'Apr 14, 2026' },
-  { key: '3', name: 'Mei Lin', email: 'meilin@example.com', subject: 'International shipping to Taiwan', status: 'read', created_at: 'Apr 13, 2026' },
-  { key: '4', name: 'Robert Clarke', email: 'rob.c@example.com', subject: 'Certificate of authenticity', status: 'replied', created_at: 'Apr 12, 2026' },
-  { key: '5', name: 'Sophie Dubois', email: 'sdubois@example.com', subject: 'Returns policy question', status: 'replied', created_at: 'Apr 11, 2026' },
-  { key: '6', name: 'Hassan Ali', email: 'hassan.a@example.com', subject: 'Order ORD-2026-04-10-3 delivery delay', status: 'read', created_at: 'Apr 10, 2026' },
-  { key: '7', name: 'Isabella Rossi', email: 'irossi@example.com', subject: 'Gift wrapping options', status: 'archived', created_at: 'Apr 8, 2026' },
-  { key: '8', name: 'Tom Nguyen', email: 'tnguyen@example.com', subject: 'Partnership inquiry', status: 'new', created_at: 'Apr 14, 2026' },
-]
 
 const statusConfig: Record<string, { color: string; label: string }> = {
   new: { color: 'blue', label: 'New' },
@@ -33,13 +25,16 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   archived: { color: 'default', label: 'Archived' },
 }
 
+const fmtDate = (v: string | null) =>
+  v ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
+
 const columns: ColumnsType<Inquiry> = [
   {
     title: 'From',
     key: 'from',
     render: (_, r) => (
       <div>
-        <Text strong style={{ display: 'block' }}>{r.name}</Text>
+        <Text strong style={{ display: 'block' }}>{r.name ?? '—'}</Text>
         <Text type="secondary" style={{ fontSize: 12 }}>{r.email}</Text>
       </div>
     ),
@@ -48,7 +43,7 @@ const columns: ColumnsType<Inquiry> = [
     title: 'Subject',
     dataIndex: 'subject',
     key: 'subject',
-    render: (v: string) => <Text>{v}</Text>,
+    render: (v: string | null) => <Text>{v ?? '—'}</Text>,
   },
   {
     title: 'Status',
@@ -65,7 +60,8 @@ const columns: ColumnsType<Inquiry> = [
     dataIndex: 'created_at',
     key: 'created_at',
     width: 120,
-    render: (v: string) => <Text type="secondary">{v}</Text>,
+    responsive: ['sm'],
+    render: (v: string) => <Text type="secondary">{fmtDate(v)}</Text>,
   },
   {
     title: 'Actions',
@@ -73,12 +69,7 @@ const columns: ColumnsType<Inquiry> = [
     width: 150,
     render: () => (
       <Space>
-        <Button
-          type="link"
-          size="small"
-          icon={<MailOutlined />}
-          style={{ padding: 0, color: '#16a34a' }}
-        >
+        <Button type="link" size="small" icon={<MailOutlined />} style={{ padding: 0, color: '#9AB17A' }}>
           Reply
         </Button>
         <Button type="link" size="small" style={{ padding: 0, color: '#64748b' }}>
@@ -89,35 +80,64 @@ const columns: ColumnsType<Inquiry> = [
   },
 ]
 
-const tabItems = [
-  {
-    key: 'all',
-    label: `All (${mockInquiries.length})`,
-    data: mockInquiries,
-  },
-  {
-    key: 'new',
-    label: `New (${mockInquiries.filter((i) => i.status === 'new').length})`,
-    data: mockInquiries.filter((i) => i.status === 'new'),
-  },
-  {
-    key: 'read',
-    label: 'Read',
-    data: mockInquiries.filter((i) => i.status === 'read'),
-  },
-  {
-    key: 'replied',
-    label: 'Replied',
-    data: mockInquiries.filter((i) => i.status === 'replied'),
-  },
-  {
-    key: 'archived',
-    label: 'Archived',
-    data: mockInquiries.filter((i) => i.status === 'archived'),
-  },
-]
-
 export default function InquiriesPage() {
+  const [inquiries, setInquiries] = useState<Inquiry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [activeTab, setActiveTab] = useState('all')
+
+  useEffect(() => {
+    const supabase = createClient()
+    async function load() {
+      const { data } = await supabase
+        .from('contact_inquiry')
+        .select('id, name, email, subject, message, status, created_at')
+        .eq('del_flag', false)
+        .order('created_at', { ascending: false })
+      setInquiries(data ?? [])
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  const counts = useMemo(() => ({
+    all: inquiries.length,
+    new: inquiries.filter(i => i.status === 'new').length,
+    read: inquiries.filter(i => i.status === 'read').length,
+    replied: inquiries.filter(i => i.status === 'replied').length,
+    archived: inquiries.filter(i => i.status === 'archived').length,
+  }), [inquiries])
+
+  const displayData = useMemo(() => {
+    let list = inquiries
+    if (activeTab !== 'all') list = list.filter(i => i.status === activeTab)
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      list = list.filter(i =>
+        i.name?.toLowerCase().includes(q) ||
+        i.email?.toLowerCase().includes(q) ||
+        i.subject?.toLowerCase().includes(q)
+      )
+    }
+    return list
+  }, [inquiries, activeTab, search])
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <Spin size="large" />
+      </div>
+    )
+  }
+
+  const tabItems = [
+    { key: 'all', label: `All (${counts.all})` },
+    { key: 'new', label: `New (${counts.new})` },
+    { key: 'read', label: 'Read' },
+    { key: 'replied', label: 'Replied' },
+    { key: 'archived', label: 'Archived' },
+  ]
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
@@ -127,26 +147,31 @@ export default function InquiriesPage() {
 
       <Card style={{ borderRadius: 12 }}>
         <Row style={{ marginBottom: 16 }}>
-          <Col>
+          <Col xs={24} md={14}>
             <Input
               placeholder="Search by name, email or subject..."
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-              style={{ maxWidth: 360 }}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ width: '100%' }}
             />
           </Col>
         </Row>
 
         <Tabs
-          defaultActiveKey="all"
-          items={tabItems.map((tab) => ({
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems.map(tab => ({
             key: tab.key,
             label: tab.label,
             children: (
               <Table
                 columns={columns}
-                dataSource={tab.data}
+                dataSource={displayData}
+                rowKey="id"
                 pagination={{ pageSize: 8, showTotal: (total) => `${total} inquiries` }}
                 size="middle"
+                scroll={{ x: 'max-content' }}
               />
             ),
           }))}
@@ -155,3 +180,4 @@ export default function InquiriesPage() {
     </div>
   )
 }
+
