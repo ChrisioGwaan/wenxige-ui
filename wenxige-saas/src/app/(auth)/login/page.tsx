@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { App, Button, Form, Input, Typography, ConfigProvider, theme } from 'antd'
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
@@ -86,7 +87,7 @@ function LoginForm() {
           animation: 'watermark-drift 14s ease-in-out infinite',
         }}
       >
-        WENXIGE
+        LUMI TEA
       </div>
 
       {/* ── Central orb glow ── */}
@@ -315,6 +316,15 @@ function LoginForm() {
             <div style={{ flex: 1, height: 1, background: 'rgba(154,177,122,0.2)', maxWidth: 40 }} />
           </div>
 
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+            <Image
+              src="/Lumi Tea Logo.png"
+              alt="Lumi Tea"
+              width={72}
+              height={72}
+              style={{ borderRadius: 16, objectFit: 'cover', boxShadow: '0 8px 24px rgba(154,177,122,0.3)' }}
+            />
+          </div>
           <div
             style={{
               fontSize: 32,
@@ -325,7 +335,7 @@ function LoginForm() {
               marginBottom: 8,
             }}
           >
-            Wenxige
+            Lumi Tea
           </div>
           <Text style={{ color: 'rgba(228,223,181,0.4)', fontSize: 13 }}>
             Sign in to manage your store
@@ -348,7 +358,7 @@ function LoginForm() {
           >
             <Input
               prefix={<MailOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
-              placeholder="admin@wenxige.com"
+              placeholder="admin@lumitea.com"
               autoComplete="email"
               style={{ borderRadius: 12 }}
             />

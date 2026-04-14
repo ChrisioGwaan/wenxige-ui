@@ -3,8 +3,8 @@ import { AntdRegistry } from '@ant-design/nextjs-registry'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Wenxige Admin',
-  description: 'Wenxige Store Management System',
+  title: 'Lumi Tea Admin',
+  description: 'Lumi Tea Store Management System',
 }
 
 export default function RootLayout({

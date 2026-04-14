@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import {
   Layout,
@@ -166,16 +167,12 @@ export function DashboardShell({
           width: 32,
           height: 32,
           borderRadius: 8,
-          background: 'linear-gradient(135deg, #9AB17A, #7a9460)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 16,
+          overflow: 'hidden',
           flexShrink: 0,
           boxShadow: '0 4px 12px rgba(154,177,122,0.45)',
         }}
       >
-        🍵
+        <Image src="/Lumi Tea Logo.png" alt="Lumi Tea" width={32} height={32} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
       </div>
       {expanded && (
         <div style={{ overflow: 'hidden' }}>
@@ -189,7 +186,7 @@ export function DashboardShell({
               lineHeight: 1.3,
             }}
           >
-            Wenxige
+            Lumi Tea
           </Text>
           <Text
             style={{
