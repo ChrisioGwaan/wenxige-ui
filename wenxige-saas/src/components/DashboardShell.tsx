@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Layout,
   Menu,
@@ -10,15 +10,13 @@ import {
   ConfigProvider,
   theme,
   Typography,
+  Drawer,
   type MenuProps,
 } from 'antd'
 import {
   DashboardOutlined,
   ShoppingOutlined,
-  AppstoreOutlined,
-  TagsOutlined,
   ShoppingCartOutlined,
-  CarOutlined,
   MessageOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -36,7 +34,7 @@ const { Text } = Typography
 
 const SIDEBAR_WIDTH = 240
 const SIDEBAR_COLLAPSED_WIDTH = 64
-const SIDEBAR_BG = '#0e1117'
+const SIDEBAR_BG = '#2a3820'
 const HEADER_HEIGHT = 56
 
 interface NavItem {
@@ -114,8 +112,21 @@ export function DashboardShell({
   user: User
 }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const update = (matches: boolean) => {
+      setIsMobile(matches)
+      setCollapsed(matches)
+    }
+    update(mq.matches)
+    const handler = (e: MediaQueryListEvent) => update(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -137,12 +148,89 @@ export function DashboardShell({
   const menuItems = buildMenuItems(navItems)
   const openKeys = getOpenKeys(pathname)
 
+  const logoContent = (expanded: boolean) => (
+    <div
+      style={{
+        height: HEADER_HEIGHT,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 20px',
+        borderBottom: '1px solid rgba(154,177,122,0.14)',
+        overflow: 'hidden',
+        gap: 10,
+        flexShrink: 0,
+      }}
+    >
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: 8,
+          background: 'linear-gradient(135deg, #9AB17A, #7a9460)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 16,
+          flexShrink: 0,
+          boxShadow: '0 4px 12px rgba(154,177,122,0.45)',
+        }}
+      >
+        🍵
+      </div>
+      {expanded && (
+        <div style={{ overflow: 'hidden' }}>
+          <Text
+            strong
+            style={{
+              color: '#ffffff',
+              fontSize: 15,
+              display: 'block',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.3,
+            }}
+          >
+            Wenxige
+          </Text>
+          <Text
+            style={{
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: 11,
+              display: 'block',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Store Admin
+          </Text>
+        </div>
+      )}
+    </div>
+  )
+
+  const sidebarMenu = (
+    <Menu
+      theme="dark"
+      mode="inline"
+      selectedKeys={[pathname]}
+      defaultOpenKeys={openKeys}
+      items={menuItems}
+      onClick={(info) => {
+        if (isMobile && info.key.startsWith('/')) setCollapsed(true)
+      }}
+      style={{
+        background: 'transparent',
+        border: 'none',
+        marginTop: 8,
+        flex: 1,
+      }}
+    />
+  )
+
   return (
     <ConfigProvider
       theme={{
         algorithm: theme.defaultAlgorithm,
         token: {
-          colorPrimary: '#16a34a',
+          colorPrimary: '#9AB17A',
           borderRadius: 8,
           fontFamily:
             'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
@@ -150,144 +238,96 @@ export function DashboardShell({
         components: {
           Layout: {
             siderBg: SIDEBAR_BG,
-            headerBg: '#ffffff',
+            headerBg: '#FEFCF8',
           },
           Menu: {
             darkItemBg: SIDEBAR_BG,
-            darkSubMenuItemBg: '#161b22',
-            darkItemSelectedBg: '#16a34a',
+            darkSubMenuItemBg: '#1e2a16',
+            darkItemSelectedBg: '#9AB17A',
             darkItemSelectedColor: '#ffffff',
-            darkItemHoverBg: 'rgba(255,255,255,0.06)',
+            darkItemHoverBg: 'rgba(154,177,122,0.14)',
             darkItemHoverColor: '#ffffff',
           },
         },
       }}
     >
       <Layout style={{ minHeight: '100vh' }}>
-        {/* ── Sidebar ── */}
-        <Sider
-          collapsible
-          collapsed={collapsed}
-          onCollapse={setCollapsed}
-          width={SIDEBAR_WIDTH}
-          collapsedWidth={SIDEBAR_COLLAPSED_WIDTH}
-          theme="dark"
-          style={{
-            background: SIDEBAR_BG,
-            borderRight: '1px solid rgba(255,255,255,0.06)',
-            overflow: 'auto',
-            height: '100vh',
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            zIndex: 100,
-          }}
-          trigger={null}
-        >
-          {/* Logo */}
-          <div
-            style={{
-              height: HEADER_HEIGHT,
-              display: 'flex',
-              alignItems: 'center',
-              padding: collapsed ? '0 20px' : '0 20px',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
-              overflow: 'hidden',
-              gap: 10,
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 8,
-                background: 'linear-gradient(135deg, #16a34a, #15803d)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 16,
-                flexShrink: 0,
-                boxShadow: '0 4px 12px rgba(22, 163, 74, 0.4)',
-              }}
-            >
-              🍵
-            </div>
-            {!collapsed && (
-              <div style={{ overflow: 'hidden' }}>
-                <Text
-                  strong
-                  style={{
-                    color: '#ffffff',
-                    fontSize: 15,
-                    display: 'block',
-                    whiteSpace: 'nowrap',
-                    lineHeight: 1.3,
-                  }}
-                >
-                  Wenxige
-                </Text>
-                <Text
-                  style={{
-                    color: 'rgba(255,255,255,0.4)',
-                    fontSize: 11,
-                    display: 'block',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  Store Admin
-                </Text>
-              </div>
-            )}
-          </div>
-
-          {/* Navigation */}
-          <Menu
+        {/* ── Desktop Sidebar ── */}
+        {!isMobile && (
+          <Sider
+            collapsible
+            collapsed={collapsed}
+            onCollapse={setCollapsed}
+            width={SIDEBAR_WIDTH}
+            collapsedWidth={SIDEBAR_COLLAPSED_WIDTH}
             theme="dark"
-            mode="inline"
-            selectedKeys={[pathname]}
-            defaultOpenKeys={openKeys}
-            items={menuItems}
             style={{
-              background: 'transparent',
-              border: 'none',
-              marginTop: 8,
-              flex: 1,
+              background: SIDEBAR_BG,
+              borderRight: '1px solid rgba(154,177,122,0.14)',
+              overflow: 'auto',
+              height: '100vh',
+              position: 'fixed',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              zIndex: 100,
             }}
-          />
-        </Sider>
+            trigger={null}
+          >
+            {logoContent(!collapsed)}
+            {sidebarMenu}
+          </Sider>
+        )}
+
+        {/* ── Mobile Drawer ── */}
+        {isMobile && (
+          <Drawer
+            placement="left"
+            open={!collapsed}
+            onClose={() => setCollapsed(true)}
+            closable={false}
+            zIndex={200}
+            styles={{ body: { padding: 0, background: SIDEBAR_BG }, wrapper: { width: SIDEBAR_WIDTH } }}
+          >
+            {logoContent(true)}
+            {sidebarMenu}
+          </Drawer>
+        )}
 
         {/* ── Main area ── */}
         <Layout
           style={{
-            marginLeft: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
+            marginLeft: isMobile
+              ? 0
+              : collapsed
+              ? SIDEBAR_COLLAPSED_WIDTH
+              : SIDEBAR_WIDTH,
             transition: 'margin-left 0.2s',
           }}
         >
           {/* Header */}
           <Header
             style={{
-              background: '#ffffff',
+              background: '#FEFCF8',
               height: HEADER_HEIGHT,
               lineHeight: `${HEADER_HEIGHT}px`,
-              padding: '0 24px',
+              padding: `0 ${isMobile ? 16 : 24}px`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #f0f0f0',
+              borderBottom: '1px solid #E4DFB5',
               position: 'sticky',
               top: 0,
               zIndex: 99,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              boxShadow: '0 1px 4px rgba(42,56,32,0.06)',
             }}
           >
-            {/* Collapse button */}
+            {/* Hamburger / collapse toggle */}
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
-              style={{ color: '#64748b', fontSize: 16 }}
+              style={{ color: '#6b7c5a', fontSize: 16 }}
             />
 
             {/* User menu */}
@@ -304,7 +344,7 @@ export function DashboardShell({
                 }}
                 onMouseEnter={(e) =>
                   ((e.currentTarget as HTMLElement).style.background =
-                    '#f8fafc')
+                    '#F0EAD6')
                 }
                 onMouseLeave={(e) =>
                   ((e.currentTarget as HTMLElement).style.background =
@@ -314,12 +354,17 @@ export function DashboardShell({
                 <Avatar
                   size={32}
                   icon={<UserOutlined />}
-                  style={{ background: '#16a34a' }}
+                  style={{ background: '#9AB17A' }}
                 />
-                <Text style={{ fontSize: 13, color: '#374151', maxWidth: 180 }} ellipsis>
-                  {user.email}
-                </Text>
-                <DownOutlined style={{ fontSize: 10, color: '#94a3b8' }} />
+                {!isMobile && (
+                  <Text
+                    style={{ fontSize: 13, color: '#374151', maxWidth: 180 }}
+                    ellipsis
+                  >
+                    {user.email}
+                  </Text>
+                )}
+                <DownOutlined style={{ fontSize: 10, color: '#9AB17A' }} />
               </div>
             </Dropdown>
           </Header>
@@ -327,11 +372,13 @@ export function DashboardShell({
           {/* Page content */}
           <Content
             style={{
-              background: '#f8fafc',
+              background: '#F7F2E5',
               minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
             }}
           >
-            <div style={{ padding: 24 }}>{children}</div>
+            <div className="dash-content" style={{ padding: 24 }}>
+              {children}
+            </div>
           </Content>
         </Layout>
       </Layout>
