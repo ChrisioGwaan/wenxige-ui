@@ -172,7 +172,7 @@ export function DashboardShell({
           boxShadow: '0 4px 12px rgba(154,177,122,0.45)',
         }}
       >
-        <Image src="/Lumi Tea Logo.png" alt="Lumi Tea" width={32} height={32} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+        <Image src="/Lumi_Tea_Logo-removebg.png" alt="Lumi Tea" width={32} height={32} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
       </div>
       {expanded && (
         <div style={{ overflow: 'hidden' }}>

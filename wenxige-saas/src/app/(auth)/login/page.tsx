@@ -318,7 +318,7 @@ function LoginForm() {
 
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
             <Image
-              src="/Lumi Tea Logo.png"
+              src="/Lumi_Tea_Logo-removebg.png"
               alt="Lumi Tea"
               width={72}
               height={72}
