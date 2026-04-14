@@ -1,4 +1,6 @@
-<div align="center">
+# Under restruction
+
+<!-- <div align="center">
   <img width="100" src="saas-platform/src/assets/readme/green-tea.png" alt="Wenxige Logo">
 
   <h1>Wenxige Store</h1>
@@ -14,7 +16,7 @@
   [![Live Demo](https://img.shields.io/badge/demo-live-success?style=flat-square)](https://www.wenxige.com)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-</div>
+</div> -->
 
 <!-- ---
 
