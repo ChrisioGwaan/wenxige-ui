@@ -1,148 +1,199 @@
 'use client'
 
-import { Card, Table, Tag, Button, Input, Space, Typography, Select, Row, Col } from 'antd'
+import { useEffect, useState, useMemo } from 'react'
+import { Card, Table, Tag, Button, Input, Space, Typography, Select, Row, Col, Spin } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
+import { createClient } from '@/lib/supabase/client'
 
 const { Title, Text } = Typography
 
 interface Product {
-  key: string
-  name_en: string
-  name_zh: string
-  category: string
-  brand: string
-  price: string
-  stock_qty: number
-  sku: string
+  id: string
+  name_en: string | null
+  name_zh: string | null
+  category_id: string | null
+  brand_id: string | null
+  price: number | null
+  stock_qty: number | null
+  sku: string | null
   is_active: boolean
   is_featured: boolean
+  del_flag: boolean
 }
 
-const mockProducts: Product[] = [
-  { key: '1', name_en: 'Dragon Well Green Tea', name_zh: '西湖龙井', category: 'Tea', brand: 'Wenxige', price: '$28.00', stock_qty: 45, sku: 'TEA-DW-50G', is_active: true, is_featured: true },
-  { key: '2', name_en: 'Aged Pu-erh Tea Cake', name_zh: '普洱茶饼', category: 'Tea', brand: 'Wenxige', price: '$89.00', stock_qty: 12, sku: 'TEA-PE-357G', is_active: true, is_featured: true },
-  { key: '3', name_en: 'Tieguanyin Oolong Tea', name_zh: '铁观音', category: 'Tea', brand: 'Wenxige', price: '$45.00', stock_qty: 28, sku: 'TEA-TGY-100G', is_active: true, is_featured: false },
-  { key: '4', name_en: 'Yixing Zisha Teapot', name_zh: '宜兴紫砂壶', category: 'Teapot', brand: 'Yixing Craft', price: '$185.00', stock_qty: 8, sku: 'POT-YX-200ML', is_active: true, is_featured: true },
-  { key: '5', name_en: 'White Porcelain Gaiwan', name_zh: '白瓷盖碗', category: 'Teapot', brand: 'Jingdezhen', price: '$42.00', stock_qty: 22, sku: 'POT-GW-150ML', is_active: true, is_featured: false },
-  { key: '6', name_en: 'Bamboo Tea Tray', name_zh: '竹制茶盘', category: 'Accessory', brand: 'Wenxige', price: '$56.00', stock_qty: 15, sku: 'ACC-BT-L', is_active: true, is_featured: false },
-  { key: '7', name_en: 'Chinese Ink Landscape Painting', name_zh: '山水水墨画', category: 'Painting', brand: 'Original Art', price: '$280.00', stock_qty: 3, sku: 'ART-INK-01', is_active: true, is_featured: true },
-  { key: '8', name_en: 'Jasmine Silver Needle White Tea', name_zh: '茉莉银针', category: 'Tea', brand: 'Wenxige', price: '$68.00', stock_qty: 18, sku: 'TEA-JAS-50G', is_active: true, is_featured: false },
-  { key: '9', name_en: 'Phoenix Dan Cong Oolong', name_zh: '凤凰单枞', category: 'Tea', brand: 'Wenxige', price: '$55.00', stock_qty: 0, sku: 'TEA-PDC-100G', is_active: false, is_featured: false },
-  { key: '10', name_en: 'Celadon Ceramic Cup Set', name_zh: '青瓷茶杯套装', category: 'Teapot', brand: 'Longquan', price: '$98.00', stock_qty: 10, sku: 'CUP-CEL-SET4', is_active: true, is_featured: false },
-]
+const fmtCurrency = (amount: number | null) =>
+  amount != null ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount) : '—'
 
-const columns: ColumnsType<Product> = [
-  {
-    title: 'Product',
-    key: 'product',
-    render: (_, r) => (
-      <div>
-        <Text strong style={{ display: 'block' }}>{r.name_en}</Text>
-        <Text type="secondary" style={{ fontSize: 12 }}>{r.name_zh}</Text>
-      </div>
-    ),
-  },
-  {
-    title: 'SKU',
-    dataIndex: 'sku',
-    key: 'sku',
-    render: (v: string) => <Text code style={{ fontSize: 11 }}>{v}</Text>,
-  },
-  {
-    title: 'Category',
-    dataIndex: 'category',
-    key: 'category',
-    render: (v: string) => <Tag>{v}</Tag>,
-  },
-  {
-    title: 'Brand',
-    dataIndex: 'brand',
-    key: 'brand',
-    render: (v: string) => <Text type="secondary">{v}</Text>,
-  },
-  {
-    title: 'Price',
-    dataIndex: 'price',
-    key: 'price',
-    render: (v: string) => <Text strong>{v}</Text>,
-  },
-  {
-    title: 'Stock',
-    dataIndex: 'stock_qty',
-    key: 'stock_qty',
-    render: (v: number) => (
-      <Tag color={v === 0 ? 'red' : v < 10 ? 'orange' : 'green'}>
-        {v === 0 ? 'Out of stock' : `${v} in stock`}
-      </Tag>
-    ),
-  },
-  {
-    title: 'Status',
-    key: 'status',
-    render: (_, r) => (
-      <Space size={4}>
-        <Tag color={r.is_active ? 'green' : 'default'}>
-          {r.is_active ? 'Active' : 'Inactive'}
-        </Tag>
-        {r.is_featured && <Tag color="gold">Featured</Tag>}
-      </Space>
-    ),
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    render: () => (
-      <Space>
-        <Button type="link" size="small" style={{ padding: 0, color: '#16a34a' }}>
-          Edit
-        </Button>
-        <Button type="link" size="small" danger style={{ padding: 0 }}>
-          Delete
-        </Button>
-      </Space>
-    ),
-  },
-]
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [catMap, setCatMap] = useState<Map<string, string>>(new Map())
+  const [brandMap, setBrandMap] = useState<Map<string, string>>(new Map())
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [filterCat, setFilterCat] = useState<string | null>(null)
+  const [filterStatus, setFilterStatus] = useState<string | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    async function load() {
+      const [{ data: prods }, { data: cats }, { data: brands }] = await Promise.all([
+        supabase.from('product').select('id, name_en, name_zh, category_id, brand_id, price, stock_qty, sku, is_active, is_featured, del_flag').eq('del_flag', false),
+        supabase.from('category').select('id, name_en'),
+        supabase.from('brand').select('id, name_en'),
+      ])
+      setProducts(prods ?? [])
+      setCatMap(new Map(cats?.map(c => [c.id, c.name_en]) ?? []))
+      setBrandMap(new Map(brands?.map(b => [b.id, b.name_en]) ?? []))
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  const filtered = useMemo(() => {
+    let list = products
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      list = list.filter(p =>
+        p.name_en?.toLowerCase().includes(q) ||
+        p.name_zh?.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q)
+      )
+    }
+    if (filterCat) list = list.filter(p => p.category_id === filterCat)
+    if (filterStatus === 'active') list = list.filter(p => p.is_active)
+    if (filterStatus === 'inactive') list = list.filter(p => !p.is_active)
+    if (filterStatus === 'featured') list = list.filter(p => p.is_featured)
+    return list
+  }, [products, search, filterCat, filterStatus])
+
+  const categories = useMemo(() => {
+    const seen = new Map<string, string>()
+    products.forEach(p => {
+      if (p.category_id && catMap.has(p.category_id)) {
+        seen.set(p.category_id, catMap.get(p.category_id)!)
+      }
+    })
+    return Array.from(seen.entries()).map(([id, name]) => ({ id, name }))
+  }, [products, catMap])
+
+  const columns: ColumnsType<Product> = [
+    {
+      title: 'Product',
+      key: 'product',
+      render: (_, r) => (
+        <div>
+          <Text strong style={{ display: 'block' }}>{r.name_en ?? '—'}</Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>{r.name_zh}</Text>
+        </div>
+      ),
+    },
+    {
+      title: 'SKU',
+      dataIndex: 'sku',
+      key: 'sku',
+      responsive: ['md'],
+      render: (v: string | null) => v ? <Text code style={{ fontSize: 11 }}>{v}</Text> : <Text type="secondary">—</Text>,
+    },
+    {
+      title: 'Category',
+      dataIndex: 'category_id',
+      key: 'category',
+      render: (v: string | null) => <Tag>{catMap.get(v ?? '') ?? '—'}</Tag>,
+    },
+    {
+      title: 'Brand',
+      dataIndex: 'brand_id',
+      key: 'brand',
+      responsive: ['sm'],
+      render: (v: string | null) => <Text type="secondary">{brandMap.get(v ?? '') ?? '—'}</Text>,
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+      render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
+    },
+    {
+      title: 'Stock',
+      dataIndex: 'stock_qty',
+      key: 'stock_qty',
+      render: (v: number | null) => {
+        const qty = v ?? 0
+        return (
+          <Tag color={qty === 0 ? 'red' : qty < 10 ? 'orange' : 'green'}>
+            {qty === 0 ? 'Out of stock' : `${qty} in stock`}
+          </Tag>
+        )
+      },
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      render: (_, r) => (
+        <Space size={4}>
+          <Tag color={r.is_active ? 'green' : 'default'}>
+            {r.is_active ? 'Active' : 'Inactive'}
+          </Tag>
+          {r.is_featured && <Tag color="gold">Featured</Tag>}
+        </Space>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: () => (
+        <Space>
+          <Button type="link" size="small" style={{ padding: 0 }}>Edit</Button>
+          <Button type="link" size="small" danger style={{ padding: 0 }}>Delete</Button>
+        </Space>
+      ),
+    },
+  ]
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <Spin size="large" />
+      </div>
+    )
+  }
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
         <div>
           <Title level={4} style={{ margin: 0, color: '#0f172a' }}>Products</Title>
           <Text type="secondary" style={{ fontSize: 13 }}>
             Manage your product catalog
           </Text>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ background: '#16a34a', borderColor: '#16a34a' }}
-        >
+        <Button type="primary" icon={<PlusOutlined />}>
           Add Product
         </Button>
       </div>
 
       <Card style={{ borderRadius: 12 }}>
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
-          <Col flex="auto">
+          <Col xs={24} md={10}>
             <Input
               placeholder="Search products..."
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-              style={{ maxWidth: 320 }}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ width: '100%' }}
             />
           </Col>
-          <Col>
-            <Select placeholder="All Categories" style={{ width: 160 }} allowClear>
-              <Select.Option value="Tea">Tea</Select.Option>
-              <Select.Option value="Teapot">Teapot</Select.Option>
-              <Select.Option value="Painting">Painting</Select.Option>
-              <Select.Option value="Accessory">Accessory</Select.Option>
+          <Col xs={12} md={7}>
+            <Select placeholder="All Categories" style={{ width: '100%' }} allowClear value={filterCat} onChange={v => setFilterCat(v ?? null)}>
+              {categories.map(c => (
+                <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>
+              ))}
             </Select>
           </Col>
-          <Col>
-            <Select placeholder="All Status" style={{ width: 140 }} allowClear>
+          <Col xs={12} md={7}>
+            <Select placeholder="All Status" style={{ width: '100%' }} allowClear value={filterStatus} onChange={v => setFilterStatus(v ?? null)}>
               <Select.Option value="active">Active</Select.Option>
               <Select.Option value="inactive">Inactive</Select.Option>
               <Select.Option value="featured">Featured</Select.Option>
@@ -152,9 +203,11 @@ export default function ProductsPage() {
 
         <Table
           columns={columns}
-          dataSource={mockProducts}
+          dataSource={filtered}
+          rowKey="id"
           pagination={{ pageSize: 10, showSizeChanger: false }}
           size="middle"
+          scroll={{ x: 'max-content' }}
         />
       </Card>
     </div>
