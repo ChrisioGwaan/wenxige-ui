@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AntdRegistry>{children}</AntdRegistry>
+        <Analytics />
       </body>
     </html>
   )
