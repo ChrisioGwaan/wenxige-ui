@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { Card, Table, Tag, Button, Input, Space, Typography, Select, Row, Col, Spin } from 'antd'
+import { Card, Table, Tag, Button, Input, Typography, Select, Row, Col, Spin } from 'antd'
 import { SearchOutlined, EyeOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -28,22 +29,17 @@ const fmtDate = (v: string | null) =>
 const fmtCurrency = (amount: number | null) =>
   amount != null ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount) : '—'
 
-const orderStatusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'orange', label: 'Pending' },
-  processing: { color: 'blue', label: 'Processing' },
-  shipped: { color: 'cyan', label: 'Shipped' },
-  delivered: { color: 'green', label: 'Delivered' },
-  cancelled: { color: 'red', label: 'Cancelled' },
+const orderStatusColors: Record<string, string> = {
+  pending: 'orange', processing: 'blue', shipped: 'cyan',
+  delivered: 'green', cancelled: 'red',
 }
 
-const paymentStatusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'orange', label: 'Pending' },
-  paid: { color: 'green', label: 'Paid' },
-  failed: { color: 'red', label: 'Failed' },
-  refunded: { color: 'purple', label: 'Refunded' },
+const paymentStatusColors: Record<string, string> = {
+  pending: 'orange', paid: 'green', failed: 'red', refunded: 'purple',
 }
 
 export default function OrdersPage() {
+  const { t } = useLanguage()
   const [allOrders, setAllOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -75,7 +71,7 @@ export default function OrdersPage() {
 
   const columns: ColumnsType<Order> = [
     {
-      title: 'Order #',
+      title: t.orders.orderNumber,
       dataIndex: 'order_number',
       key: 'order_number',
       render: (v: string, r) => (
@@ -85,7 +81,7 @@ export default function OrdersPage() {
       ),
     },
     {
-      title: 'Customer',
+      title: t.orders.customer,
       key: 'customer',
       render: (_, r) => (
         <div>
@@ -97,7 +93,7 @@ export default function OrdersPage() {
       ),
     },
     {
-      title: 'Country',
+      title: t.orders.country,
       dataIndex: 'country',
       key: 'country',
       width: 80,
@@ -105,32 +101,32 @@ export default function OrdersPage() {
       render: (v: string | null) => v ? <Tag>{v}</Tag> : <Text type="secondary">—</Text>,
     },
     {
-      title: 'Total',
+      title: t.orders.total,
       dataIndex: 'total',
       key: 'total',
       render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
     },
     {
-      title: 'Order Status',
+      title: t.orders.orderStatus,
       dataIndex: 'order_status',
       key: 'order_status',
       render: (v: string) => {
-        const cfg = orderStatusConfig[v] ?? { color: 'default', label: v }
-        return <Tag color={cfg.color}>{cfg.label}</Tag>
+        const label = (t.orders as Record<string, string>)[v] ?? v
+        return <Tag color={orderStatusColors[v] ?? 'default'}>{label}</Tag>
       },
     },
     {
-      title: 'Payment',
+      title: t.orders.paymentStatus,
       dataIndex: 'payment_status',
       key: 'payment_status',
       responsive: ['lg'],
       render: (v: string) => {
-        const cfg = paymentStatusConfig[v] ?? { color: 'default', label: v }
-        return <Tag color={cfg.color}>{cfg.label}</Tag>
+        const label = (t.orders as Record<string, string>)[v] ?? v
+        return <Tag color={paymentStatusColors[v] ?? 'default'}>{label}</Tag>
       },
     },
     {
-      title: 'Date',
+      title: t.orders.date,
       dataIndex: 'created_at',
       key: 'created_at',
       responsive: ['md'],
@@ -151,15 +147,15 @@ export default function OrdersPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>Orders</Title>
-        <Text type="secondary" style={{ fontSize: 13 }}>Track and manage customer orders</Text>
+        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.orders.title}</Title>
+        <Text type="secondary" style={{ fontSize: 13 }}>{t.orders.subtitle}</Text>
       </div>
 
       <Card style={{ borderRadius: 12 }}>
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={12}>
             <Input
-              placeholder="Search by order # or customer email..."
+              placeholder={t.orders.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -168,30 +164,30 @@ export default function OrdersPage() {
           </Col>
           <Col xs={12} md={6}>
             <Select
-              placeholder="All Statuses"
+              placeholder={t.orders.allStatuses}
               style={{ width: '100%' }}
               allowClear
               value={statusFilter}
               onChange={(v) => setStatusFilter(v)}
             >
-              <Select.Option value="pending">Pending</Select.Option>
-              <Select.Option value="processing">Processing</Select.Option>
-              <Select.Option value="shipped">Shipped</Select.Option>
-              <Select.Option value="delivered">Delivered</Select.Option>
-              <Select.Option value="cancelled">Cancelled</Select.Option>
+              <Select.Option value="pending">{t.orders.pending}</Select.Option>
+              <Select.Option value="processing">{t.orders.processing}</Select.Option>
+              <Select.Option value="shipped">{t.orders.shipped}</Select.Option>
+              <Select.Option value="delivered">{t.orders.delivered}</Select.Option>
+              <Select.Option value="cancelled">{t.orders.cancelled}</Select.Option>
             </Select>
           </Col>
           <Col xs={12} md={6}>
             <Select
-              placeholder="Payment"
+              placeholder={t.orders.payment}
               style={{ width: '100%' }}
               allowClear
               value={paymentFilter}
               onChange={(v) => setPaymentFilter(v)}
             >
-              <Select.Option value="pending">Pending</Select.Option>
-              <Select.Option value="paid">Paid</Select.Option>
-              <Select.Option value="refunded">Refunded</Select.Option>
+              <Select.Option value="pending">{t.orders.pending}</Select.Option>
+              <Select.Option value="paid">{t.orders.paid}</Select.Option>
+              <Select.Option value="refunded">{t.orders.refunded}</Select.Option>
             </Select>
           </Col>
         </Row>
@@ -205,7 +201,7 @@ export default function OrdersPage() {
             columns={columns}
             dataSource={filtered}
             rowKey="id"
-            pagination={{ pageSize: 10, showTotal: (total) => `${total} orders` }}
+            pagination={{ pageSize: 10, showTotal: (total) => `${total} ${t.orders.ordersCount}` }}
             size="middle"
             scroll={{ x: 'max-content' }}
           />
