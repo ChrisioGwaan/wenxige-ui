@@ -7,6 +7,8 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
+import { useLanguage } from '@/lib/i18n'
+
 const { Text } = Typography
 
 const SAGE  = '#9AB17A'
@@ -32,6 +34,7 @@ const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
 }))
 
 function LoginForm() {
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { message } = App.useApp()
@@ -311,7 +314,7 @@ function LoginForm() {
                 textTransform: 'uppercase',
               }}
             >
-              Admin Portal
+              {t.login.adminPortal}
             </Text>
             <div style={{ flex: 1, height: 1, background: 'rgba(154,177,122,0.2)', maxWidth: 40 }} />
           </div>
@@ -338,7 +341,7 @@ function LoginForm() {
             Lumi Tea
           </div>
           <Text style={{ color: 'rgba(228,223,181,0.4)', fontSize: 13 }}>
-            Sign in to manage your store
+            {t.login.signInTo}
           </Text>
         </div>
 
@@ -348,17 +351,17 @@ function LoginForm() {
             name="email"
             label={
               <span style={{ color: 'rgba(228,223,181,0.6)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Email
+                {t.login.email}
               </span>
             }
             rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' },
+              { required: true, message: t.login.emailRequired },
+              { type: 'email', message: t.login.emailInvalid },
             ]}
           >
             <Input
               prefix={<MailOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
-              placeholder="admin@lumitea.com"
+              placeholder={t.login.emailPlaceholder}
               autoComplete="email"
               style={{ borderRadius: 12 }}
             />
@@ -368,15 +371,15 @@ function LoginForm() {
             name="password"
             label={
               <span style={{ color: 'rgba(228,223,181,0.6)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                Password
+                {t.login.password}
               </span>
             }
-            rules={[{ required: true, message: 'Please enter your password' }]}
+            rules={[{ required: true, message: t.login.passwordRequired }]}
             style={{ marginBottom: 36 }}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
-              placeholder="••••••••"
+              placeholder={t.login.passwordPlaceholder}
               autoComplete="current-password"
               style={{ borderRadius: 12 }}
             />
@@ -401,7 +404,7 @@ function LoginForm() {
                 color: '#0c1a09',
               }}
             >
-              Sign In
+              {t.login.signIn}
             </Button>
           </Form.Item>
         </Form>
@@ -417,7 +420,7 @@ function LoginForm() {
           >
             <div style={{ width: 16, height: 1, background: 'rgba(154,177,122,0.18)' }} />
             <Text style={{ fontSize: 10, color: 'rgba(154,177,122,0.3)', letterSpacing: '0.14em' }}>
-              AUTHORIZED ACCESS ONLY
+      AUTHORIZED ACCESS ONLY — {t.login.adminPortal}
             </Text>
             <div style={{ width: 16, height: 1, background: 'rgba(154,177,122,0.18)' }} />
           </div>
