@@ -5,6 +5,7 @@ import { Card, Table, Button, Input, Space, Typography, Tag, Avatar, Row, Col, S
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -19,6 +20,7 @@ interface Brand {
 }
 
 export default function BrandsPage() {
+  const { t } = useLanguage()
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -52,7 +54,7 @@ export default function BrandsPage() {
 
   const columns: ColumnsType<Brand> = [
     {
-      title: 'Brand',
+      title: t.brands.colBrand,
       key: 'brand',
       render: (_, r) => (
         <Space>
@@ -67,14 +69,14 @@ export default function BrandsPage() {
       ),
     },
     {
-      title: 'Slug',
+      title: t.brands.colSlug,
       dataIndex: 'slug',
       key: 'slug',
       responsive: ['sm'],
       render: (v: string | null) => v ? <Text code style={{ fontSize: 12 }}>{v}</Text> : <Text type="secondary">—</Text>,
     },
     {
-      title: 'Sort',
+      title: t.brands.colSort,
       dataIndex: 'sort_order',
       key: 'sort_order',
       width: 80,
@@ -82,20 +84,20 @@ export default function BrandsPage() {
       render: (v: number | null) => <Text type="secondary">{v ?? '—'}</Text>,
     },
     {
-      title: 'Products',
+      title: t.brands.colProducts,
       dataIndex: 'product_count',
       key: 'product_count',
       width: 110,
-      render: (v: number) => <Tag color="green">{v} products</Tag>,
+      render: (v: number) => <Tag color="green">{v} {t.brands.products}</Tag>,
     },
     {
-      title: 'Actions',
+      title: '',
       key: 'actions',
       width: 120,
       render: () => (
         <Space>
-          <Button type="link" size="small" style={{ padding: 0 }}>Edit</Button>
-          <Button type="link" size="small" danger style={{ padding: 0 }}>Delete</Button>
+          <Button type="link" size="small" style={{ padding: 0 }}>{t.common.edit}</Button>
+          <Button type="link" size="small" danger style={{ padding: 0 }}>{t.common.delete}</Button>
         </Space>
       ),
     },
@@ -113,11 +115,11 @@ export default function BrandsPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
         <div>
-          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>Brands</Title>
-          <Text type="secondary" style={{ fontSize: 13 }}>Manage product brands and suppliers</Text>
+          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.brands.title}</Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>{t.brands.subtitle}</Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />}>
-          Add Brand
+          {t.brands.addBrand}
         </Button>
       </div>
 
@@ -125,7 +127,7 @@ export default function BrandsPage() {
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={10}>
             <Input
-              placeholder="Search brands..."
+              placeholder={t.brands.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
               onChange={e => setSearch(e.target.value)}
