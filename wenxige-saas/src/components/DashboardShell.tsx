@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Layout,
   Menu,
@@ -19,6 +19,8 @@ import {
   message,
   type MenuProps,
 } from 'antd'
+import enUS from 'antd/locale/en_US'
+import zhCN from 'antd/locale/zh_CN'
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -31,11 +33,13 @@ import {
   DownOutlined,
   SettingOutlined,
   SaveOutlined,
+  TranslationOutlined,
 } from '@ant-design/icons'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import { useLanguage } from '@/lib/i18n'
 
 const { Sider, Header, Content } = Layout
 const { Text } = Typography
@@ -45,70 +49,9 @@ const SIDEBAR_COLLAPSED_WIDTH = 64
 const SIDEBAR_BG = '#2a3820'
 const HEADER_HEIGHT = 56
 
-interface NavItem {
-  key: string
-  icon: React.ReactNode
-  label: string
-  children?: { key: string; label: string }[]
-}
-
-const navItems: NavItem[] = [
-  {
-    key: '/dashboard',
-    icon: <DashboardOutlined />,
-    label: 'Dashboard',
-  },
-  {
-    key: 'products-group',
-    icon: <ShoppingOutlined />,
-    label: 'Products',
-    children: [
-      { key: '/products', label: 'All Products' },
-      { key: '/products/categories', label: 'Categories' },
-      { key: '/products/brands', label: 'Brands' },
-    ],
-  },
-  {
-    key: 'orders-group',
-    icon: <ShoppingCartOutlined />,
-    label: 'Orders',
-    children: [
-      { key: '/orders', label: 'All Orders' },
-      { key: '/shipments', label: 'Shipments' },
-    ],
-  },
-  {
-    key: '/inquiries',
-    icon: <MessageOutlined />,
-    label: 'Inquiries',
-  },
-]
-
-function buildMenuItems(items: NavItem[]): MenuProps['items'] {
-  return items.map((item) => {
-    if (item.children) {
-      return {
-        key: item.key,
-        icon: item.icon,
-        label: item.label,
-        children: item.children.map((child) => ({
-          key: child.key,
-          label: <Link href={child.key}>{child.label}</Link>,
-        })),
-      }
-    }
-    return {
-      key: item.key,
-      icon: item.icon,
-      label: <Link href={item.key}>{item.label}</Link>,
-    }
-  })
-}
-
 function getOpenKeys(pathname: string): string[] {
   if (pathname.startsWith('/products')) return ['products-group']
-  if (pathname.startsWith('/orders') || pathname.startsWith('/shipments'))
-    return ['orders-group']
+  if (pathname.startsWith('/orders') || pathname.startsWith('/shipments')) return ['orders-group']
   return []
 }
 
@@ -119,6 +62,7 @@ export function DashboardShell({
   children: React.ReactNode
   user: User
 }) {
+  const { lang, setLang, t } = useLanguage()
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -163,35 +107,66 @@ export function DashboardShell({
       })
       setProfileSaving(false)
       if (error) {
-        messageApi.error('Failed to save: ' + error.message)
+        messageApi.error(t.profile.updateError + error.message)
       } else {
         setDisplayName(values.display_name.trim())
         setProfileOpen(false)
-        messageApi.success('Display name updated!')
+        messageApi.success(t.profile.updateSuccess)
       }
     } catch {
-      // validation failed — do nothing
+      // validation failed
     }
   }
+
+  const navItems = useMemo(() => [
+    {
+      key: '/dashboard',
+      icon: <DashboardOutlined />,
+      label: <Link href="/dashboard">{t.nav.dashboard}</Link>,
+    },
+    {
+      key: 'products-group',
+      icon: <ShoppingOutlined />,
+      label: t.nav.products,
+      children: [
+        { key: '/products', label: <Link href="/products">{t.nav.allProducts}</Link> },
+        { key: '/products/categories', label: <Link href="/products/categories">{t.nav.categories}</Link> },
+        { key: '/products/brands', label: <Link href="/products/brands">{t.nav.brands}</Link> },
+      ],
+    },
+    {
+      key: 'orders-group',
+      icon: <ShoppingCartOutlined />,
+      label: t.nav.orders,
+      children: [
+        { key: '/orders', label: <Link href="/orders">{t.nav.allOrders}</Link> },
+        { key: '/shipments', label: <Link href="/shipments">{t.nav.shipments}</Link> },
+      ],
+    },
+    {
+      key: '/inquiries',
+      icon: <MessageOutlined />,
+      label: <Link href="/inquiries">{t.nav.inquiries}</Link>,
+    },
+  ], [t])
 
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <SettingOutlined />,
-      label: 'Profile Settings',
+      label: t.nav.profileSettings,
       onClick: openProfile,
     },
     { type: 'divider' },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Sign Out',
+      label: t.nav.signOut,
       danger: true,
       onClick: handleLogout,
     },
   ]
 
-  const menuItems = buildMenuItems(navItems)
   const openKeys = getOpenKeys(pathname)
 
   const logoContent = (expanded: boolean) => (
@@ -221,27 +196,11 @@ export function DashboardShell({
       </div>
       {expanded && (
         <div style={{ overflow: 'hidden' }}>
-          <Text
-            strong
-            style={{
-              color: '#ffffff',
-              fontSize: 15,
-              display: 'block',
-              whiteSpace: 'nowrap',
-              lineHeight: 1.3,
-            }}
-          >
+          <Text strong style={{ color: '#ffffff', fontSize: 15, display: 'block', whiteSpace: 'nowrap', lineHeight: 1.3 }}>
             Lumi Tea
           </Text>
-          <Text
-            style={{
-              color: 'rgba(255,255,255,0.4)',
-              fontSize: 11,
-              display: 'block',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Store Admin
+          <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, display: 'block', whiteSpace: 'nowrap' }}>
+            {t.nav.storeAdmin}
           </Text>
         </div>
       )}
@@ -254,34 +213,26 @@ export function DashboardShell({
       mode="inline"
       selectedKeys={[pathname]}
       defaultOpenKeys={openKeys}
-      items={menuItems}
+      items={navItems}
       onClick={(info) => {
         if (isMobile && info.key.startsWith('/')) setCollapsed(true)
       }}
-      style={{
-        background: 'transparent',
-        border: 'none',
-        marginTop: 8,
-        flex: 1,
-      }}
+      style={{ background: 'transparent', border: 'none', marginTop: 8, flex: 1 }}
     />
   )
 
   return (
     <ConfigProvider
+      locale={lang === 'zh' ? zhCN : enUS}
       theme={{
         algorithm: theme.defaultAlgorithm,
         token: {
           colorPrimary: '#9AB17A',
           borderRadius: 8,
-          fontFamily:
-            'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         },
         components: {
-          Layout: {
-            siderBg: SIDEBAR_BG,
-            headerBg: '#FEFCF8',
-          },
+          Layout: { siderBg: SIDEBAR_BG, headerBg: '#FEFCF8' },
           Menu: {
             darkItemBg: SIDEBAR_BG,
             darkSubMenuItemBg: '#1e2a16',
@@ -339,11 +290,7 @@ export function DashboardShell({
         {/* ── Main area ── */}
         <Layout
           style={{
-            marginLeft: isMobile
-              ? 0
-              : collapsed
-              ? SIDEBAR_COLLAPSED_WIDTH
-              : SIDEBAR_WIDTH,
+            marginLeft: isMobile ? 0 : collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
             transition: 'margin-left 0.2s',
           }}
         >
@@ -372,52 +319,47 @@ export function DashboardShell({
               style={{ color: '#6b7c5a', fontSize: 16 }}
             />
 
-            {/* User menu */}
-            <Dropdown menu={{ items: userMenuItems }} trigger={['click']}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  cursor: 'pointer',
-                  padding: '4px 8px',
-                  borderRadius: 8,
-                  transition: 'background 0.15s',
-                }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLElement).style.background =
-                    '#F0EAD6')
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLElement).style.background =
-                    'transparent')
-                }
+            {/* Right side: language switcher + user menu */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {/* Language toggle */}
+              <Button
+                type="text"
+                icon={<TranslationOutlined />}
+                onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+                style={{ color: '#6b7c5a', fontWeight: 600, fontSize: 13 }}
               >
-                <Avatar
-                  size={32}
-                  icon={<UserOutlined />}
-                  style={{ background: '#9AB17A' }}
-                />
-                {!isMobile && (
-                  <Text
-                    style={{ fontSize: 13, color: '#374151', maxWidth: 180 }}
-                    ellipsis
-                  >
-                    {displayName || user.email}
-                  </Text>
-                )}
-                <DownOutlined style={{ fontSize: 10, color: '#9AB17A' }} />
-              </div>
-            </Dropdown>
+                {lang === 'en' ? '中文' : 'EN'}
+              </Button>
+
+              {/* User dropdown */}
+              <Dropdown menu={{ items: userMenuItems }} trigger={['click']}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                    borderRadius: 8,
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#F0EAD6')}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                >
+                  <Avatar size={32} icon={<UserOutlined />} style={{ background: '#9AB17A' }} />
+                  {!isMobile && (
+                    <Text style={{ fontSize: 13, color: '#374151', maxWidth: 180 }} ellipsis>
+                      {displayName || user.email}
+                    </Text>
+                  )}
+                  <DownOutlined style={{ fontSize: 10, color: '#9AB17A' }} />
+                </div>
+              </Dropdown>
+            </div>
           </Header>
 
           {/* Page content */}
-          <Content
-            style={{
-              background: '#F7F2E5',
-              minHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
-            }}
-          >
+          <Content style={{ background: '#F7F2E5', minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}>
             <div className="dash-content" style={{ padding: 24 }}>
               {children}
             </div>
@@ -428,11 +370,12 @@ export function DashboardShell({
       {/* ── Profile modal ── */}
       {msgContextHolder}
       <Modal
-        title="Profile Settings"
+        title={t.profile.title}
         open={profileOpen}
         onCancel={() => setProfileOpen(false)}
         onOk={handleProfileSave}
-        okText="Save Changes"
+        okText={t.profile.saveChanges}
+        cancelText={t.common.cancel}
         okButtonProps={{ icon: <SaveOutlined />, loading: profileSaving }}
         width={400}
         destroyOnHidden
@@ -445,13 +388,13 @@ export function DashboardShell({
         <Form form={form} layout="vertical" requiredMark={false}>
           <Form.Item
             name="display_name"
-            label="Display Name"
+            label={t.profile.displayName}
             rules={[
-              { required: true, message: 'Please enter a display name' },
-              { max: 60, message: 'Max 60 characters' },
+              { required: true, message: t.profile.displayNameRequired },
+              { max: 60, message: t.profile.displayNameMax },
             ]}
           >
-            <Input placeholder="e.g. Admin" maxLength={60} style={{ borderRadius: 8 }} />
+            <Input placeholder={t.profile.placeholder} maxLength={60} style={{ borderRadius: 8 }} />
           </Form.Item>
         </Form>
       </Modal>
