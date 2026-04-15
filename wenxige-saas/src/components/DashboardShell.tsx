@@ -12,6 +12,11 @@ import {
   theme,
   Typography,
   Drawer,
+  Modal,
+  Form,
+  Input,
+  Divider,
+  message,
   type MenuProps,
 } from 'antd'
 import {
@@ -24,6 +29,8 @@ import {
   UserOutlined,
   LogoutOutlined,
   DownOutlined,
+  SettingOutlined,
+  SaveOutlined,
 } from '@ant-design/icons'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -114,6 +121,11 @@ export function DashboardShell({
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [profileSaving, setProfileSaving] = useState(false)
+  const [displayName, setDisplayName] = useState(user.user_metadata?.full_name ?? '')
+  const [form] = Form.useForm()
+  const [messageApi, msgContextHolder] = message.useMessage()
   const pathname = usePathname()
   const router = useRouter()
 
@@ -136,7 +148,40 @@ export function DashboardShell({
     router.refresh()
   }
 
+  const openProfile = () => {
+    form.setFieldsValue({ display_name: displayName })
+    setProfileOpen(true)
+  }
+
+  const handleProfileSave = async () => {
+    try {
+      const values = await form.validateFields()
+      setProfileSaving(true)
+      const supabase = createClient()
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: values.display_name.trim() },
+      })
+      setProfileSaving(false)
+      if (error) {
+        messageApi.error('Failed to save: ' + error.message)
+      } else {
+        setDisplayName(values.display_name.trim())
+        setProfileOpen(false)
+        messageApi.success('Display name updated!')
+      }
+    } catch {
+      // validation failed — do nothing
+    }
+  }
+
   const userMenuItems: MenuProps['items'] = [
+    {
+      key: 'profile',
+      icon: <SettingOutlined />,
+      label: 'Profile Settings',
+      onClick: openProfile,
+    },
+    { type: 'divider' },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
@@ -358,7 +403,7 @@ export function DashboardShell({
                     style={{ fontSize: 13, color: '#374151', maxWidth: 180 }}
                     ellipsis
                   >
-                    {user.email}
+                    {displayName || user.email}
                   </Text>
                 )}
                 <DownOutlined style={{ fontSize: 10, color: '#9AB17A' }} />
@@ -379,6 +424,37 @@ export function DashboardShell({
           </Content>
         </Layout>
       </Layout>
+
+      {/* ── Profile modal ── */}
+      {msgContextHolder}
+      <Modal
+        title="Profile Settings"
+        open={profileOpen}
+        onCancel={() => setProfileOpen(false)}
+        onOk={handleProfileSave}
+        okText="Save Changes"
+        okButtonProps={{ icon: <SaveOutlined />, loading: profileSaving }}
+        width={400}
+        destroyOnHidden
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0 24px' }}>
+          <Avatar size={64} icon={<UserOutlined />} style={{ background: '#9AB17A', marginBottom: 10 }} />
+          <Text type="secondary" style={{ fontSize: 13 }}>{user.email}</Text>
+        </div>
+        <Divider style={{ margin: '0 0 20px' }} />
+        <Form form={form} layout="vertical" requiredMark={false}>
+          <Form.Item
+            name="display_name"
+            label="Display Name"
+            rules={[
+              { required: true, message: 'Please enter a display name' },
+              { max: 60, message: 'Max 60 characters' },
+            ]}
+          >
+            <Input placeholder="e.g. Admin" maxLength={60} style={{ borderRadius: 8 }} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </ConfigProvider>
   )
 }
