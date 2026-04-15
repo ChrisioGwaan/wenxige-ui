@@ -5,6 +5,7 @@ import { Card, Table, Tag, Button, Input, Space, Typography, Select, Row, Col, S
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -27,6 +28,7 @@ const fmtCurrency = (amount: number | null) =>
 
 
 export default function ProductsPage() {
+  const { t } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [catMap, setCatMap] = useState<Map<string, string>>(new Map())
   const [brandMap, setBrandMap] = useState<Map<string, string>>(new Map())
@@ -80,7 +82,7 @@ export default function ProductsPage() {
 
   const columns: ColumnsType<Product> = [
     {
-      title: 'Product',
+      title: t.products.colProduct,
       key: 'product',
       render: (_, r) => (
         <div>
@@ -90,63 +92,63 @@ export default function ProductsPage() {
       ),
     },
     {
-      title: 'SKU',
+      title: t.products.colSKU,
       dataIndex: 'sku',
       key: 'sku',
       responsive: ['md'],
       render: (v: string | null) => v ? <Text code style={{ fontSize: 11 }}>{v}</Text> : <Text type="secondary">—</Text>,
     },
     {
-      title: 'Category',
+      title: t.products.colCategory,
       dataIndex: 'category_id',
       key: 'category',
       render: (v: string | null) => <Tag>{catMap.get(v ?? '') ?? '—'}</Tag>,
     },
     {
-      title: 'Brand',
+      title: t.products.colBrand,
       dataIndex: 'brand_id',
       key: 'brand',
       responsive: ['sm'],
       render: (v: string | null) => <Text type="secondary">{brandMap.get(v ?? '') ?? '—'}</Text>,
     },
     {
-      title: 'Price',
+      title: t.products.colPrice,
       dataIndex: 'price',
       key: 'price',
       render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
     },
     {
-      title: 'Stock',
+      title: t.products.colStock,
       dataIndex: 'stock_qty',
       key: 'stock_qty',
       render: (v: number | null) => {
         const qty = v ?? 0
         return (
           <Tag color={qty === 0 ? 'red' : qty < 10 ? 'orange' : 'green'}>
-            {qty === 0 ? 'Out of stock' : `${qty} in stock`}
+            {qty === 0 ? t.products.outOfStock : `${qty} ${t.products.inStock}`}
           </Tag>
         )
       },
     },
     {
-      title: 'Status',
+      title: t.products.colStatus,
       key: 'status',
       render: (_, r) => (
         <Space size={4}>
           <Tag color={r.is_active ? 'green' : 'default'}>
-            {r.is_active ? 'Active' : 'Inactive'}
+            {r.is_active ? t.products.active : t.products.inactive}
           </Tag>
-          {r.is_featured && <Tag color="gold">Featured</Tag>}
+          {r.is_featured && <Tag color="gold">{t.products.featured}</Tag>}
         </Space>
       ),
     },
     {
-      title: 'Actions',
+      title: '',
       key: 'actions',
       render: () => (
         <Space>
-          <Button type="link" size="small" style={{ padding: 0 }}>Edit</Button>
-          <Button type="link" size="small" danger style={{ padding: 0 }}>Delete</Button>
+          <Button type="link" size="small" style={{ padding: 0 }}>{t.common.edit}</Button>
+          <Button type="link" size="small" danger style={{ padding: 0 }}>{t.common.delete}</Button>
         </Space>
       ),
     },
@@ -164,13 +166,13 @@ export default function ProductsPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
         <div>
-          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>Products</Title>
+          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.products.title}</Title>
           <Text type="secondary" style={{ fontSize: 13 }}>
-            Manage your product catalog
+            {t.products.subtitle}
           </Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />}>
-          Add Product
+          {t.products.addProduct}
         </Button>
       </div>
 
@@ -178,7 +180,7 @@ export default function ProductsPage() {
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={10}>
             <Input
-              placeholder="Search products..."
+              placeholder={t.products.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -186,17 +188,17 @@ export default function ProductsPage() {
             />
           </Col>
           <Col xs={12} md={7}>
-            <Select placeholder="All Categories" style={{ width: '100%' }} allowClear value={filterCat} onChange={v => setFilterCat(v ?? null)}>
+            <Select placeholder={t.products.allCategories} style={{ width: '100%' }} allowClear value={filterCat} onChange={v => setFilterCat(v ?? null)}>
               {categories.map(c => (
                 <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>
               ))}
             </Select>
           </Col>
           <Col xs={12} md={7}>
-            <Select placeholder="All Status" style={{ width: '100%' }} allowClear value={filterStatus} onChange={v => setFilterStatus(v ?? null)}>
-              <Select.Option value="active">Active</Select.Option>
-              <Select.Option value="inactive">Inactive</Select.Option>
-              <Select.Option value="featured">Featured</Select.Option>
+            <Select placeholder={t.products.allStatus} style={{ width: '100%' }} allowClear value={filterStatus} onChange={v => setFilterStatus(v ?? null)}>
+              <Select.Option value="active">{t.products.active}</Select.Option>
+              <Select.Option value="inactive">{t.products.inactive}</Select.Option>
+              <Select.Option value="featured">{t.products.featured}</Select.Option>
             </Select>
           </Col>
         </Row>
