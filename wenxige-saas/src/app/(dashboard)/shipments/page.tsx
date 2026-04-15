@@ -5,6 +5,7 @@ import { Card, Table, Tag, Button, Input, Space, Typography, Select, Row, Col, S
 import { SearchOutlined, LinkOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -34,17 +35,18 @@ const carrierColors: Record<string, string> = {
   ups: 'gold', fedex: 'purple', china_post: 'cyan', yanwen: 'green', cainiao: 'default',
 }
 
-const statusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'default', label: 'Pending' },
-  picked_up: { color: 'blue', label: 'Picked Up' },
-  in_transit: { color: 'cyan', label: 'In Transit' },
-  out_for_delivery: { color: 'purple', label: 'Out for Delivery' },
-  delivered: { color: 'green', label: 'Delivered' },
-  exception: { color: 'red', label: 'Exception' },
-  returned: { color: 'orange', label: 'Returned' },
+const statusColors: Record<string, string> = {
+  pending: 'default',
+  picked_up: 'blue',
+  in_transit: 'cyan',
+  out_for_delivery: 'purple',
+  delivered: 'green',
+  exception: 'red',
+  returned: 'orange',
 }
 
 export default function ShipmentsPage() {
+  const { t } = useLanguage()
   const [shipments, setShipments] = useState<Shipment[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -100,7 +102,7 @@ export default function ShipmentsPage() {
 
   const columns: ColumnsType<Shipment> = [
     {
-      title: 'Order #',
+      title: t.shipments.colOrderNum,
       dataIndex: 'order_number',
       key: 'order_number',
       render: (v: string) => (
@@ -108,7 +110,7 @@ export default function ShipmentsPage() {
       ),
     },
     {
-      title: 'Carrier',
+      title: t.shipments.colCarrier,
       dataIndex: 'carrier_code',
       key: 'carrier',
       render: (v: string | null) => v
@@ -116,7 +118,7 @@ export default function ShipmentsPage() {
         : <Text type="secondary">—</Text>,
     },
     {
-      title: 'Tracking #',
+      title: t.shipments.colTracking,
       dataIndex: 'tracking_number',
       key: 'tracking_number',
       render: (v: string | null, r) => v ? (
@@ -129,29 +131,30 @@ export default function ShipmentsPage() {
       ) : <Text type="secondary">—</Text>,
     },
     {
-      title: 'Status',
+      title: t.shipments.colStatus,
       dataIndex: 'shipment_status',
       key: 'shipment_status',
       render: (v: string) => {
-        const cfg = statusConfig[v] ?? { color: 'default', label: v }
-        return <Tag color={cfg.color}>{cfg.label}</Tag>
+        const color = statusColors[v] ?? 'default'
+        const label = (t.shipments as Record<string, string>)[v] ?? v
+        return <Tag color={color}>{label}</Tag>
       },
     },
     {
-      title: 'Est. Delivery',
+      title: t.shipments.colEstDelivery,
       dataIndex: 'estimated_delivery',
       key: 'estimated_delivery',
       render: (v: string | null) => <Text type="secondary">{fmtDate(v)}</Text>,
     },
     {
-      title: 'Shipped',
+      title: t.shipments.colShipped,
       dataIndex: 'shipped_at',
       key: 'shipped_at',
       responsive: ['md'],
       render: (v: string | null) => <Text type="secondary">{fmtDate(v)}</Text>,
     },
     {
-      title: 'Delivered',
+      title: t.shipments.colDelivered,
       dataIndex: 'delivered_at',
       key: 'delivered_at',
       responsive: ['md'],
@@ -160,11 +163,11 @@ export default function ShipmentsPage() {
       ),
     },
     {
-      title: 'Actions',
+      title: '',
       key: 'actions',
       width: 100,
       render: () => (
-        <Button type="link" size="small" style={{ padding: 0, color: '#9AB17A' }}>Update</Button>
+        <Button type="link" size="small" style={{ padding: 0, color: '#9AB17A' }}>{t.shipments.update}</Button>
       ),
     },
   ]
@@ -180,15 +183,15 @@ export default function ShipmentsPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>Shipments</Title>
-        <Text type="secondary" style={{ fontSize: 13 }}>Track all outgoing shipments</Text>
+        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.shipments.title}</Title>
+        <Text type="secondary" style={{ fontSize: 13 }}>{t.shipments.subtitle}</Text>
       </div>
 
       <Card style={{ borderRadius: 12 }}>
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={12}>
             <Input
-              placeholder="Search by order # or tracking number..."
+              placeholder={t.shipments.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -196,19 +199,19 @@ export default function ShipmentsPage() {
             />
           </Col>
           <Col xs={12} md={6}>
-            <Select placeholder="All Carriers" style={{ width: '100%' }} allowClear value={filterCarrier} onChange={v => setFilterCarrier(v ?? null)}>
+            <Select placeholder={t.shipments.allCarriers} style={{ width: '100%' }} allowClear value={filterCarrier} onChange={v => setFilterCarrier(v ?? null)}>
               {carriers.map(c => (
                 <Select.Option key={c} value={c}>{carrierName[c] ?? c}</Select.Option>
               ))}
             </Select>
           </Col>
           <Col xs={12} md={6}>
-            <Select placeholder="All Status" style={{ width: '100%' }} allowClear value={filterStatus} onChange={v => setFilterStatus(v ?? null)}>
-              <Select.Option value="pending">Pending</Select.Option>
-              <Select.Option value="in_transit">In Transit</Select.Option>
-              <Select.Option value="out_for_delivery">Out for Delivery</Select.Option>
-              <Select.Option value="delivered">Delivered</Select.Option>
-              <Select.Option value="exception">Exception</Select.Option>
+            <Select placeholder={t.shipments.allStatus} style={{ width: '100%' }} allowClear value={filterStatus} onChange={v => setFilterStatus(v ?? null)}>
+              <Select.Option value="pending">{t.shipments.pending}</Select.Option>
+              <Select.Option value="in_transit">{t.shipments.in_transit}</Select.Option>
+              <Select.Option value="out_for_delivery">{t.shipments.out_for_delivery}</Select.Option>
+              <Select.Option value="delivered">{t.shipments.delivered}</Select.Option>
+              <Select.Option value="exception">{t.shipments.exception}</Select.Option>
             </Select>
           </Col>
         </Row>
@@ -217,7 +220,7 @@ export default function ShipmentsPage() {
           columns={columns}
           dataSource={filtered}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (total) => `${total} shipments` }}
+          pagination={{ pageSize: 10, showTotal: (total) => `${total} ${t.shipments.shipmentsCount}` }}
           size="middle"
           scroll={{ x: 'max-content' }}
         />
