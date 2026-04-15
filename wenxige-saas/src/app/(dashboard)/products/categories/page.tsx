@@ -5,6 +5,7 @@ import { Card, Table, Button, Input, Space, Typography, Tag, Row, Col, Spin } fr
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -19,6 +20,7 @@ interface Category {
 }
 
 export default function CategoriesPage() {
+  const { t } = useLanguage()
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -52,7 +54,7 @@ export default function CategoriesPage() {
 
   const columns: ColumnsType<Category> = [
     {
-      title: 'Name',
+      title: t.categories.colName,
       key: 'name',
       render: (_, r) => (
         <div>
@@ -62,14 +64,14 @@ export default function CategoriesPage() {
       ),
     },
     {
-      title: 'Slug',
+      title: t.categories.colSlug,
       dataIndex: 'slug',
       key: 'slug',
       responsive: ['sm'],
       render: (v: string | null) => v ? <Text code style={{ fontSize: 12 }}>{v}</Text> : <Text type="secondary">—</Text>,
     },
     {
-      title: 'Sort',
+      title: t.categories.colSort,
       dataIndex: 'sort_order',
       key: 'sort_order',
       width: 80,
@@ -77,20 +79,20 @@ export default function CategoriesPage() {
       render: (v: number | null) => <Text type="secondary">{v ?? '—'}</Text>,
     },
     {
-      title: 'Products',
+      title: t.categories.colProducts,
       dataIndex: 'product_count',
       key: 'product_count',
       width: 100,
-      render: (v: number) => <Tag color="blue">{v} products</Tag>,
+      render: (v: number) => <Tag color="blue">{v} {t.categories.products}</Tag>,
     },
     {
-      title: 'Actions',
+      title: '',
       key: 'actions',
       width: 120,
       render: () => (
         <Space>
-          <Button type="link" size="small" style={{ padding: 0 }}>Edit</Button>
-          <Button type="link" size="small" danger style={{ padding: 0 }}>Delete</Button>
+          <Button type="link" size="small" style={{ padding: 0 }}>{t.common.edit}</Button>
+          <Button type="link" size="small" danger style={{ padding: 0 }}>{t.common.delete}</Button>
         </Space>
       ),
     },
@@ -108,11 +110,11 @@ export default function CategoriesPage() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
         <div>
-          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>Categories</Title>
-          <Text type="secondary" style={{ fontSize: 13 }}>Organize your product catalog</Text>
+          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.categories.title}</Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>{t.categories.subtitle}</Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />}>
-          Add Category
+          {t.categories.addCategory}
         </Button>
       </div>
 
@@ -120,7 +122,7 @@ export default function CategoriesPage() {
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={10}>
             <Input
-              placeholder="Search categories..."
+              placeholder={t.categories.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
               onChange={e => setSearch(e.target.value)}
