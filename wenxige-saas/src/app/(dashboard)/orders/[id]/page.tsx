@@ -27,6 +27,7 @@ import {
 import Link from 'next/link'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -92,67 +93,21 @@ const carrierName: Record<string, string> = {
   ups: 'UPS', fedex: 'FedEx', china_post: 'China Post', yanwen: 'Yanwen', cainiao: 'Cainiao',
 }
 
-const orderStatusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'orange', label: 'Pending' },
-  processing: { color: 'blue', label: 'Processing' },
-  shipped: { color: 'cyan', label: 'Shipped' },
-  delivered: { color: 'green', label: 'Delivered' },
-  cancelled: { color: 'red', label: 'Cancelled' },
+const orderStatusColors: Record<string, string> = {
+  pending: 'orange', processing: 'blue', shipped: 'cyan', delivered: 'green', cancelled: 'red',
 }
 
-const shipmentStatusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'default', label: 'Pending' },
-  picked_up: { color: 'blue', label: 'Picked Up' },
-  in_transit: { color: 'cyan', label: 'In Transit' },
-  out_for_delivery: { color: 'purple', label: 'Out for Delivery' },
-  delivered: { color: 'green', label: 'Delivered' },
-  exception: { color: 'red', label: 'Exception' },
-  returned: { color: 'orange', label: 'Returned' },
+const shipmentStatusColors: Record<string, string> = {
+  pending: 'default', picked_up: 'blue', in_transit: 'cyan',
+  out_for_delivery: 'purple', delivered: 'green', exception: 'red', returned: 'orange',
 }
 
-const paymentStatusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'orange', label: 'Pending' },
-  paid: { color: 'green', label: 'Paid' },
-  failed: { color: 'red', label: 'Failed' },
-  refunded: { color: 'default', label: 'Refunded' },
+const paymentStatusColors: Record<string, string> = {
+  pending: 'orange', paid: 'green', failed: 'red', refunded: 'default',
 }
-
-const itemColumns: ColumnsType<OrderItem> = [
-  {
-    title: 'Product',
-    key: 'product',
-    render: (_, r) => (
-      <div>
-        <Text strong>{r.product_name_en ?? '—'}</Text>
-        {r.variant_name_en && (
-          <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>{r.variant_name_en}</Text>
-        )}
-      </div>
-    ),
-  },
-  {
-    title: 'SKU',
-    dataIndex: 'sku',
-    key: 'sku',
-    responsive: ['sm'],
-    render: (v: string | null) => v ? <Text code style={{ fontSize: 11 }}>{v}</Text> : <Text type="secondary">—</Text>,
-  },
-  {
-    title: 'Unit Price',
-    dataIndex: 'unit_price',
-    key: 'unit_price',
-    render: (v: number | null) => <Text>{fmtCurrency(v)}</Text>,
-  },
-  { title: 'Qty', dataIndex: 'quantity', key: 'quantity', width: 60 },
-  {
-    title: 'Subtotal',
-    dataIndex: 'line_total',
-    key: 'line_total',
-    render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
-  },
-]
 
 export default function OrderDetailPage() {
+  const { t } = useLanguage()
   const params = useParams()
   const id = params?.id as string
 
@@ -161,6 +116,41 @@ export default function OrderDetailPage() {
   const [shipment, setShipment] = useState<Shipment | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+
+  const itemColumns: ColumnsType<OrderItem> = [
+    {
+      title: t.orders.colProduct,
+      key: 'product',
+      render: (_, r) => (
+        <div>
+          <Text strong>{r.product_name_en ?? '—'}</Text>
+          {r.variant_name_en && (
+            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>{r.variant_name_en}</Text>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: t.orders.colSKU,
+      dataIndex: 'sku',
+      key: 'sku',
+      responsive: ['sm'],
+      render: (v: string | null) => v ? <Text code style={{ fontSize: 11 }}>{v}</Text> : <Text type="secondary">—</Text>,
+    },
+    {
+      title: t.orders.colUnitPrice,
+      dataIndex: 'unit_price',
+      key: 'unit_price',
+      render: (v: number | null) => <Text>{fmtCurrency(v)}</Text>,
+    },
+    { title: t.orders.colQty, dataIndex: 'quantity', key: 'quantity', width: 60 },
+    {
+      title: t.orders.colLineTotal,
+      dataIndex: 'line_total',
+      key: 'line_total',
+      render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
+    },
+  ]
 
   useEffect(() => {
     if (!id) return
@@ -199,24 +189,25 @@ export default function OrderDetailPage() {
     return (
       <Result
         status="404"
-        title="Order Not Found"
-        subTitle="The order you're looking for doesn't exist."
-        extra={<Link href="/orders"><Button type="primary">Back to Orders</Button></Link>}
+        title={t.orders.notFound}
+        subTitle={t.orders.notFoundDesc}
+        extra={<Link href="/orders"><Button type="primary">{t.orders.backToOrders}</Button></Link>}
       />
     )
   }
 
-  const orderStatusCfg = orderStatusConfig[order.order_status] ?? { color: 'default', label: order.order_status }
+  const orderStatusColor = orderStatusColors[order.order_status] ?? 'default'
+  const orderStatusLabel = (t.orders as Record<string, string>)[order.order_status] ?? order.order_status
 
   const timelineItems = [
     {
       color: 'green',
       children: (
         <>
-          <Text strong>Order placed</Text><br />
+          <Text strong>{t.orders.orderPlaced}</Text><br />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {fmtDateTime(order.created_at)} — Payment {order.payment_status}
-            {order.payment_method ? ` via ${order.payment_method.replace(/_/g, ' ')}` : ''}
+            {fmtDateTime(order.created_at)} — {t.orders.paymentReceived.toLowerCase()} {order.payment_status}
+            {order.payment_method ? ` ${t.orders.via} ${order.payment_method.replace(/_/g, ' ')}` : ''}
           </Text>
         </>
       ),
@@ -228,10 +219,10 @@ export default function OrderDetailPage() {
       color: 'blue',
       children: (
         <>
-          <Text strong>Payment received</Text><br />
+          <Text strong>{t.orders.paymentReceived}</Text><br />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {fmtCurrency(order.total)} charged
-            {order.payment_ref ? ` — ref: ${order.payment_ref}` : ''}
+            {fmtCurrency(order.total)} {t.orders.charged}
+            {order.payment_ref ? ` — ${t.orders.ref}: ${order.payment_ref}` : ''}
           </Text>
         </>
       ),
@@ -243,7 +234,7 @@ export default function OrderDetailPage() {
       color: 'cyan',
       children: (
         <>
-          <Text strong>Shipped</Text><br />
+          <Text strong>{(t.orders as Record<string, string>)['shipped'] ?? 'Shipped'}</Text><br />
           <Text type="secondary" style={{ fontSize: 12 }}>
             {fmtDateTime(shipment.shipped_at)} — {carrierName[shipment.carrier_code ?? ''] ?? shipment.carrier_code}
             {shipment.tracking_number ? ` · ${shipment.tracking_number}` : ''}
@@ -258,7 +249,7 @@ export default function OrderDetailPage() {
       color: 'green',
       children: (
         <>
-          <Text strong>Delivered</Text><br />
+          <Text strong>{(t.orders as Record<string, string>)['delivered'] ?? 'Delivered'}</Text><br />
           <Text type="secondary" style={{ fontSize: 12 }}>{fmtDateTime(shipment.delivered_at)}</Text>
         </>
       ),
@@ -266,7 +257,7 @@ export default function OrderDetailPage() {
   } else if (order.order_status !== 'cancelled') {
     timelineItems.push({
       color: 'gray' as string,
-      children: <Text type="secondary">Awaiting next update…</Text>,
+      children: <Text type="secondary">{t.orders.awaitingUpdate}</Text>,
     })
   }
 
@@ -282,42 +273,42 @@ export default function OrderDetailPage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
         <Link href="/orders">
           <Button type="text" icon={<ArrowLeftOutlined />} style={{ color: '#64748b' }}>
-            Back to Orders
+            {t.orders.backToOrders}
           </Button>
         </Link>
         <Divider orientation="vertical" />
         <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
           {order.order_number}
         </Title>
-        <Tag color={orderStatusCfg.color} style={{ marginLeft: 4 }}>{orderStatusCfg.label}</Tag>
+        <Tag color={orderStatusColor} style={{ marginLeft: 4 }}>{orderStatusLabel}</Tag>
       </div>
 
       <Row gutter={[16, 16]}>
         {/* Order Items */}
         <Col span={24}>
-          <Card title="Order Items" style={{ borderRadius: 12 }}>
+          <Card title={t.orders.orderItems} style={{ borderRadius: 12 }}>
             <Table columns={itemColumns} dataSource={items} rowKey="id" pagination={false} size="middle" scroll={{ x: 'max-content' }} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, gap: 8, flexDirection: 'column', alignItems: 'flex-end' }}>
               <Space style={{ fontSize: 13 }}>
-                <Text type="secondary">Subtotal:</Text><Text>{fmtCurrency(order.subtotal)}</Text>
+                <Text type="secondary">{t.orders.subtotal}:</Text><Text>{fmtCurrency(order.subtotal)}</Text>
               </Space>
               <Space style={{ fontSize: 13 }}>
-                <Text type="secondary">Shipping:</Text><Text>{fmtCurrency(order.shipping_cost)}</Text>
+                <Text type="secondary">{t.orders.shipping}:</Text><Text>{fmtCurrency(order.shipping_cost)}</Text>
               </Space>
               {(order.tax ?? 0) > 0 && (
                 <Space style={{ fontSize: 13 }}>
-                  <Text type="secondary">Tax:</Text><Text>{fmtCurrency(order.tax)}</Text>
+                  <Text type="secondary">{t.orders.tax}:</Text><Text>{fmtCurrency(order.tax)}</Text>
                 </Space>
               )}
               {(order.discount ?? 0) > 0 && (
                 <Space style={{ fontSize: 13 }}>
-                  <Text type="secondary">Discount:</Text>
+                  <Text type="secondary">{t.orders.discount}:</Text>
                   <Text style={{ color: '#9AB17A' }}>-{fmtCurrency(order.discount)}</Text>
                 </Space>
               )}
               <Divider style={{ margin: '8px 0' }} />
               <Space style={{ fontSize: 16 }}>
-                <Text strong>Total:</Text>
+                <Text strong>{t.orders.total}:</Text>
                 <Text strong style={{ color: '#9AB17A' }}>{fmtCurrency(order.total)}</Text>
               </Space>
             </div>
@@ -326,20 +317,20 @@ export default function OrderDetailPage() {
 
         {/* Customer */}
         <Col xs={24} md={12}>
-          <Card title={<Space><UserOutlined /> Customer</Space>} style={{ borderRadius: 12, height: '100%' }}>
+          <Card title={<Space><UserOutlined /> {t.orders.customerSection}</Space>} style={{ borderRadius: 12, height: '100%' }}>
             <Descriptions column={1} size="small" styles={{ label: { color: '#64748b', width: 100 } }}>
-              <Descriptions.Item label="Name">
+              <Descriptions.Item label={t.orders.name}>
                 {[order.first_name, order.last_name].filter(Boolean).join(' ') || '—'}
               </Descriptions.Item>
-              <Descriptions.Item label="Email">{order.email ?? '—'}</Descriptions.Item>
-              <Descriptions.Item label="Phone">{order.phone ?? '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.orders.email}>{order.email ?? '—'}</Descriptions.Item>
+              <Descriptions.Item label={t.orders.phone}>{order.phone ?? '—'}</Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
 
         {/* Shipping Address */}
         <Col xs={24} md={12}>
-          <Card title={<Space><EnvironmentOutlined /> Shipping Address</Space>} style={{ borderRadius: 12, height: '100%' }}>
+          <Card title={<Space><EnvironmentOutlined /> {t.orders.shippingAddress}</Space>} style={{ borderRadius: 12, height: '100%' }}>
             <Text style={{ whiteSpace: 'pre-line', fontSize: 13 }}>
               {shippingAddress || '—'}
             </Text>
@@ -348,21 +339,22 @@ export default function OrderDetailPage() {
 
         {/* Payment */}
         <Col xs={24} md={12}>
-          <Card title={<Space><DollarOutlined /> Payment</Space>} style={{ borderRadius: 12 }}>
+          <Card title={<Space><DollarOutlined /> {t.orders.paymentSection}</Space>} style={{ borderRadius: 12 }}>
             <Descriptions column={1} size="small" styles={{ label: { color: '#64748b', width: 120 } }}>
-              <Descriptions.Item label="Method">
+              <Descriptions.Item label={t.orders.paymentMethod}>
                 {order.payment_method
                   ? order.payment_method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
                   : '—'}
               </Descriptions.Item>
-              <Descriptions.Item label="Status">
+              <Descriptions.Item label={t.orders.paymentStatus}>
                 {(() => {
-                  const cfg = paymentStatusConfig[order.payment_status] ?? { color: 'default', label: order.payment_status }
-                  return <Tag color={cfg.color}>{cfg.label}</Tag>
+                  const color = paymentStatusColors[order.payment_status] ?? 'default'
+                  const label = (t.orders as Record<string, string>)[order.payment_status] ?? order.payment_status
+                  return <Tag color={color}>{label}</Tag>
                 })()}
               </Descriptions.Item>
               {order.payment_ref && (
-                <Descriptions.Item label="Reference">{order.payment_ref}</Descriptions.Item>
+                <Descriptions.Item label={t.orders.paymentRef}>{order.payment_ref}</Descriptions.Item>
               )}
             </Descriptions>
           </Card>
@@ -370,19 +362,20 @@ export default function OrderDetailPage() {
 
         {/* Shipment */}
         <Col xs={24} md={12}>
-          <Card title={<Space><CarOutlined /> Shipment</Space>} style={{ borderRadius: 12 }}>
+          <Card title={<Space><CarOutlined /> {t.orders.shipmentSection}</Space>} style={{ borderRadius: 12 }}>
             {shipment ? (
               <Descriptions column={1} size="small" styles={{ label: { color: '#64748b', width: 120 } }}>
-                <Descriptions.Item label="Status">
+                <Descriptions.Item label={t.orders.shipmentStatus}>
                   {(() => {
-                    const cfg = shipmentStatusConfig[shipment.shipment_status] ?? { color: 'default', label: shipment.shipment_status }
-                    return <Tag color={cfg.color}>{cfg.label}</Tag>
+                    const color = shipmentStatusColors[shipment.shipment_status] ?? 'default'
+                    const label = (t.shipments as Record<string, string>)[shipment.shipment_status] ?? shipment.shipment_status
+                    return <Tag color={color}>{label}</Tag>
                   })()}
                 </Descriptions.Item>
-                <Descriptions.Item label="Carrier">
+                <Descriptions.Item label={t.orders.carrier}>
                   {carrierName[shipment.carrier_code ?? ''] ?? shipment.carrier_code ?? '—'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Tracking">
+                <Descriptions.Item label={t.orders.tracking}>
                   {shipment.tracking_number ? (
                     shipment.tracking_url ? (
                       <a href={shipment.tracking_url} target="_blank" rel="noopener noreferrer">
@@ -393,16 +386,16 @@ export default function OrderDetailPage() {
                     )
                   ) : '—'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Est. Delivery">{fmtDate(shipment.estimated_delivery)}</Descriptions.Item>
+                <Descriptions.Item label={t.orders.estDelivery}>{fmtDate(shipment.estimated_delivery)}</Descriptions.Item>
                 {shipment.delivered_at && (
-                  <Descriptions.Item label="Delivered">{fmtDateTime(shipment.delivered_at)}</Descriptions.Item>
+                  <Descriptions.Item label={t.orders.deliveredAt}>{fmtDateTime(shipment.delivered_at)}</Descriptions.Item>
                 )}
               </Descriptions>
             ) : (
               <>
-                <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>No shipment yet</Text>
+                <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>{t.common.noShipmentYet}</Text>
                 <Button type="dashed" size="small" icon={<CarOutlined />} style={{ width: '100%' }}>
-                  Add Shipment
+                  {t.common.addShipment}
                 </Button>
               </>
             )}
@@ -411,14 +404,14 @@ export default function OrderDetailPage() {
 
         {/* Timeline */}
         <Col span={24}>
-          <Card title="Order Timeline" style={{ borderRadius: 12 }}>
+          <Card title={t.orders.orderTimeline} style={{ borderRadius: 12 }}>
             <Timeline items={timelineItems} />
           </Card>
         </Col>
 
         {order.notes && (
           <Col span={24}>
-            <Card title="Notes" style={{ borderRadius: 12 }}>
+            <Card title={t.orders.notes} style={{ borderRadius: 12 }}>
               <Text>{order.notes}</Text>
             </Card>
           </Col>
