@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/i18n'
 
 const { Title, Text } = Typography
 
@@ -25,59 +26,11 @@ interface RecentOrder {
   created_at: string
 }
 
-const statusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'orange', label: 'Pending' },
-  processing: { color: 'blue', label: 'Processing' },
-  shipped: { color: 'cyan', label: 'Shipped' },
-  delivered: { color: 'green', label: 'Delivered' },
-  cancelled: { color: 'red', label: 'Cancelled' },
-}
-
 const fmtDate = (v: string | null) =>
   v ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
 
 const fmtCurrency = (amount: number | null, currency = 'USD') =>
   amount != null ? new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount) : '—'
-
-const columns: ColumnsType<RecentOrder> = [
-  {
-    title: 'Order',
-    dataIndex: 'order_number',
-    key: 'order_number',
-    render: (v: string) => (
-      <Text strong style={{ fontFamily: 'monospace', fontSize: 12 }}>
-        {v}
-      </Text>
-    ),
-  },
-  {
-    title: 'Customer',
-    key: 'customer',
-    render: (_, r) => <Text>{[r.first_name, r.last_name].filter(Boolean).join(' ') || '—'}</Text>,
-  },
-  {
-    title: 'Total',
-    dataIndex: 'total',
-    key: 'total',
-    render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
-  },
-  {
-    title: 'Status',
-    dataIndex: 'order_status',
-    key: 'order_status',
-    render: (v: string) => {
-      const cfg = statusConfig[v] ?? { color: 'default', label: v }
-      return <Tag color={cfg.color}>{cfg.label}</Tag>
-    },
-  },
-  {
-    title: 'Date',
-    dataIndex: 'created_at',
-    key: 'created_at',
-    responsive: ['md'],
-    render: (v: string) => <Text type="secondary">{fmtDate(v)}</Text>,
-  },
-]
 
 interface Stats {
   productCount: number
@@ -89,6 +42,7 @@ interface Stats {
 }
 
 export default function DashboardPage() {
+  const { t } = useLanguage()
   const [stats, setStats] = useState<Stats>({
     productCount: 0, orderCount: 0, pendingCount: 0,
     revenue: 0, inquiryCount: 0, categoryCount: 0,
@@ -136,67 +90,64 @@ export default function DashboardPage() {
     load()
   }, [])
 
+  const statusColors: Record<string, string> = {
+    pending: 'orange', processing: 'blue', shipped: 'cyan',
+    delivered: 'green', cancelled: 'red',
+  }
+
+  const orderStatusLabel = (v: string) => {
+    const map: Record<string, keyof typeof t.orders> = {
+      pending: 'pending', processing: 'processing', shipped: 'shipped',
+      delivered: 'delivered', cancelled: 'cancelled',
+    }
+    const key = map[v]
+    return key ? (t.orders[key] as string) : v
+  }
+
+  const columns: ColumnsType<RecentOrder> = [
+    {
+      title: t.dashboard.order,
+      dataIndex: 'order_number',
+      key: 'order_number',
+      render: (v: string) => (
+        <Text strong style={{ fontFamily: 'monospace', fontSize: 12 }}>{v}</Text>
+      ),
+    },
+    {
+      title: t.dashboard.customer,
+      key: 'customer',
+      render: (_, r) => <Text>{[r.first_name, r.last_name].filter(Boolean).join(' ') || '—'}</Text>,
+    },
+    {
+      title: t.dashboard.total,
+      dataIndex: 'total',
+      key: 'total',
+      render: (v: number | null) => <Text strong>{fmtCurrency(v)}</Text>,
+    },
+    {
+      title: t.dashboard.status,
+      dataIndex: 'order_status',
+      key: 'order_status',
+      render: (v: string) => (
+        <Tag color={statusColors[v] ?? 'default'}>{orderStatusLabel(v)}</Tag>
+      ),
+    },
+    {
+      title: t.dashboard.date,
+      dataIndex: 'created_at',
+      key: 'created_at',
+      responsive: ['md'],
+      render: (v: string) => <Text type="secondary">{fmtDate(v)}</Text>,
+    },
+  ]
+
   const statCards = [
-    {
-      title: 'Total Products',
-      value: stats.productCount,
-      icon: <ShoppingOutlined style={{ fontSize: 22, color: '#9AB17A' }} />,
-      bg: '#f2f6ec',
-      border: '#C3CC9B',
-      prefix: undefined as string | undefined,
-      precision: undefined as number | undefined,
-      desc: 'Active products in catalog',
-    },
-    {
-      title: 'Total Orders',
-      value: stats.orderCount,
-      icon: <ShoppingCartOutlined style={{ fontSize: 22, color: '#7a9460' }} />,
-      bg: '#f5f0e4',
-      border: '#d4c9a0',
-      prefix: undefined as string | undefined,
-      precision: undefined as number | undefined,
-      desc: 'All-time orders',
-    },
-    {
-      title: 'Pending Orders',
-      value: stats.pendingCount,
-      icon: <ClockCircleOutlined style={{ fontSize: 22, color: '#c49060' }} />,
-      bg: '#fdf5e4',
-      border: '#f0d490',
-      prefix: undefined as string | undefined,
-      precision: undefined as number | undefined,
-      desc: 'Awaiting fulfilment',
-    },
-    {
-      title: 'Monthly Revenue',
-      value: stats.revenue,
-      icon: <DollarOutlined style={{ fontSize: 22, color: '#9AB17A' }} />,
-      bg: '#f2f6ec',
-      border: '#C3CC9B',
-      prefix: '$' as string | undefined,
-      precision: 2 as number | undefined,
-      desc: 'Paid orders this month',
-    },
-    {
-      title: 'New Inquiries',
-      value: stats.inquiryCount,
-      icon: <MessageOutlined style={{ fontSize: 22, color: '#b87858' }} />,
-      bg: '#fdf3e8',
-      border: '#FBE8CE',
-      prefix: undefined as string | undefined,
-      precision: undefined as number | undefined,
-      desc: 'Customer messages',
-    },
-    {
-      title: 'Active Categories',
-      value: stats.categoryCount,
-      icon: <RiseOutlined style={{ fontSize: 22, color: '#7a9460' }} />,
-      bg: '#f5f0e4',
-      border: '#E4DFB5',
-      prefix: undefined as string | undefined,
-      precision: undefined as number | undefined,
-      desc: 'Product categories',
-    },
+    { title: t.dashboard.totalProducts, value: stats.productCount, icon: <ShoppingOutlined style={{ fontSize: 22, color: '#9AB17A' }} />, bg: '#f2f6ec', border: '#C3CC9B', prefix: undefined as string | undefined, precision: undefined as number | undefined, desc: t.dashboard.totalProductsDesc },
+    { title: t.dashboard.totalOrders, value: stats.orderCount, icon: <ShoppingCartOutlined style={{ fontSize: 22, color: '#7a9460' }} />, bg: '#f5f0e4', border: '#d4c9a0', prefix: undefined as string | undefined, precision: undefined as number | undefined, desc: t.dashboard.totalOrdersDesc },
+    { title: t.dashboard.pendingOrders, value: stats.pendingCount, icon: <ClockCircleOutlined style={{ fontSize: 22, color: '#c49060' }} />, bg: '#fdf5e4', border: '#f0d490', prefix: undefined as string | undefined, precision: undefined as number | undefined, desc: t.dashboard.pendingOrdersDesc },
+    { title: t.dashboard.revenue, value: stats.revenue, icon: <DollarOutlined style={{ fontSize: 22, color: '#9AB17A' }} />, bg: '#f2f6ec', border: '#C3CC9B', prefix: '$' as string | undefined, precision: 2 as number | undefined, desc: t.dashboard.revenueDesc },
+    { title: t.dashboard.inquiries, value: stats.inquiryCount, icon: <MessageOutlined style={{ fontSize: 22, color: '#b87858' }} />, bg: '#fdf3e8', border: '#FBE8CE', prefix: undefined as string | undefined, precision: undefined as number | undefined, desc: t.dashboard.inquiriesDesc },
+    { title: t.dashboard.categories, value: stats.categoryCount, icon: <RiseOutlined style={{ fontSize: 22, color: '#7a9460' }} />, bg: '#f5f0e4', border: '#E4DFB5', prefix: undefined as string | undefined, precision: undefined as number | undefined, desc: t.dashboard.categoriesDesc },
   ]
 
   if (loading) {
@@ -210,24 +161,15 @@ export default function DashboardPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
-          Dashboard
-        </Title>
-        <Text type="secondary" style={{ fontSize: 13 }}>
-          Welcome back! Here's what's happening with your store.
-        </Text>
+        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.dashboard.title}</Title>
+        <Text type="secondary" style={{ fontSize: 13 }}>{t.dashboard.subtitle}</Text>
       </div>
 
-      {/* Stats */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {statCards.map((card) => (
           <Col xs={24} sm={12} lg={8} key={card.title}>
             <Card
-              style={{
-                border: `1px solid ${card.border}`,
-                background: card.bg,
-                borderRadius: 12,
-              }}
+              style={{ border: `1px solid ${card.border}`, background: card.bg, borderRadius: 12 }}
               styles={{ body: { padding: '20px 24px' } }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -243,17 +185,7 @@ export default function DashboardPage() {
                   />
                   <Text style={{ fontSize: 12, color: '#64748b' }}>{card.desc}</Text>
                 </div>
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 10,
-                    background: 'rgba(255,255,255,0.7)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {card.icon}
                 </div>
               </div>
@@ -262,19 +194,9 @@ export default function DashboardPage() {
         ))}
       </Row>
 
-      {/* Recent Orders */}
       <Card
-        title={
-          <Space>
-            <ShoppingCartOutlined />
-            <span>Recent Orders</span>
-          </Space>
-        }
-        extra={
-          <a href="/orders" style={{ color: '#9AB17A', fontSize: 13 }}>
-            View all →
-          </a>
-        }
+        title={<Space><ShoppingCartOutlined /><span>{t.dashboard.recentOrders}</span></Space>}
+        extra={<a href="/orders" style={{ color: '#9AB17A', fontSize: 13 }}>{t.common.viewAll}</a>}
         style={{ borderRadius: 12 }}
       >
         <Table
