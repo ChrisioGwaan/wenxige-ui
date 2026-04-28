@@ -43,5 +43,5 @@ next-env.d.ts
 # supabase_schema folder
 /supabase_schema
 
-# AGENT.md
-AGENT.md
+# AGENTS.md
+AGENTS.md
