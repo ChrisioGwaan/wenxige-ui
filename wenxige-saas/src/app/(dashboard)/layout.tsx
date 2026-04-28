@@ -14,5 +14,10 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/login')
 
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+  if (aal && aal.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+    redirect('/login')
+  }
+
   return <DashboardShell user={user}>{children}</DashboardShell>
 }

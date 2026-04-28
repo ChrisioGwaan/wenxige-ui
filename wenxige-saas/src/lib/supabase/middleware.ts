@@ -39,7 +39,21 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (user && isLoginPage) {
+  // If the user is signed in but has not satisfied MFA (aal2 required),
+  // keep them on the login page so they can complete the TOTP challenge.
+  let needsMfa = false
+  if (user) {
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    needsMfa = !!aal && aal.nextLevel === 'aal2' && aal.currentLevel !== 'aal2'
+  }
+
+  if (user && needsMfa && !isLoginPage && !isPublicAsset) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (user && !needsMfa && isLoginPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)

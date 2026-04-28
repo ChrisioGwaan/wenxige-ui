@@ -1,15 +1,98 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import Script from 'next/script'
+import { useEffect, useRef, useState } from 'react'
 import { App, Button, Form, Input, Typography, ConfigProvider, theme } from 'antd'
-import { LockOutlined, MailOutlined } from '@ant-design/icons'
+import { LockOutlined, MailOutlined, SafetyCertificateOutlined } from '@ant-design/icons'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 import { useLanguage } from '@/lib/i18n'
 
 const { Text } = Typography
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
+
+type TurnstileApi = {
+  render: (
+    el: HTMLElement,
+    options: {
+      sitekey: string
+      callback: (token: string) => void
+      'error-callback'?: () => void
+      'expired-callback'?: () => void
+      theme?: 'light' | 'dark' | 'auto'
+      size?: 'normal' | 'flexible' | 'compact'
+    }
+  ) => string
+  reset: (widgetId?: string) => void
+  remove: (widgetId: string) => void
+}
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi
+    __turnstileReady?: boolean
+    __onTurnstileLoad?: () => void
+  }
+}
+
+function TurnstileWidget({
+  onToken,
+  onError,
+}: {
+  onToken: (token: string) => void
+  onError: () => void
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const widgetIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return
+    let cancelled = false
+
+    const tryRender = () => {
+      if (cancelled) return
+      const ts = window.turnstile
+      if (!ts || !containerRef.current || widgetIdRef.current) return
+      widgetIdRef.current = ts.render(containerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: 'dark',
+        size: 'flexible',
+        callback: (token) => onToken(token),
+        'error-callback': () => onError(),
+        'expired-callback': () => onError(),
+      })
+    }
+
+    if (window.turnstile) {
+      tryRender()
+    } else {
+      const prev = window.__onTurnstileLoad
+      window.__onTurnstileLoad = () => {
+        prev?.()
+        tryRender()
+      }
+    }
+
+    return () => {
+      cancelled = true
+      const ts = window.turnstile
+      const id = widgetIdRef.current
+      if (ts && id) {
+        try { ts.remove(id) } catch { /* noop */ }
+      }
+      widgetIdRef.current = null
+    }
+  }, [onToken, onError])
+
+  if (!TURNSTILE_SITE_KEY) return null
+  return (
+    <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'center' }}>
+      <div ref={containerRef} />
+    </div>
+  )
+}
 
 const SAGE  = '#9AB17A'
 const OLIVE = '#C3CC9B'
@@ -36,26 +119,97 @@ const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
 function LoginForm() {
   const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState<'credentials' | 'mfa'>('credentials')
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null)
+  const [mfaChallengeId, setMfaChallengeId] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const router = useRouter()
   const { message } = App.useApp()
 
-  const onFinish = async (values: { email: string; password: string }) => {
+  const resetCaptcha = () => {
+    setCaptchaToken(null)
+    if (typeof window !== 'undefined') {
+      try { window.turnstile?.reset() } catch { /* noop */ }
+    }
+  }
+
+  const proceedAfterAuth = async () => {
+    const supabase = createClient()
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    if (aal && aal.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+      const { data: factors, error: factorErr } = await supabase.auth.mfa.listFactors()
+      if (factorErr) throw factorErr
+      const totp = factors?.totp?.find((f) => f.status === 'verified')
+      if (!totp) {
+        message.error(t.login.mfaNoFactor)
+        await supabase.auth.signOut()
+        return
+      }
+      const { data: challenge, error: challengeErr } = await supabase.auth.mfa.challenge({
+        factorId: totp.id,
+      })
+      if (challengeErr) throw challengeErr
+      setMfaFactorId(totp.id)
+      setMfaChallengeId(challenge.id)
+      setStep('mfa')
+      return
+    }
+    router.push('/dashboard')
+    router.refresh()
+  }
+
+  const onFinishCredentials = async (values: { email: string; password: string }) => {
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      message.error(t.login.captchaRequired)
+      return
+    }
     setLoading(true)
     try {
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
+        options: captchaToken ? { captchaToken } : undefined,
+      })
+      if (error) throw error
+      await proceedAfterAuth()
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : t.login.loginError
+      message.error(msg)
+      resetCaptcha()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onFinishMfa = async (values: { code: string }) => {
+    if (!mfaFactorId || !mfaChallengeId) return
+    setLoading(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: mfaChallengeId,
+        code: values.code.trim(),
       })
       if (error) throw error
       router.push('/dashboard')
       router.refresh()
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Invalid credentials'
+      const msg = err instanceof Error ? err.message : t.login.mfaVerifyError
       message.error(msg)
     } finally {
       setLoading(false)
     }
+  }
+
+  const onBackToCredentials = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setStep('credentials')
+    setMfaFactorId(null)
+    setMfaChallengeId(null)
+    resetCaptcha()
   }
 
   return (
@@ -341,12 +495,13 @@ function LoginForm() {
             Lumi Tea
           </div>
           <Text style={{ color: 'rgba(228,223,181,0.4)', fontSize: 13 }}>
-            {t.login.signInTo}
+            {step === 'mfa' ? t.login.mfaSubtitle : t.login.signInTo}
           </Text>
         </div>
 
         {/* ── Form ── */}
-        <Form layout="vertical" onFinish={onFinish} requiredMark={false} size="large">
+        {step === 'credentials' ? (
+        <Form layout="vertical" onFinish={onFinishCredentials} requiredMark={false} size="large">
           <Form.Item
             name="email"
             label={
@@ -375,7 +530,7 @@ function LoginForm() {
               </span>
             }
             rules={[{ required: true, message: t.login.passwordRequired }]}
-            style={{ marginBottom: 36 }}
+            style={{ marginBottom: TURNSTILE_SITE_KEY ? 16 : 36 }}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
@@ -384,6 +539,14 @@ function LoginForm() {
               style={{ borderRadius: 12 }}
             />
           </Form.Item>
+
+          <TurnstileWidget
+            onToken={(tk) => setCaptchaToken(tk)}
+            onError={() => {
+              setCaptchaToken(null)
+              message.error(t.login.captchaFailed)
+            }}
+          />
 
           <Form.Item style={{ marginBottom: 0 }}>
             <Button
@@ -408,6 +571,61 @@ function LoginForm() {
             </Button>
           </Form.Item>
         </Form>
+        ) : (
+        <Form layout="vertical" onFinish={onFinishMfa} requiredMark={false} size="large">
+          <Form.Item
+            name="code"
+            label={
+              <span style={{ color: 'rgba(228,223,181,0.6)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                {t.login.mfaCode}
+              </span>
+            }
+            rules={[
+              { required: true, message: t.login.mfaCodeRequired },
+              { pattern: /^\d{6}$/, message: t.login.mfaCodeInvalid },
+            ]}
+            style={{ marginBottom: 24 }}
+          >
+            <Input
+              prefix={<SafetyCertificateOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
+              placeholder={t.login.mfaCodePlaceholder}
+              autoComplete="one-time-code"
+              inputMode="numeric"
+              maxLength={6}
+              style={{ borderRadius: 12, letterSpacing: '0.4em', fontSize: 18, textAlign: 'center' }}
+            />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 12 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              block
+              style={{
+                height: 52,
+                fontSize: 14,
+                fontWeight: 700,
+                background: `linear-gradient(135deg, ${SAGE} 0%, #6e8854 100%)`,
+                border: 'none',
+                borderRadius: 14,
+                boxShadow: `0 8px 32px rgba(154,177,122,0.32), 0 0 0 1px rgba(154,177,122,0.18)`,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#0c1a09',
+              }}
+            >
+              {t.login.mfaVerify}
+            </Button>
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, textAlign: 'center' }}>
+            <Button type="link" onClick={onBackToCredentials} style={{ color: 'rgba(228,223,181,0.55)', fontSize: 12 }}>
+              {t.login.mfaBackToLogin}
+            </Button>
+          </Form.Item>
+        </Form>
+        )}
 
         {/* ── Footer note ── */}
         <div style={{ marginTop: 32, textAlign: 'center' }}>
@@ -445,6 +663,18 @@ export default function LoginPage() {
     >
       <App>
         <LoginForm />
+        {TURNSTILE_SITE_KEY && (
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__onTurnstileLoad"
+            strategy="afterInteractive"
+            onLoad={() => {
+              if (typeof window !== 'undefined') {
+                window.__turnstileReady = true
+                window.__onTurnstileLoad?.()
+              }
+            }}
+          />
+        )}
       </App>
     </ConfigProvider>
   )
