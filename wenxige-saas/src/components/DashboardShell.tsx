@@ -21,6 +21,7 @@ import {
   Space,
   Popconfirm,
   Spin,
+  Slider,
   type MenuProps,
 } from 'antd'
 import enUS from 'antd/locale/en_US'
@@ -54,6 +55,10 @@ const SIDEBAR_WIDTH = 240
 const SIDEBAR_COLLAPSED_WIDTH = 64
 const SIDEBAR_BG = '#2a3820'
 const HEADER_HEIGHT = 56
+const FONT_SCALE_KEY = 'fontScale'
+const FONT_SCALE_MIN = 100
+const FONT_SCALE_MAX = 150
+const FONT_SCALE_DEFAULT = 100
 
 function getOpenKeys(pathname: string): string[] {
   if (pathname.startsWith('/products')) return ['products-group']
@@ -89,8 +94,26 @@ export function DashboardShell({
   >(null)
   const [verifying, setVerifying] = useState(false)
   const [unenrolling, setUnenrolling] = useState(false)
+  const [fontScale, setFontScale] = useState<number>(FONT_SCALE_DEFAULT)
   const pathname = usePathname()
   const router = useRouter()
+
+  // Load persisted font scale.
+  useEffect(() => {
+    const saved = Number(localStorage.getItem(FONT_SCALE_KEY))
+    if (Number.isFinite(saved) && saved >= FONT_SCALE_MIN && saved <= FONT_SCALE_MAX) {
+      setFontScale(saved)
+    }
+  }, [])
+
+  const updateFontScale = (value: number) => {
+    const clamped = Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, Math.round(value)))
+    setFontScale((prev) => {
+      if (prev === clamped) return prev
+      localStorage.setItem(FONT_SCALE_KEY, String(clamped))
+      return clamped
+    })
+  }
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)')
@@ -489,7 +512,15 @@ export function DashboardShell({
 
           {/* Page content */}
           <Content style={{ background: '#F7F2E5', minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}>
-            <div className="dash-content" style={{ padding: 24 }}>
+            <div
+              className="dash-content"
+              style={{
+                padding: 24,
+                // `zoom` scales rendered size including layout, without re-rendering the
+                // antd ConfigProvider tree (which would remount Modals/Forms during drag).
+                zoom: fontScale / 100,
+              }}
+            >
               {children}
             </div>
           </Content>
@@ -644,6 +675,36 @@ export function DashboardShell({
                       {t.profile.mfaEnable}
                     </Button>
                   )}
+                </div>
+              ),
+            },
+            {
+              key: 'preferences',
+              label: t.profile.tabPreferences,
+              children: (
+                <div>
+                  <Space align="center" style={{ marginBottom: 8 }}>
+                    <Text strong>{t.profile.textSize}</Text>
+                    <Tag color="green">{fontScale}%</Tag>
+                  </Space>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 13 }}>
+                    {t.profile.textSizeDescription}
+                  </Text>
+                  <Slider
+                    min={FONT_SCALE_MIN}
+                    max={FONT_SCALE_MAX}
+                    step={5}
+                    value={fontScale}
+                    onChange={updateFontScale}
+                    onChangeComplete={updateFontScale}
+                    marks={{ 100: '100%', 110: '110%', 120: '120%', 130: '130%', 140: '140%', 150: '150%' }}
+                    tooltip={{ formatter: (v) => `${v}%` }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+                    <Button onClick={() => updateFontScale(FONT_SCALE_DEFAULT)} disabled={fontScale === FONT_SCALE_DEFAULT}>
+                      {t.profile.textSizeReset}
+                    </Button>
+                  </div>
                 </div>
               ),
             },
