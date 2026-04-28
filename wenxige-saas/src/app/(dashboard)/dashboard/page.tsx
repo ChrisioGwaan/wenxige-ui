@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Card, Row, Col, Statistic, Table, Tag, Typography, Space, Spin } from 'antd'
 import {
   ShoppingOutlined,
@@ -313,9 +314,9 @@ export default function DashboardPage() {
           </Space>
         }
         extra={
-          <a href="/orders" style={{ color: '#9AB17A', fontSize: 13 }}>
+          <Link href="/orders" style={{ color: '#9AB17A', fontSize: 13 }}>
             {t.common.viewAll}
-          </a>
+          </Link>
         }
         style={{ borderRadius: 12 }}
       >

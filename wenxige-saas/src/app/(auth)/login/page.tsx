@@ -96,8 +96,6 @@ function TurnstileWidget({
       }
       widgetIdRef.current = null
     }
-    // Render exactly once; latest callbacks are read via refs above.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!TURNSTILE_SITE_KEY) return null

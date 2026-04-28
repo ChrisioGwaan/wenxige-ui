@@ -20,7 +20,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Lang | null
-    if (saved === 'en' || saved === 'zh') setLangState(saved)
+    if (saved === 'en' || saved === 'zh') {
+      // Hydrating persisted preference from localStorage; this only runs once on mount.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLangState(saved)
+    }
   }, [])
 
   const setLang = (l: Lang) => {
