@@ -168,7 +168,10 @@ export function DashboardShell({ children, user }: { children: React.ReactNode; 
     setEnrolling(true)
     try {
       const { data: existing } = await supabase.auth.mfa.listFactors()
-      const stale = existing?.totp?.filter((f) => f.status !== 'verified') ?? []
+      const stale =
+        existing?.all?.filter(
+          (f) => f.factor_type === 'totp' && f.status !== 'verified',
+        ) ?? []
       await Promise.all(
         stale.map((f) => supabase.auth.mfa.unenroll({ factorId: f.id })),
       )
