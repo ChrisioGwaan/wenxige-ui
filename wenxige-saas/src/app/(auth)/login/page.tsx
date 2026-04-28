@@ -24,7 +24,7 @@ type TurnstileApi = {
       'expired-callback'?: () => void
       theme?: 'light' | 'dark' | 'auto'
       size?: 'normal' | 'flexible' | 'compact'
-    }
+    },
   ) => string
   reset: (widgetId?: string) => void
   remove: (widgetId: string) => void
@@ -88,7 +88,11 @@ function TurnstileWidget({
       const ts = window.turnstile
       const id = widgetIdRef.current
       if (ts && id) {
-        try { ts.remove(id) } catch { /* noop */ }
+        try {
+          ts.remove(id)
+        } catch {
+          /* noop */
+        }
       }
       widgetIdRef.current = null
     }
@@ -104,24 +108,22 @@ function TurnstileWidget({
   )
 }
 
-const SAGE  = '#9AB17A'
+const SAGE = '#9AB17A'
 const OLIVE = '#C3CC9B'
 const CREAM = '#E4DFB5'
-const DEEP  = '#0c1a09'
-const MID   = '#152211'
+const DEEP = '#0c1a09'
+const MID = '#152211'
 
 // Deterministic particle configs — no Math.random() to avoid hydration mismatch
 const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
   id: i,
-  left:     `${((i * 4.33 + 3) % 92) + 2}%`,
-  bottom:   `-${6 + (i * 2.7) % 20}px`,
-  size:     3 + Math.round((i * 1.4) % 7),
-  delay:    `${(i * 0.38) % 9}s`,
-  duration: `${9 + (i * 0.6) % 9}s`,
+  left: `${((i * 4.33 + 3) % 92) + 2}%`,
+  bottom: `-${6 + ((i * 2.7) % 20)}px`,
+  size: 3 + Math.round((i * 1.4) % 7),
+  delay: `${(i * 0.38) % 9}s`,
+  duration: `${9 + ((i * 0.6) % 9)}s`,
   // organic leaf shapes
-  radius:   i % 3 === 0 ? '50% 0 50% 0'
-          : i % 3 === 1 ? '50%'
-          : '30% 70% 70% 30% / 30% 30% 70% 70%',
+  radius: i % 3 === 0 ? '50% 0 50% 0' : i % 3 === 1 ? '50%' : '30% 70% 70% 30% / 30% 30% 70% 70%',
   color: i % 2 === 0 ? SAGE : OLIVE,
   opacity: 0.25 + (i % 4) * 0.12,
 }))
@@ -139,7 +141,11 @@ function LoginForm() {
   const resetCaptcha = () => {
     setCaptchaToken(null)
     if (typeof window !== 'undefined') {
-      try { window.turnstile?.reset() } catch { /* noop */ }
+      try {
+        window.turnstile?.reset()
+      } catch {
+        /* noop */
+      }
     }
   }
 
@@ -234,7 +240,6 @@ function LoginForm() {
         justifyContent: 'center',
       }}
     >
-
       {/* ── Ghost watermark ── */}
       <div
         style={{
@@ -352,13 +357,19 @@ function LoginForm() {
       {/* ── Corner bracket — top left ── */}
       <div style={{ position: 'absolute', top: 36, left: 36, pointerEvents: 'none' }}>
         <div style={{ width: 48, height: 1, background: 'rgba(154,177,122,0.35)' }} />
-        <div style={{ width: 1, height: 48, background: 'rgba(154,177,122,0.35)', marginTop: -1 }} />
+        <div
+          style={{ width: 1, height: 48, background: 'rgba(154,177,122,0.35)', marginTop: -1 }}
+        />
       </div>
 
       {/* ── Corner bracket — bottom right ── */}
       <div style={{ position: 'absolute', bottom: 36, right: 36, pointerEvents: 'none' }}>
-        <div style={{ width: 1, height: 48, background: 'rgba(154,177,122,0.35)', marginLeft: 'auto' }} />
-        <div style={{ width: 48, height: 1, background: 'rgba(154,177,122,0.35)', marginTop: -1 }} />
+        <div
+          style={{ width: 1, height: 48, background: 'rgba(154,177,122,0.35)', marginLeft: 'auto' }}
+        />
+        <div
+          style={{ width: 48, height: 1, background: 'rgba(154,177,122,0.35)', marginTop: -1 }}
+        />
       </div>
 
       {/* ── Bottom-left label ── */}
@@ -429,7 +440,6 @@ function LoginForm() {
       >
         {/* ── Brand block ── */}
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
-
           {/* Steam */}
           <div
             style={{
@@ -468,7 +478,9 @@ function LoginForm() {
               marginBottom: 12,
             }}
           >
-            <div style={{ flex: 1, height: 1, background: 'rgba(154,177,122,0.2)', maxWidth: 40 }} />
+            <div
+              style={{ flex: 1, height: 1, background: 'rgba(154,177,122,0.2)', maxWidth: 40 }}
+            />
             <Text
               style={{
                 color: SAGE,
@@ -480,7 +492,9 @@ function LoginForm() {
             >
               {t.login.adminPortal}
             </Text>
-            <div style={{ flex: 1, height: 1, background: 'rgba(154,177,122,0.2)', maxWidth: 40 }} />
+            <div
+              style={{ flex: 1, height: 1, background: 'rgba(154,177,122,0.2)', maxWidth: 40 }}
+            />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
@@ -489,7 +503,11 @@ function LoginForm() {
               alt="Lumi Tea"
               width={72}
               height={72}
-              style={{ borderRadius: 16, objectFit: 'cover', boxShadow: '0 8px 24px rgba(154,177,122,0.3)' }}
+              style={{
+                borderRadius: 16,
+                objectFit: 'cover',
+                boxShadow: '0 8px 24px rgba(154,177,122,0.3)',
+              }}
             />
           </div>
           <div
@@ -511,130 +529,163 @@ function LoginForm() {
 
         {/* ── Form ── */}
         {step === 'credentials' ? (
-        <Form layout="vertical" onFinish={onFinishCredentials} requiredMark={false} size="large">
-          <Form.Item
-            name="email"
-            label={
-              <span style={{ color: 'rgba(228,223,181,0.6)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                {t.login.email}
-              </span>
-            }
-            rules={[
-              { required: true, message: t.login.emailRequired },
-              { type: 'email', message: t.login.emailInvalid },
-            ]}
-          >
-            <Input
-              prefix={<MailOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
-              placeholder={t.login.emailPlaceholder}
-              autoComplete="email"
-              style={{ borderRadius: 12 }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            label={
-              <span style={{ color: 'rgba(228,223,181,0.6)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                {t.login.password}
-              </span>
-            }
-            rules={[{ required: true, message: t.login.passwordRequired }]}
-            style={{ marginBottom: TURNSTILE_SITE_KEY ? 16 : 36 }}
-          >
-            <Input.Password
-              prefix={<LockOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
-              placeholder={t.login.passwordPlaceholder}
-              autoComplete="current-password"
-              style={{ borderRadius: 12 }}
-            />
-          </Form.Item>
-
-          <TurnstileWidget
-            onToken={(tk) => setCaptchaToken(tk)}
-            onError={() => {
-              setCaptchaToken(null)
-              message.error(t.login.captchaFailed)
-            }}
-          />
-
-          <Form.Item style={{ marginBottom: 0 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              style={{
-                height: 52,
-                fontSize: 14,
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${SAGE} 0%, #6e8854 100%)`,
-                border: 'none',
-                borderRadius: 14,
-                boxShadow: `0 8px 32px rgba(154,177,122,0.32), 0 0 0 1px rgba(154,177,122,0.18)`,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: '#0c1a09',
-              }}
+          <Form layout="vertical" onFinish={onFinishCredentials} requiredMark={false} size="large">
+            <Form.Item
+              name="email"
+              label={
+                <span
+                  style={{
+                    color: 'rgba(228,223,181,0.6)',
+                    fontWeight: 500,
+                    fontSize: 12,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {t.login.email}
+                </span>
+              }
+              rules={[
+                { required: true, message: t.login.emailRequired },
+                { type: 'email', message: t.login.emailInvalid },
+              ]}
             >
-              {t.login.signIn}
-            </Button>
-          </Form.Item>
-        </Form>
+              <Input
+                prefix={<MailOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
+                placeholder={t.login.emailPlaceholder}
+                autoComplete="email"
+                style={{ borderRadius: 12 }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              label={
+                <span
+                  style={{
+                    color: 'rgba(228,223,181,0.6)',
+                    fontWeight: 500,
+                    fontSize: 12,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {t.login.password}
+                </span>
+              }
+              rules={[{ required: true, message: t.login.passwordRequired }]}
+              style={{ marginBottom: TURNSTILE_SITE_KEY ? 16 : 36 }}
+            >
+              <Input.Password
+                prefix={<LockOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
+                placeholder={t.login.passwordPlaceholder}
+                autoComplete="current-password"
+                style={{ borderRadius: 12 }}
+              />
+            </Form.Item>
+
+            <TurnstileWidget
+              onToken={(tk) => setCaptchaToken(tk)}
+              onError={() => {
+                setCaptchaToken(null)
+                message.error(t.login.captchaFailed)
+              }}
+            />
+
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                style={{
+                  height: 52,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  background: `linear-gradient(135deg, ${SAGE} 0%, #6e8854 100%)`,
+                  border: 'none',
+                  borderRadius: 14,
+                  boxShadow: `0 8px 32px rgba(154,177,122,0.32), 0 0 0 1px rgba(154,177,122,0.18)`,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: '#0c1a09',
+                }}
+              >
+                {t.login.signIn}
+              </Button>
+            </Form.Item>
+          </Form>
         ) : (
-        <Form layout="vertical" onFinish={onFinishMfa} requiredMark={false} size="large">
-          <Form.Item
-            name="code"
-            label={
-              <span style={{ color: 'rgba(228,223,181,0.6)', fontWeight: 500, fontSize: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                {t.login.mfaCode}
-              </span>
-            }
-            rules={[
-              { required: true, message: t.login.mfaCodeRequired },
-              { pattern: /^\d{6}$/, message: t.login.mfaCodeInvalid },
-            ]}
-            style={{ marginBottom: 24 }}
-          >
-            <Input
-              prefix={<SafetyCertificateOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
-              placeholder={t.login.mfaCodePlaceholder}
-              autoComplete="one-time-code"
-              inputMode="numeric"
-              maxLength={6}
-              style={{ borderRadius: 12, letterSpacing: '0.4em', fontSize: 18, textAlign: 'center' }}
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 12 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              style={{
-                height: 52,
-                fontSize: 14,
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${SAGE} 0%, #6e8854 100%)`,
-                border: 'none',
-                borderRadius: 14,
-                boxShadow: `0 8px 32px rgba(154,177,122,0.32), 0 0 0 1px rgba(154,177,122,0.18)`,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: '#0c1a09',
-              }}
+          <Form layout="vertical" onFinish={onFinishMfa} requiredMark={false} size="large">
+            <Form.Item
+              name="code"
+              label={
+                <span
+                  style={{
+                    color: 'rgba(228,223,181,0.6)',
+                    fontWeight: 500,
+                    fontSize: 12,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {t.login.mfaCode}
+                </span>
+              }
+              rules={[
+                { required: true, message: t.login.mfaCodeRequired },
+                { pattern: /^\d{6}$/, message: t.login.mfaCodeInvalid },
+              ]}
+              style={{ marginBottom: 24 }}
             >
-              {t.login.mfaVerify}
-            </Button>
-          </Form.Item>
+              <Input
+                prefix={<SafetyCertificateOutlined style={{ color: 'rgba(154,177,122,0.55)' }} />}
+                placeholder={t.login.mfaCodePlaceholder}
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                maxLength={6}
+                style={{
+                  borderRadius: 12,
+                  letterSpacing: '0.4em',
+                  fontSize: 18,
+                  textAlign: 'center',
+                }}
+              />
+            </Form.Item>
 
-          <Form.Item style={{ marginBottom: 0, textAlign: 'center' }}>
-            <Button type="link" onClick={onBackToCredentials} style={{ color: 'rgba(228,223,181,0.55)', fontSize: 12 }}>
-              {t.login.mfaBackToLogin}
-            </Button>
-          </Form.Item>
-        </Form>
+            <Form.Item style={{ marginBottom: 12 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                style={{
+                  height: 52,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  background: `linear-gradient(135deg, ${SAGE} 0%, #6e8854 100%)`,
+                  border: 'none',
+                  borderRadius: 14,
+                  boxShadow: `0 8px 32px rgba(154,177,122,0.32), 0 0 0 1px rgba(154,177,122,0.18)`,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: '#0c1a09',
+                }}
+              >
+                {t.login.mfaVerify}
+              </Button>
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0, textAlign: 'center' }}>
+              <Button
+                type="link"
+                onClick={onBackToCredentials}
+                style={{ color: 'rgba(228,223,181,0.55)', fontSize: 12 }}
+              >
+                {t.login.mfaBackToLogin}
+              </Button>
+            </Form.Item>
+          </Form>
         )}
 
         {/* ── Footer note ── */}
@@ -648,7 +699,7 @@ function LoginForm() {
           >
             <div style={{ width: 16, height: 1, background: 'rgba(154,177,122,0.18)' }} />
             <Text style={{ fontSize: 10, color: 'rgba(154,177,122,0.3)', letterSpacing: '0.14em' }}>
-      AUTHORIZED ACCESS ONLY — {t.login.adminPortal}
+              AUTHORIZED ACCESS ONLY — {t.login.adminPortal}
             </Text>
             <div style={{ width: 16, height: 1, background: 'rgba(154,177,122,0.18)' }} />
           </div>
@@ -689,4 +740,3 @@ export default function LoginPage() {
     </ConfigProvider>
   )
 }
-

@@ -83,11 +83,19 @@ interface ProductFormValues {
 }
 
 type ImageItem =
-  | { kind: 'existing'; id: string; url: string; bucket_id: string | null; object_path: string | null }
+  | {
+      kind: 'existing'
+      id: string
+      url: string
+      bucket_id: string | null
+      object_path: string | null
+    }
   | { kind: 'pending'; tempId: string; bucket_id: string; object_path: string; url: string }
 
 const fmtCurrency = (amount: number | null) =>
-  amount != null ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount) : '—'
+  amount != null
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+    : '—'
 
 const normalizeText = (value?: string | null) => {
   const trimmed = value?.trim()
@@ -125,12 +133,18 @@ export default function ProductsPage() {
   const { t } = useLanguage()
   const [form] = Form.useForm<ProductFormValues>()
   const [messageApi, contextHolder] = message.useMessage()
-  const [notificationApi, notificationHolder] = notification.useNotification({ placement: 'topRight' })
+  const [notificationApi, notificationHolder] = notification.useNotification({
+    placement: 'topRight',
+  })
 
   const [products, setProducts] = useState<Product[]>([])
   const [primaryImageMap, setPrimaryImageMap] = useState<Map<string, string>>(new Map())
-  const [catList, setCatList] = useState<Array<{ id: string; name_en: string | null; name_zh: string | null }>>([])
-  const [brandList, setBrandList] = useState<Array<{ id: string; name_en: string | null; name_zh: string | null }>>([])
+  const [catList, setCatList] = useState<
+    Array<{ id: string; name_en: string | null; name_zh: string | null }>
+  >([])
+  const [brandList, setBrandList] = useState<
+    Array<{ id: string; name_en: string | null; name_zh: string | null }>
+  >([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -145,8 +159,14 @@ export default function ProductsPage() {
   const [imageUploading, setImageUploading] = useState(false)
   const [imagesError, setImagesError] = useState<string | null>(null)
 
-  const catMap = useMemo(() => new Map(catList.map(c => [c.id, c.name_en ?? c.name_zh ?? '—'])), [catList])
-  const brandMap = useMemo(() => new Map(brandList.map(b => [b.id, b.name_en ?? b.name_zh ?? '—'])), [brandList])
+  const catMap = useMemo(
+    () => new Map(catList.map((c) => [c.id, c.name_en ?? c.name_zh ?? '—'])),
+    [catList],
+  )
+  const brandMap = useMemo(
+    () => new Map(brandList.map((b) => [b.id, b.name_en ?? b.name_zh ?? '—'])),
+    [brandList],
+  )
 
   const loadAll = useCallback(async () => {
     const supabase = createClient()
@@ -155,12 +175,25 @@ export default function ProductsPage() {
       const [prodsRes, catsRes, brandsRes, imagesRes] = await Promise.all([
         supabase
           .from('product')
-          .select('id, name_en, name_zh, category_id, brand_id, price, compare_at_price, stock_qty, sku, description_en, description_zh, weight, origin, is_active, is_featured, del_flag')
+          .select(
+            'id, name_en, name_zh, category_id, brand_id, price, compare_at_price, stock_qty, sku, description_en, description_zh, weight, origin, is_active, is_featured, del_flag',
+          )
           .eq('del_flag', false)
           .order('modified_at', { ascending: false }),
-        supabase.from('category').select('id, name_en, name_zh').eq('del_flag', false).order('sort_order', { ascending: true }),
-        supabase.from('brand').select('id, name_en, name_zh').eq('del_flag', false).order('sort_order', { ascending: true }),
-        supabase.from('product_image').select('product_id, bucket_id, object_path, url, is_primary, sort_order').eq('del_flag', false),
+        supabase
+          .from('category')
+          .select('id, name_en, name_zh')
+          .eq('del_flag', false)
+          .order('sort_order', { ascending: true }),
+        supabase
+          .from('brand')
+          .select('id, name_en, name_zh')
+          .eq('del_flag', false)
+          .order('sort_order', { ascending: true }),
+        supabase
+          .from('product_image')
+          .select('product_id, bucket_id, object_path, url, is_primary, sort_order')
+          .eq('del_flag', false),
       ])
 
       if (prodsRes.error) throw prodsRes.error
@@ -173,7 +206,14 @@ export default function ProductsPage() {
       setBrandList(brandsRes.data ?? [])
 
       // Pick a representative thumbnail per product (primary first, then lowest sort_order).
-      type ImgListItem = { product_id: string | null; bucket_id: string | null; object_path: string | null; url: string | null; is_primary: boolean | null; sort_order: number | null }
+      type ImgListItem = {
+        product_id: string | null
+        bucket_id: string | null
+        object_path: string | null
+        url: string | null
+        is_primary: boolean | null
+        sort_order: number | null
+      }
       const grouped: Record<string, ImgListItem[]> = {}
       ;(imagesRes.data ?? []).forEach((img: ImgListItem) => {
         if (!img.product_id) return
@@ -212,23 +252,24 @@ export default function ProductsPage() {
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(
-        p =>
+        (p) =>
           p.name_en?.toLowerCase().includes(q) ||
           p.name_zh?.toLowerCase().includes(q) ||
           p.sku?.toLowerCase().includes(q),
       )
     }
-    if (filterCat) list = list.filter(p => p.category_id === filterCat)
-    if (filterStatus === 'active') list = list.filter(p => p.is_active)
-    if (filterStatus === 'inactive') list = list.filter(p => !p.is_active)
-    if (filterStatus === 'featured') list = list.filter(p => p.is_featured)
+    if (filterCat) list = list.filter((p) => p.category_id === filterCat)
+    if (filterStatus === 'active') list = list.filter((p) => p.is_active)
+    if (filterStatus === 'inactive') list = list.filter((p) => !p.is_active)
+    if (filterStatus === 'featured') list = list.filter((p) => p.is_featured)
     return list
   }, [products, search, filterCat, filterStatus])
 
   const categoryOptions = useMemo(() => {
     const seen = new Map<string, string>()
-    products.forEach(p => {
-      if (p.category_id && catMap.has(p.category_id)) seen.set(p.category_id, catMap.get(p.category_id)!)
+    products.forEach((p) => {
+      if (p.category_id && catMap.has(p.category_id))
+        seen.set(p.category_id, catMap.get(p.category_id)!)
     })
     return Array.from(seen.entries()).map(([id, name]) => ({ id, name }))
   }, [products, catMap])
@@ -239,36 +280,39 @@ export default function ProductsPage() {
     setImagesError(null)
   }
 
-  const loadImagesForEdit = useCallback(async (productId: string) => {
-    const supabase = createClient()
-    const { data, error } = await supabase
-      .from('product_image')
-      .select('id, product_id, bucket_id, object_path, url, sort_order, is_primary')
-      .eq('product_id', productId)
-      .eq('del_flag', false)
-      .order('sort_order', { ascending: true })
+  const loadImagesForEdit = useCallback(
+    async (productId: string) => {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('product_image')
+        .select('id, product_id, bucket_id, object_path, url, sort_order, is_primary')
+        .eq('product_id', productId)
+        .eq('del_flag', false)
+        .order('sort_order', { ascending: true })
 
-    if (error) {
-      messageApi.error(`${t.products.loadError}${getErrorMessage(error)}`)
-      return
-    }
+      if (error) {
+        messageApi.error(`${t.products.loadError}${getErrorMessage(error)}`)
+        return
+      }
 
-    const items: ImageItem[] = (data ?? []).map((img: ProductImageRow) => {
-      let resolved = img.url ?? ''
-      if (img.object_path && img.bucket_id) {
-        const { data: pub } = supabase.storage.from(img.bucket_id).getPublicUrl(img.object_path)
-        resolved = pub.publicUrl
-      }
-      return {
-        kind: 'existing',
-        id: img.id,
-        url: resolved,
-        bucket_id: img.bucket_id,
-        object_path: img.object_path,
-      }
-    })
-    setImageItems(items)
-  }, [messageApi, t.products.loadError])
+      const items: ImageItem[] = (data ?? []).map((img: ProductImageRow) => {
+        let resolved = img.url ?? ''
+        if (img.object_path && img.bucket_id) {
+          const { data: pub } = supabase.storage.from(img.bucket_id).getPublicUrl(img.object_path)
+          resolved = pub.publicUrl
+        }
+        return {
+          kind: 'existing',
+          id: img.id,
+          url: resolved,
+          bucket_id: img.bucket_id,
+          object_path: img.object_path,
+        }
+      })
+      setImageItems(items)
+    },
+    [messageApi, t.products.loadError],
+  )
 
   const openCreateModal = () => {
     setEditingProduct(null)
@@ -336,7 +380,7 @@ export default function ProductsPage() {
       if (uploadError) throw uploadError
 
       const { data } = supabase.storage.from(PRODUCT_IMAGE_BUCKET).getPublicUrl(objectPath)
-      setImageItems(prev => [
+      setImageItems((prev) => [
         ...prev,
         {
           kind: 'pending',
@@ -367,9 +411,9 @@ export default function ProductsPage() {
         // best effort cleanup
       }
     } else {
-      setRemovedExistingIds(prev => [...prev, item.id])
+      setRemovedExistingIds((prev) => [...prev, item.id])
     }
-    setImageItems(prev => prev.filter((_, i) => i !== index))
+    setImageItems((prev) => prev.filter((_, i) => i !== index))
   }
 
   const persistImages = async (productId: string, userId: string | null) => {
@@ -387,7 +431,10 @@ export default function ProductsPage() {
     // Insert new pending uploads, preserving order vs. existing kept items.
     const pendingWithIndex = imageItems
       .map((it, idx) => ({ it, idx }))
-      .filter(({ it }) => it.kind === 'pending') as Array<{ it: Extract<ImageItem, { kind: 'pending' }>; idx: number }>
+      .filter(({ it }) => it.kind === 'pending') as Array<{
+      it: Extract<ImageItem, { kind: 'pending' }>
+      idx: number
+    }>
 
     if (pendingWithIndex.length > 0) {
       const insertRows = pendingWithIndex.map(({ it, idx }) => ({
@@ -408,7 +455,10 @@ export default function ProductsPage() {
     // Update sort_order / is_primary for kept existing rows
     const existingItems = imageItems
       .map((it, idx) => ({ it, idx }))
-      .filter(({ it }) => it.kind === 'existing') as Array<{ it: Extract<ImageItem, { kind: 'existing' }>; idx: number }>
+      .filter(({ it }) => it.kind === 'existing') as Array<{
+      it: Extract<ImageItem, { kind: 'existing' }>
+      idx: number
+    }>
 
     for (const { it, idx } of existingItems) {
       const { error } = await supabase
@@ -462,11 +512,19 @@ export default function ProductsPage() {
 
       let productId: string
       if (editingProduct) {
-        const { error } = await supabase.from('product').update(basePayload).eq('id', editingProduct.id)
+        const { error } = await supabase
+          .from('product')
+          .update(basePayload)
+          .eq('id', editingProduct.id)
         if (error) throw error
         productId = editingProduct.id
       } else {
-        const insertPayload = { ...basePayload, slug: buildSlug(values.name_en), created_by: userId, del_flag: false }
+        const insertPayload = {
+          ...basePayload,
+          slug: buildSlug(values.name_en),
+          created_by: userId,
+          del_flag: false,
+        }
         const { data, error } = await supabase
           .from('product')
           .insert(insertPayload)
@@ -510,7 +568,7 @@ export default function ProductsPage() {
         .eq('id', product.id)
       if (error) throw error
 
-      setProducts(prev => prev.filter(p => p.id !== product.id))
+      setProducts((prev) => prev.filter((p) => p.id !== product.id))
       notificationApi.success({
         message: t.common.success,
         description: t.products.deleteSuccess,
@@ -543,13 +601,29 @@ export default function ProductsPage() {
                 preview={false}
               />
             ) : (
-              <div style={{ width: 40, height: 40, borderRadius: 6, background: '#f0f4ec', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AB17A', fontWeight: 700 }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 6,
+                  background: '#f0f4ec',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#9AB17A',
+                  fontWeight: 700,
+                }}
+              >
                 {r.name_en?.[0] ?? '?'}
               </div>
             )}
             <div>
-              <Text strong style={{ display: 'block' }}>{r.name_en ?? '—'}</Text>
-              <Text type="secondary" style={{ fontSize: 12 }}>{r.name_zh}</Text>
+              <Text strong style={{ display: 'block' }}>
+                {r.name_en ?? '—'}
+              </Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {r.name_zh}
+              </Text>
             </div>
           </Space>
         )
@@ -560,7 +634,14 @@ export default function ProductsPage() {
       dataIndex: 'sku',
       key: 'sku',
       responsive: ['md'],
-      render: (v: string | null) => (v ? <Text code style={{ fontSize: 11 }}>{v}</Text> : <Text type="secondary">—</Text>),
+      render: (v: string | null) =>
+        v ? (
+          <Text code style={{ fontSize: 11 }}>
+            {v}
+          </Text>
+        ) : (
+          <Text type="secondary">—</Text>
+        ),
     },
     {
       title: t.products.colCategory,
@@ -612,7 +693,12 @@ export default function ProductsPage() {
       width: 140,
       render: (_, record) => (
         <Space>
-          <Button type="link" size="small" style={{ padding: 0 }} onClick={() => openEditModal(record)}>
+          <Button
+            type="link"
+            size="small"
+            style={{ padding: 0 }}
+            onClick={() => openEditModal(record)}
+          >
             {t.common.edit}
           </Button>
           <Popconfirm
@@ -623,7 +709,13 @@ export default function ProductsPage() {
             okButtonProps={{ danger: true, loading: deletingId === record.id }}
             onConfirm={() => handleDelete(record)}
           >
-            <Button type="link" size="small" danger loading={deletingId === record.id} style={{ padding: 0 }}>
+            <Button
+              type="link"
+              size="small"
+              danger
+              loading={deletingId === record.id}
+              style={{ padding: 0 }}
+            >
               {t.common.delete}
             </Button>
           </Popconfirm>
@@ -637,7 +729,14 @@ export default function ProductsPage() {
       <>
         {contextHolder}
         {notificationHolder}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 300,
+          }}
+        >
           <Spin size="large" />
         </div>
       </>
@@ -648,10 +747,23 @@ export default function ProductsPage() {
     <div>
       {contextHolder}
       {notificationHolder}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 24,
+        }}
+      >
         <div>
-          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.products.title}</Title>
-          <Text type="secondary" style={{ fontSize: 13 }}>{t.products.subtitle}</Text>
+          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
+            {t.products.title}
+          </Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            {t.products.subtitle}
+          </Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
           {t.products.addProduct}
@@ -665,19 +777,33 @@ export default function ProductsPage() {
               placeholder={t.products.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               style={{ width: '100%' }}
             />
           </Col>
           <Col xs={12} md={7}>
-            <Select placeholder={t.products.allCategories} style={{ width: '100%' }} allowClear value={filterCat} onChange={v => setFilterCat(v ?? null)}>
-              {categoryOptions.map(c => (
-                <Select.Option key={c.id} value={c.id}>{c.name}</Select.Option>
+            <Select
+              placeholder={t.products.allCategories}
+              style={{ width: '100%' }}
+              allowClear
+              value={filterCat}
+              onChange={(v) => setFilterCat(v ?? null)}
+            >
+              {categoryOptions.map((c) => (
+                <Select.Option key={c.id} value={c.id}>
+                  {c.name}
+                </Select.Option>
               ))}
             </Select>
           </Col>
           <Col xs={12} md={7}>
-            <Select placeholder={t.products.allStatus} style={{ width: '100%' }} allowClear value={filterStatus} onChange={v => setFilterStatus(v ?? null)}>
+            <Select
+              placeholder={t.products.allStatus}
+              style={{ width: '100%' }}
+              allowClear
+              value={filterStatus}
+              onChange={(v) => setFilterStatus(v ?? null)}
+            >
               <Select.Option value="active">{t.products.active}</Select.Option>
               <Select.Option value="inactive">{t.products.inactive}</Select.Option>
               <Select.Option value="featured">{t.products.featured}</Select.Option>
@@ -706,15 +832,33 @@ export default function ProductsPage() {
         width={760}
         forceRender
       >
-        <Form form={form} layout="vertical" initialValues={{ is_active: true, is_featured: false, stock_qty: 0, price: 0 }}>
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ is_active: true, is_featured: false, stock_qty: 0, price: 0 }}
+        >
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item name="name_en" label={t.products.nameEn} rules={[{ required: true, message: t.products.nameRequired }, { max: 200, message: t.products.nameMax }]}>
+              <Form.Item
+                name="name_en"
+                label={t.products.nameEn}
+                rules={[
+                  { required: true, message: t.products.nameRequired },
+                  { max: 200, message: t.products.nameMax },
+                ]}
+              >
                 <Input placeholder={t.products.nameEnPlaceholder} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
-              <Form.Item name="name_zh" label={t.products.nameZh} rules={[{ required: true, message: t.products.nameZhRequired }, { max: 200, message: t.products.nameMax }]}>
+              <Form.Item
+                name="name_zh"
+                label={t.products.nameZh}
+                rules={[
+                  { required: true, message: t.products.nameZhRequired },
+                  { max: 200, message: t.products.nameMax },
+                ]}
+              >
                 <Input placeholder={t.products.nameZhPlaceholder} />
               </Form.Item>
             </Col>
@@ -722,19 +866,36 @@ export default function ProductsPage() {
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item name="category_id" label={t.products.category} rules={[{ required: true, message: t.products.categoryRequired }]}>
-                <Select placeholder={t.products.categoryPlaceholder} showSearch optionFilterProp="children">
-                  {catList.map(c => (
-                    <Select.Option key={c.id} value={c.id}>{c.name_en ?? c.name_zh}</Select.Option>
+              <Form.Item
+                name="category_id"
+                label={t.products.category}
+                rules={[{ required: true, message: t.products.categoryRequired }]}
+              >
+                <Select
+                  placeholder={t.products.categoryPlaceholder}
+                  showSearch
+                  optionFilterProp="children"
+                >
+                  {catList.map((c) => (
+                    <Select.Option key={c.id} value={c.id}>
+                      {c.name_en ?? c.name_zh}
+                    </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item name="brand_id" label={t.products.brand}>
-                <Select placeholder={t.products.brandPlaceholder} allowClear showSearch optionFilterProp="children">
-                  {brandList.map(b => (
-                    <Select.Option key={b.id} value={b.id}>{b.name_en ?? b.name_zh}</Select.Option>
+                <Select
+                  placeholder={t.products.brandPlaceholder}
+                  allowClear
+                  showSearch
+                  optionFilterProp="children"
+                >
+                  {brandList.map((b) => (
+                    <Select.Option key={b.id} value={b.id}>
+                      {b.name_en ?? b.name_zh}
+                    </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
@@ -743,17 +904,37 @@ export default function ProductsPage() {
 
           <Row gutter={16}>
             <Col xs={24} sm={8}>
-              <Form.Item name="price" label={t.products.price} rules={[{ required: true, message: t.products.priceRequired }]}>
-                <InputNumber min={0} step={0.01} precision={2} style={{ width: '100%' }} prefix="$" />
+              <Form.Item
+                name="price"
+                label={t.products.price}
+                rules={[{ required: true, message: t.products.priceRequired }]}
+              >
+                <InputNumber
+                  min={0}
+                  step={0.01}
+                  precision={2}
+                  style={{ width: '100%' }}
+                  prefix="$"
+                />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
               <Form.Item name="compare_at_price" label={t.products.compareAtPrice}>
-                <InputNumber min={0} step={0.01} precision={2} style={{ width: '100%' }} prefix="$" />
+                <InputNumber
+                  min={0}
+                  step={0.01}
+                  precision={2}
+                  style={{ width: '100%' }}
+                  prefix="$"
+                />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
-              <Form.Item name="stock_qty" label={t.products.stockQty} rules={[{ required: true, message: t.products.stockRequired }]}>
+              <Form.Item
+                name="stock_qty"
+                label={t.products.stockQty}
+                rules={[{ required: true, message: t.products.stockRequired }]}
+              >
                 <InputNumber min={0} precision={0} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
@@ -787,7 +968,10 @@ export default function ProductsPage() {
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item name="is_active" label={t.products.isActive} valuePropName="checked">
-                <Switch checkedChildren={t.products.active} unCheckedChildren={t.products.inactive} />
+                <Switch
+                  checkedChildren={t.products.active}
+                  unCheckedChildren={t.products.inactive}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -850,7 +1034,14 @@ export default function ProductsPage() {
                     type="primary"
                     onClick={() => handleRemoveImage(idx)}
                     disabled={saving || imageUploading}
-                    style={{ position: 'absolute', top: 4, right: 4, padding: '0 4px', height: 20, lineHeight: 1 }}
+                    style={{
+                      position: 'absolute',
+                      top: 4,
+                      right: 4,
+                      padding: '0 4px',
+                      height: 20,
+                      lineHeight: 1,
+                    }}
                   />
                 </div>
               ))}
@@ -862,7 +1053,14 @@ export default function ProductsPage() {
                   disabled={imageUploading || saving}
                 >
                   <Button
-                    style={{ width: 96, height: 96, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+                    style={{
+                      width: 96,
+                      height: 96,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                     loading={imageUploading}
                   >
                     <PlusOutlined />

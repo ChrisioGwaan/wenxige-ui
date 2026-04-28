@@ -1,7 +1,27 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Avatar, Button, Card, Col, Form, Input, InputNumber, message, Modal, notification, Popconfirm, Row, Space, Spin, Switch, Table, Tag, Typography, Upload } from 'antd'
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  notification,
+  Popconfirm,
+  Row,
+  Space,
+  Spin,
+  Switch,
+  Table,
+  Tag,
+  Typography,
+  Upload,
+} from 'antd'
 import { DeleteOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import type { RcFile } from 'antd/es/upload'
@@ -92,7 +112,9 @@ export default function BrandsPage() {
   const { t } = useLanguage()
   const [form] = Form.useForm<BrandFormValues>()
   const [messageApi, contextHolder] = message.useMessage()
-  const [notificationApi, notificationHolder] = notification.useNotification({ placement: 'topRight' })
+  const [notificationApi, notificationHolder] = notification.useNotification({
+    placement: 'topRight',
+  })
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -112,9 +134,16 @@ export default function BrandsPage() {
 
     try {
       const [brandsRes, productsRes, logosRes] = await Promise.all([
-        supabase.from('brand').select('id, name_en, name_zh, slug, description, sort_order, is_show, del_flag').eq('del_flag', false).order('sort_order', { ascending: true }),
+        supabase
+          .from('brand')
+          .select('id, name_en, name_zh, slug, description, sort_order, is_show, del_flag')
+          .eq('del_flag', false)
+          .order('sort_order', { ascending: true }),
         supabase.from('product').select('brand_id').eq('del_flag', false),
-        supabase.from('brand_image').select('id, brand_id, bucket_id, object_path, url').eq('del_flag', false),
+        supabase
+          .from('brand_image')
+          .select('id, brand_id, bucket_id, object_path, url')
+          .eq('del_flag', false),
       ])
 
       if (brandsRes.error) throw brandsRes.error
@@ -122,33 +151,35 @@ export default function BrandsPage() {
       if (logosRes.error) throw logosRes.error
 
       const countMap: Record<string, number> = {}
-      productsRes.data?.forEach(product => {
+      productsRes.data?.forEach((product) => {
         if (product.brand_id) countMap[product.brand_id] = (countMap[product.brand_id] ?? 0) + 1
       })
 
       const logoMap: Record<string, BrandImageRow> = {}
-      logosRes.data?.forEach(img => {
+      logosRes.data?.forEach((img) => {
         if (img.brand_id) logoMap[img.brand_id] = img as BrandImageRow
       })
 
-      setBrands((brandsRes.data ?? []).map(brand => {
-        const img = logoMap[brand.id]
-        let logo: BrandLogo | null = null
-        if (img) {
-          let resolvedUrl = img.url
-          if (img.object_path && img.bucket_id) {
-            const { data } = supabase.storage.from(img.bucket_id).getPublicUrl(img.object_path)
-            resolvedUrl = data.publicUrl
+      setBrands(
+        (brandsRes.data ?? []).map((brand) => {
+          const img = logoMap[brand.id]
+          let logo: BrandLogo | null = null
+          if (img) {
+            let resolvedUrl = img.url
+            if (img.object_path && img.bucket_id) {
+              const { data } = supabase.storage.from(img.bucket_id).getPublicUrl(img.object_path)
+              resolvedUrl = data.publicUrl
+            }
+            logo = { url: resolvedUrl, object_path: img.object_path, bucket_id: img.bucket_id }
           }
-          logo = { url: resolvedUrl, object_path: img.object_path, bucket_id: img.bucket_id }
-        }
-        return {
-          ...brand,
-          is_show: brand.is_show ?? true,
-          product_count: countMap[brand.id] ?? 0,
-          logo,
-        }
-      }))
+          return {
+            ...brand,
+            is_show: brand.is_show ?? true,
+            product_count: countMap[brand.id] ?? 0,
+            logo,
+          }
+        }),
+      )
     } catch (error) {
       messageApi.error(`${t.brands.loadError}${getErrorMessage(error)}`)
     } finally {
@@ -167,10 +198,11 @@ export default function BrandsPage() {
   const filtered = useMemo(() => {
     if (!search.trim()) return brands
     const q = search.toLowerCase()
-    return brands.filter(brand =>
-      brand.name_en?.toLowerCase().includes(q) ||
-      brand.name_zh?.toLowerCase().includes(q) ||
-      brand.slug?.toLowerCase().includes(q)
+    return brands.filter(
+      (brand) =>
+        brand.name_en?.toLowerCase().includes(q) ||
+        brand.name_zh?.toLowerCase().includes(q) ||
+        brand.slug?.toLowerCase().includes(q),
     )
   }, [brands, search])
 
@@ -397,7 +429,9 @@ export default function BrandsPage() {
 
       if (error) throw error
 
-      setBrands(currentBrands => currentBrands.filter(currentBrand => currentBrand.id !== brand.id))
+      setBrands((currentBrands) =>
+        currentBrands.filter((currentBrand) => currentBrand.id !== brand.id),
+      )
       notificationApi.success({
         title: t.common.success,
         description: t.brands.deleteSuccess,
@@ -420,12 +454,18 @@ export default function BrandsPage() {
       key: 'brand',
       render: (_, r) => (
         <Space>
-          <Avatar src={r.logo?.url ?? undefined} size={36} style={{ background: '#f0f4ec', color: '#9AB17A', fontWeight: 700, fontSize: 14 }}>
+          <Avatar
+            src={r.logo?.url ?? undefined}
+            size={36}
+            style={{ background: '#f0f4ec', color: '#9AB17A', fontWeight: 700, fontSize: 14 }}
+          >
             {r.name_en?.[0] ?? '?'}
           </Avatar>
           <div>
             <Text strong>{r.name_en ?? '—'}</Text>
-            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>{r.name_zh}</Text>
+            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
+              {r.name_zh}
+            </Text>
           </div>
         </Space>
       ),
@@ -435,7 +475,14 @@ export default function BrandsPage() {
       dataIndex: 'slug',
       key: 'slug',
       responsive: ['sm'],
-      render: (v: string | null) => v ? <Text code style={{ fontSize: 12 }}>{v}</Text> : <Text type="secondary">—</Text>,
+      render: (v: string | null) =>
+        v ? (
+          <Text code style={{ fontSize: 12 }}>
+            {v}
+          </Text>
+        ) : (
+          <Text type="secondary">—</Text>
+        ),
     },
     {
       title: t.brands.colSort,
@@ -451,9 +498,7 @@ export default function BrandsPage() {
       key: 'is_show',
       width: 110,
       render: (value: boolean) => (
-        <Tag color={value ? 'green' : 'default'}>
-          {value ? t.common.visible : t.common.hidden}
-        </Tag>
+        <Tag color={value ? 'green' : 'default'}>{value ? t.common.visible : t.common.hidden}</Tag>
       ),
     },
     {
@@ -461,7 +506,11 @@ export default function BrandsPage() {
       dataIndex: 'product_count',
       key: 'product_count',
       width: 110,
-      render: (v: number) => <Tag color="green">{v} {t.brands.products}</Tag>,
+      render: (v: number) => (
+        <Tag color="green">
+          {v} {t.brands.products}
+        </Tag>
+      ),
     },
     {
       title: t.common.actions,
@@ -469,7 +518,14 @@ export default function BrandsPage() {
       width: 140,
       render: (_, record) => (
         <Space>
-          <Button type="link" size="small" style={{ padding: 0 }} onClick={() => openEditModal(record)}>{t.common.edit}</Button>
+          <Button
+            type="link"
+            size="small"
+            style={{ padding: 0 }}
+            onClick={() => openEditModal(record)}
+          >
+            {t.common.edit}
+          </Button>
           <Popconfirm
             title={t.brands.deleteConfirmTitle}
             description={t.brands.deleteConfirmDescription}
@@ -478,7 +534,15 @@ export default function BrandsPage() {
             okButtonProps={{ danger: true, loading: deletingId === record.id }}
             onConfirm={() => handleDelete(record)}
           >
-            <Button type="link" size="small" danger loading={deletingId === record.id} style={{ padding: 0 }}>{t.common.delete}</Button>
+            <Button
+              type="link"
+              size="small"
+              danger
+              loading={deletingId === record.id}
+              style={{ padding: 0 }}
+            >
+              {t.common.delete}
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -490,7 +554,14 @@ export default function BrandsPage() {
       <>
         {contextHolder}
         {notificationHolder}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 300,
+          }}
+        >
           <Spin size="large" />
         </div>
       </>
@@ -501,10 +572,23 @@ export default function BrandsPage() {
     <div>
       {contextHolder}
       {notificationHolder}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 24,
+        }}
+      >
         <div>
-          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.brands.title}</Title>
-          <Text type="secondary" style={{ fontSize: 13 }}>{t.brands.subtitle}</Text>
+          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
+            {t.brands.title}
+          </Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            {t.brands.subtitle}
+          </Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
           {t.brands.addBrand}
@@ -518,12 +602,19 @@ export default function BrandsPage() {
               placeholder={t.brands.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               style={{ width: '100%' }}
             />
           </Col>
         </Row>
-        <Table columns={columns} dataSource={filtered} rowKey="id" pagination={false} size="middle" scroll={{ x: 'max-content' }} />
+        <Table
+          columns={columns}
+          dataSource={filtered}
+          rowKey="id"
+          pagination={false}
+          size="middle"
+          scroll={{ x: 'max-content' }}
+        />
       </Card>
 
       <Modal
@@ -540,16 +631,32 @@ export default function BrandsPage() {
           <Form.Item
             name="name_en"
             label={t.brands.nameEn}
-            rules={[{ required: true, message: t.brands.nameRequired }, { max: 120, message: t.brands.nameMax }]}
+            rules={[
+              { required: true, message: t.brands.nameRequired },
+              { max: 120, message: t.brands.nameMax },
+            ]}
           >
             <Input placeholder={t.brands.nameEnPlaceholder} />
           </Form.Item>
 
-          <Form.Item name="name_zh" label={t.brands.nameZh} rules={[{ required: true, message: t.brands.nameZhRequired }, { max: 120, message: t.brands.nameMax }]}>
+          <Form.Item
+            name="name_zh"
+            label={t.brands.nameZh}
+            rules={[
+              { required: true, message: t.brands.nameZhRequired },
+              { max: 120, message: t.brands.nameMax },
+            ]}
+          >
             <Input placeholder={t.brands.nameZhPlaceholder} />
           </Form.Item>
 
-          <Form.Item label={t.brands.logo} extra={t.brands.logoHint} required validateStatus={logoFieldError ? 'error' : undefined} help={logoFieldError ?? undefined}>
+          <Form.Item
+            label={t.brands.logo}
+            extra={t.brands.logoHint}
+            required
+            validateStatus={logoFieldError ? 'error' : undefined}
+            help={logoFieldError ?? undefined}
+          >
             <Space align="start" size={16} wrap>
               <Avatar
                 src={previewLogoUrl ?? undefined}
@@ -557,7 +664,9 @@ export default function BrandsPage() {
                 size={72}
                 style={{ background: '#f0f4ec', color: '#9AB17A', fontWeight: 700, fontSize: 22 }}
               >
-                {(form.getFieldValue('name_en') as string | undefined)?.[0] ?? editingBrand?.name_en?.[0] ?? '?'}
+                {(form.getFieldValue('name_en') as string | undefined)?.[0] ??
+                  editingBrand?.name_en?.[0] ??
+                  '?'}
               </Avatar>
               <Space>
                 <Upload
@@ -584,13 +693,24 @@ export default function BrandsPage() {
             </Space>
           </Form.Item>
 
-          <Form.Item name="description" label={t.brands.description} rules={[{ required: true, message: t.brands.descriptionRequired }, { max: 500, message: t.brands.descriptionMax }]}>
+          <Form.Item
+            name="description"
+            label={t.brands.description}
+            rules={[
+              { required: true, message: t.brands.descriptionRequired },
+              { max: 500, message: t.brands.descriptionMax },
+            ]}
+          >
             <Input.TextArea rows={3} placeholder={t.brands.descriptionPlaceholder} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item name="sort_order" label={t.brands.sortOrder} rules={[{ required: true, message: t.brands.sortOrderRequired }]}>
+              <Form.Item
+                name="sort_order"
+                label={t.brands.sortOrder}
+                rules={[{ required: true, message: t.brands.sortOrderRequired }]}
+              >
                 <InputNumber min={0} precision={0} style={{ width: '100%' }} />
               </Form.Item>
             </Col>

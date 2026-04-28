@@ -27,7 +27,9 @@ const statusColors: Record<string, string> = {
 }
 
 const fmtDate = (v: string | null) =>
-  v ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
+  v
+    ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    : '—'
 
 export default function InquiriesPage() {
   const { t } = useLanguage()
@@ -39,8 +41,12 @@ export default function InquiriesPage() {
       key: 'from',
       render: (_, r) => (
         <div>
-          <Text strong style={{ display: 'block' }}>{r.name ?? '—'}</Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>{r.email}</Text>
+          <Text strong style={{ display: 'block' }}>
+            {r.name ?? '—'}
+          </Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {r.email}
+          </Text>
         </div>
       ),
     },
@@ -57,7 +63,10 @@ export default function InquiriesPage() {
       width: 110,
       render: (v: string) => {
         const color = statusColors[v] ?? 'default'
-        const label = (t.inquiries as Record<string, string>)[`status${v.charAt(0).toUpperCase() + v.slice(1)}`] ?? v
+        const label =
+          (t.inquiries as Record<string, string>)[
+            `status${v.charAt(0).toUpperCase() + v.slice(1)}`
+          ] ?? v
         return <Tag color={color}>{label}</Tag>
       },
     },
@@ -75,7 +84,12 @@ export default function InquiriesPage() {
       width: 150,
       render: () => (
         <Space>
-          <Button type="link" size="small" icon={<MailOutlined />} style={{ padding: 0, color: '#9AB17A' }}>
+          <Button
+            type="link"
+            size="small"
+            icon={<MailOutlined />}
+            style={{ padding: 0, color: '#9AB17A' }}
+          >
             {t.inquiries.reply}
           </Button>
           <Button type="link" size="small" style={{ padding: 0, color: '#64748b' }}>
@@ -103,23 +117,27 @@ export default function InquiriesPage() {
     load()
   }, [])
 
-  const counts = useMemo(() => ({
-    all: inquiries.length,
-    new: inquiries.filter(i => i.status === 'new').length,
-    read: inquiries.filter(i => i.status === 'read').length,
-    replied: inquiries.filter(i => i.status === 'replied').length,
-    archived: inquiries.filter(i => i.status === 'archived').length,
-  }), [inquiries])
+  const counts = useMemo(
+    () => ({
+      all: inquiries.length,
+      new: inquiries.filter((i) => i.status === 'new').length,
+      read: inquiries.filter((i) => i.status === 'read').length,
+      replied: inquiries.filter((i) => i.status === 'replied').length,
+      archived: inquiries.filter((i) => i.status === 'archived').length,
+    }),
+    [inquiries],
+  )
 
   const displayData = useMemo(() => {
     let list = inquiries
-    if (activeTab !== 'all') list = list.filter(i => i.status === activeTab)
+    if (activeTab !== 'all') list = list.filter((i) => i.status === activeTab)
     if (search.trim()) {
       const q = search.toLowerCase()
-      list = list.filter(i =>
-        i.name?.toLowerCase().includes(q) ||
-        i.email?.toLowerCase().includes(q) ||
-        i.subject?.toLowerCase().includes(q)
+      list = list.filter(
+        (i) =>
+          i.name?.toLowerCase().includes(q) ||
+          i.email?.toLowerCase().includes(q) ||
+          i.subject?.toLowerCase().includes(q),
       )
     }
     return list
@@ -127,7 +145,9 @@ export default function InquiriesPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}
+      >
         <Spin size="large" />
       </div>
     )
@@ -144,8 +164,12 @@ export default function InquiriesPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.inquiries.title}</Title>
-        <Text type="secondary" style={{ fontSize: 13 }}>{t.inquiries.subtitle}</Text>
+        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
+          {t.inquiries.title}
+        </Title>
+        <Text type="secondary" style={{ fontSize: 13 }}>
+          {t.inquiries.subtitle}
+        </Text>
       </div>
 
       <Card style={{ borderRadius: 12 }}>
@@ -155,7 +179,7 @@ export default function InquiriesPage() {
               placeholder={t.inquiries.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               style={{ width: '100%' }}
             />
           </Col>
@@ -164,7 +188,7 @@ export default function InquiriesPage() {
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
-          items={tabItems.map(tab => ({
+          items={tabItems.map((tab) => ({
             key: tab.key,
             label: tab.label,
             children: (
@@ -172,7 +196,10 @@ export default function InquiriesPage() {
                 columns={columns}
                 dataSource={displayData}
                 rowKey="id"
-                pagination={{ pageSize: 8, showTotal: (total) => `${total} ${t.inquiries.inquiriesCount}` }}
+                pagination={{
+                  pageSize: 8,
+                  showTotal: (total) => `${total} ${t.inquiries.inquiriesCount}`,
+                }}
                 size="middle"
                 scroll={{ x: 'max-content' }}
               />
@@ -183,4 +210,3 @@ export default function InquiriesPage() {
     </div>
   )
 }
-

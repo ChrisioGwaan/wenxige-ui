@@ -1,7 +1,25 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Card, Col, Form, Input, InputNumber, message, Modal, notification, Popconfirm, Row, Space, Spin, Switch, Table, Tag, Typography } from 'antd'
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  notification,
+  Popconfirm,
+  Row,
+  Space,
+  Spin,
+  Switch,
+  Table,
+  Tag,
+  Typography,
+} from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { createClient } from '@/lib/supabase/client'
@@ -58,7 +76,9 @@ export default function CategoriesPage() {
   const { t } = useLanguage()
   const [form] = Form.useForm<CategoryFormValues>()
   const [messageApi, contextHolder] = message.useMessage()
-  const [notificationApi, notificationHolder] = notification.useNotification({ placement: 'topRight' })
+  const [notificationApi, notificationHolder] = notification.useNotification({
+    placement: 'topRight',
+  })
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -72,20 +92,32 @@ export default function CategoriesPage() {
     setLoading(true)
 
     try {
-      const [{ data: cats, error: categoriesError }, { data: prods, error: productsError }] = await Promise.all([
-        supabase.from('category').select('id, name_en, name_zh, slug, description, sort_order, is_show, del_flag').eq('del_flag', false).order('sort_order', { ascending: true }),
-        supabase.from('product').select('category_id').eq('del_flag', false),
-      ])
+      const [{ data: cats, error: categoriesError }, { data: prods, error: productsError }] =
+        await Promise.all([
+          supabase
+            .from('category')
+            .select('id, name_en, name_zh, slug, description, sort_order, is_show, del_flag')
+            .eq('del_flag', false)
+            .order('sort_order', { ascending: true }),
+          supabase.from('product').select('category_id').eq('del_flag', false),
+        ])
 
       if (categoriesError) throw categoriesError
       if (productsError) throw productsError
 
       const countMap: Record<string, number> = {}
-      prods?.forEach(product => {
-        if (product.category_id) countMap[product.category_id] = (countMap[product.category_id] ?? 0) + 1
+      prods?.forEach((product) => {
+        if (product.category_id)
+          countMap[product.category_id] = (countMap[product.category_id] ?? 0) + 1
       })
 
-      setCategories((cats ?? []).map(category => ({ ...category, is_show: category.is_show ?? true, product_count: countMap[category.id] ?? 0 })))
+      setCategories(
+        (cats ?? []).map((category) => ({
+          ...category,
+          is_show: category.is_show ?? true,
+          product_count: countMap[category.id] ?? 0,
+        })),
+      )
     } catch (error) {
       messageApi.error(`${t.categories.loadError}${getErrorMessage(error)}`)
     } finally {
@@ -98,16 +130,22 @@ export default function CategoriesPage() {
   }, [loadCategories])
 
   const nextSortOrder = useMemo(() => {
-    return categories.reduce((currentMax, category) => Math.max(currentMax, category.sort_order ?? 0), 0) + 1
+    return (
+      categories.reduce(
+        (currentMax, category) => Math.max(currentMax, category.sort_order ?? 0),
+        0,
+      ) + 1
+    )
   }, [categories])
 
   const filtered = useMemo(() => {
     if (!search.trim()) return categories
     const q = search.toLowerCase()
-    return categories.filter(category =>
-      category.name_en?.toLowerCase().includes(q) ||
-      category.name_zh?.toLowerCase().includes(q) ||
-      category.slug?.toLowerCase().includes(q)
+    return categories.filter(
+      (category) =>
+        category.name_en?.toLowerCase().includes(q) ||
+        category.name_zh?.toLowerCase().includes(q) ||
+        category.slug?.toLowerCase().includes(q),
     )
   }, [categories, search])
 
@@ -166,7 +204,9 @@ export default function CategoriesPage() {
 
       const result = editingCategory
         ? await supabase.from('category').update(payload).eq('id', editingCategory.id)
-        : await supabase.from('category').insert({ ...payload, created_by: user?.id ?? null, del_flag: false })
+        : await supabase
+            .from('category')
+            .insert({ ...payload, created_by: user?.id ?? null, del_flag: false })
 
       if (result.error) throw result.error
 
@@ -204,7 +244,9 @@ export default function CategoriesPage() {
 
       if (error) throw error
 
-      setCategories(currentCategories => currentCategories.filter(currentCategory => currentCategory.id !== category.id))
+      setCategories((currentCategories) =>
+        currentCategories.filter((currentCategory) => currentCategory.id !== category.id),
+      )
       notificationApi.success({
         title: t.common.success,
         description: t.categories.deleteSuccess,
@@ -226,7 +268,9 @@ export default function CategoriesPage() {
       render: (_, r) => (
         <div>
           <Text strong>{r.name_en ?? '—'}</Text>
-          <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>{r.name_zh}</Text>
+          <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
+            {r.name_zh}
+          </Text>
         </div>
       ),
     },
@@ -235,7 +279,14 @@ export default function CategoriesPage() {
       dataIndex: 'slug',
       key: 'slug',
       responsive: ['sm'],
-      render: (v: string | null) => v ? <Text code style={{ fontSize: 12 }}>{v}</Text> : <Text type="secondary">—</Text>,
+      render: (v: string | null) =>
+        v ? (
+          <Text code style={{ fontSize: 12 }}>
+            {v}
+          </Text>
+        ) : (
+          <Text type="secondary">—</Text>
+        ),
     },
     {
       title: t.categories.colSort,
@@ -251,9 +302,7 @@ export default function CategoriesPage() {
       key: 'is_show',
       width: 110,
       render: (value: boolean) => (
-        <Tag color={value ? 'green' : 'default'}>
-          {value ? t.common.visible : t.common.hidden}
-        </Tag>
+        <Tag color={value ? 'green' : 'default'}>{value ? t.common.visible : t.common.hidden}</Tag>
       ),
     },
     {
@@ -261,7 +310,11 @@ export default function CategoriesPage() {
       dataIndex: 'product_count',
       key: 'product_count',
       width: 100,
-      render: (v: number) => <Tag color="blue">{v} {t.categories.products}</Tag>,
+      render: (v: number) => (
+        <Tag color="blue">
+          {v} {t.categories.products}
+        </Tag>
+      ),
     },
     {
       title: t.common.actions,
@@ -269,7 +322,14 @@ export default function CategoriesPage() {
       width: 140,
       render: (_, record) => (
         <Space>
-          <Button type="link" size="small" style={{ padding: 0 }} onClick={() => openEditModal(record)}>{t.common.edit}</Button>
+          <Button
+            type="link"
+            size="small"
+            style={{ padding: 0 }}
+            onClick={() => openEditModal(record)}
+          >
+            {t.common.edit}
+          </Button>
           <Popconfirm
             title={t.categories.deleteConfirmTitle}
             description={t.categories.deleteConfirmDescription}
@@ -278,7 +338,15 @@ export default function CategoriesPage() {
             okButtonProps={{ danger: true, loading: deletingId === record.id }}
             onConfirm={() => handleDelete(record)}
           >
-            <Button type="link" size="small" danger loading={deletingId === record.id} style={{ padding: 0 }}>{t.common.delete}</Button>
+            <Button
+              type="link"
+              size="small"
+              danger
+              loading={deletingId === record.id}
+              style={{ padding: 0 }}
+            >
+              {t.common.delete}
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -290,7 +358,14 @@ export default function CategoriesPage() {
       <>
         {contextHolder}
         {notificationHolder}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 300,
+          }}
+        >
           <Spin size="large" />
         </div>
       </>
@@ -301,10 +376,23 @@ export default function CategoriesPage() {
     <div>
       {contextHolder}
       {notificationHolder}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginBottom: 24,
+        }}
+      >
         <div>
-          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.categories.title}</Title>
-          <Text type="secondary" style={{ fontSize: 13 }}>{t.categories.subtitle}</Text>
+          <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
+            {t.categories.title}
+          </Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            {t.categories.subtitle}
+          </Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
           {t.categories.addCategory}
@@ -318,12 +406,19 @@ export default function CategoriesPage() {
               placeholder={t.categories.searchPlaceholder}
               prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               style={{ width: '100%' }}
             />
           </Col>
         </Row>
-        <Table columns={columns} dataSource={filtered} rowKey="id" pagination={false} size="middle" scroll={{ x: 'max-content' }} />
+        <Table
+          columns={columns}
+          dataSource={filtered}
+          rowKey="id"
+          pagination={false}
+          size="middle"
+          scroll={{ x: 'max-content' }}
+        />
       </Card>
 
       <Modal
@@ -339,22 +434,43 @@ export default function CategoriesPage() {
           <Form.Item
             name="name_en"
             label={t.categories.nameEn}
-            rules={[{ required: true, message: t.categories.nameRequired }, { max: 120, message: t.categories.nameMax }]}
+            rules={[
+              { required: true, message: t.categories.nameRequired },
+              { max: 120, message: t.categories.nameMax },
+            ]}
           >
             <Input placeholder={t.categories.nameEnPlaceholder} />
           </Form.Item>
 
-          <Form.Item name="name_zh" label={t.categories.nameZh} rules={[{ required: true, message: t.categories.nameZhRequired }, { max: 120, message: t.categories.nameMax }]}>
+          <Form.Item
+            name="name_zh"
+            label={t.categories.nameZh}
+            rules={[
+              { required: true, message: t.categories.nameZhRequired },
+              { max: 120, message: t.categories.nameMax },
+            ]}
+          >
             <Input placeholder={t.categories.nameZhPlaceholder} />
           </Form.Item>
 
-          <Form.Item name="description" label={t.categories.description} rules={[{ required: true, message: t.categories.descriptionRequired }, { max: 500, message: t.categories.descriptionMax }]}>
+          <Form.Item
+            name="description"
+            label={t.categories.description}
+            rules={[
+              { required: true, message: t.categories.descriptionRequired },
+              { max: 500, message: t.categories.descriptionMax },
+            ]}
+          >
             <Input.TextArea rows={3} placeholder={t.categories.descriptionPlaceholder} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
-              <Form.Item name="sort_order" label={t.categories.sortOrder} rules={[{ required: true, message: t.categories.sortOrderRequired }]}>
+              <Form.Item
+                name="sort_order"
+                label={t.categories.sortOrder}
+                rules={[{ required: true, message: t.categories.sortOrderRequired }]}
+              >
                 <InputNumber min={0} precision={0} style={{ width: '100%' }} />
               </Form.Item>
             </Col>

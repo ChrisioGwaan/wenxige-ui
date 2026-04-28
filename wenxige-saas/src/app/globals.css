@@ -16,41 +16,84 @@ body {
 /* ── Login cinematic animations ── */
 
 @keyframes orb-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes ring-rotate {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @keyframes ring-rotate-rev {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
 }
 
 @keyframes particle-ascend {
-  0%   { transform: translateY(0)       rotate(0deg);   opacity: 0;   }
-  8%   {                                                 opacity: 1;   }
-  92%  {                                                 opacity: 0.4; }
-  100% { transform: translateY(-110vh)  rotate(540deg); opacity: 0;   }
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(540deg);
+    opacity: 0;
+  }
 }
 
 @keyframes steam-up {
-  0%, 100% { transform: translateY(0);    opacity: 0;   }
-  20%      {                              opacity: 0.65; }
-  80%      { transform: translateY(-22px); opacity: 0;  }
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.65;
+  }
+  80% {
+    transform: translateY(-22px);
+    opacity: 0;
+  }
 }
 
 @keyframes card-enter {
-  from { opacity: 0; transform: translateY(36px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes watermark-drift {
-  0%, 100% { letter-spacing: -0.01em; }
-  50%      { letter-spacing:  0.01em; }
+  0%,
+  100% {
+    letter-spacing: -0.01em;
+  }
+  50% {
+    letter-spacing: 0.01em;
+  }
 }
 
 /* ── Dashboard mobile overrides ── */

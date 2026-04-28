@@ -24,18 +24,28 @@ interface Order {
 }
 
 const fmtDate = (v: string | null) =>
-  v ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
+  v
+    ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    : '—'
 
 const fmtCurrency = (amount: number | null) =>
-  amount != null ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount) : '—'
+  amount != null
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+    : '—'
 
 const orderStatusColors: Record<string, string> = {
-  pending: 'orange', processing: 'blue', shipped: 'cyan',
-  delivered: 'green', cancelled: 'red',
+  pending: 'orange',
+  processing: 'blue',
+  shipped: 'cyan',
+  delivered: 'green',
+  cancelled: 'red',
 }
 
 const paymentStatusColors: Record<string, string> = {
-  pending: 'orange', paid: 'green', failed: 'red', refunded: 'purple',
+  pending: 'orange',
+  paid: 'green',
+  failed: 'red',
+  refunded: 'purple',
 }
 
 export default function OrdersPage() {
@@ -51,7 +61,9 @@ export default function OrdersPage() {
     async function load() {
       const { data } = await supabase
         .from('order')
-        .select('id, order_number, first_name, last_name, email, country, total, order_status, payment_status, created_at')
+        .select(
+          'id, order_number, first_name, last_name, email, country, total, order_status, payment_status, created_at',
+        )
         .order('created_at', { ascending: false })
       setAllOrders(data ?? [])
       setLoading(false)
@@ -62,7 +74,12 @@ export default function OrdersPage() {
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     return allOrders.filter((o) => {
-      if (q && !o.order_number.toLowerCase().includes(q) && !(o.email ?? '').toLowerCase().includes(q)) return false
+      if (
+        q &&
+        !o.order_number.toLowerCase().includes(q) &&
+        !(o.email ?? '').toLowerCase().includes(q)
+      )
+        return false
       if (statusFilter && o.order_status !== statusFilter) return false
       if (paymentFilter && o.payment_status !== paymentFilter) return false
       return true
@@ -75,7 +92,10 @@ export default function OrdersPage() {
       dataIndex: 'order_number',
       key: 'order_number',
       render: (v: string, r) => (
-        <Link href={`/orders/${r.id}`} style={{ color: '#9AB17A', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>
+        <Link
+          href={`/orders/${r.id}`}
+          style={{ color: '#9AB17A', fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}
+        >
           {v}
         </Link>
       ),
@@ -88,7 +108,9 @@ export default function OrdersPage() {
           <Text strong style={{ display: 'block' }}>
             {[r.first_name, r.last_name].filter(Boolean).join(' ') || '—'}
           </Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>{r.email}</Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {r.email}
+          </Text>
         </div>
       ),
     },
@@ -98,7 +120,7 @@ export default function OrdersPage() {
       key: 'country',
       width: 80,
       responsive: ['sm'],
-      render: (v: string | null) => v ? <Tag>{v}</Tag> : <Text type="secondary">—</Text>,
+      render: (v: string | null) => (v ? <Tag>{v}</Tag> : <Text type="secondary">—</Text>),
     },
     {
       title: t.orders.total,
@@ -147,8 +169,12 @@ export default function OrdersPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>{t.orders.title}</Title>
-        <Text type="secondary" style={{ fontSize: 13 }}>{t.orders.subtitle}</Text>
+        <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
+          {t.orders.title}
+        </Title>
+        <Text type="secondary" style={{ fontSize: 13 }}>
+          {t.orders.subtitle}
+        </Text>
       </div>
 
       <Card style={{ borderRadius: 12 }}>

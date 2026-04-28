@@ -66,13 +66,7 @@ function getOpenKeys(pathname: string): string[] {
   return []
 }
 
-export function DashboardShell({
-  children,
-  user,
-}: {
-  children: React.ReactNode
-  user: User
-}) {
+export function DashboardShell({ children, user }: { children: React.ReactNode; user: User }) {
   const { lang, setLang, t } = useLanguage()
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -84,14 +78,21 @@ export function DashboardShell({
   const [messageApi, msgContextHolder] = message.useMessage()
 
   // MFA management state
-  type TotpFactor = { id: string; status: string; created_at: string; friendly_name?: string | null }
+  type TotpFactor = {
+    id: string
+    status: string
+    created_at: string
+    friendly_name?: string | null
+  }
   const [mfaLoading, setMfaLoading] = useState(false)
   const [mfaFactor, setMfaFactor] = useState<TotpFactor | null>(null)
   const [enrolling, setEnrolling] = useState(false)
-  const [enrollData, setEnrollData] = useState<
-    | { factorId: string; challengeId: string; qr: string; secret: string }
-    | null
-  >(null)
+  const [enrollData, setEnrollData] = useState<{
+    factorId: string
+    challengeId: string
+    qr: string
+    secret: string
+  } | null>(null)
   const [verifying, setVerifying] = useState(false)
   const [unenrolling, setUnenrolling] = useState(false)
   const [fontScale, setFontScale] = useState<number>(FONT_SCALE_DEFAULT)
@@ -174,7 +175,9 @@ export function DashboardShell({
       }
       const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' })
       if (error || !data) throw error ?? new Error('enroll failed')
-      const { data: challenge, error: chErr } = await supabase.auth.mfa.challenge({ factorId: data.id })
+      const { data: challenge, error: chErr } = await supabase.auth.mfa.challenge({
+        factorId: data.id,
+      })
       if (chErr || !challenge) throw chErr ?? new Error('challenge failed')
       setEnrollData({
         factorId: data.id,
@@ -192,7 +195,11 @@ export function DashboardShell({
   const cancelEnroll = async () => {
     if (enrollData) {
       const supabase = createClient()
-      try { await supabase.auth.mfa.unenroll({ factorId: enrollData.factorId }) } catch { /* noop */ }
+      try {
+        await supabase.auth.mfa.unenroll({ factorId: enrollData.factorId })
+      } catch {
+        /* noop */
+      }
     }
     setEnrolling(false)
     setEnrollData(null)
@@ -246,7 +253,9 @@ export function DashboardShell({
     try {
       await navigator.clipboard.writeText(enrollData.secret)
       messageApi.success(t.profile.mfaCopied)
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }
 
   const handleProfileSave = async () => {
@@ -270,37 +279,43 @@ export function DashboardShell({
     }
   }
 
-  const navItems = useMemo(() => [
-    {
-      key: '/dashboard',
-      icon: <DashboardOutlined />,
-      label: <Link href="/dashboard">{t.nav.dashboard}</Link>,
-    },
-    {
-      key: 'products-group',
-      icon: <ShoppingOutlined />,
-      label: t.nav.products,
-      children: [
-        { key: '/products', label: <Link href="/products">{t.nav.allProducts}</Link> },
-        { key: '/products/categories', label: <Link href="/products/categories">{t.nav.categories}</Link> },
-        { key: '/products/brands', label: <Link href="/products/brands">{t.nav.brands}</Link> },
-      ],
-    },
-    {
-      key: 'orders-group',
-      icon: <ShoppingCartOutlined />,
-      label: t.nav.orders,
-      children: [
-        { key: '/orders', label: <Link href="/orders">{t.nav.allOrders}</Link> },
-        { key: '/shipments', label: <Link href="/shipments">{t.nav.shipments}</Link> },
-      ],
-    },
-    {
-      key: '/inquiries',
-      icon: <MessageOutlined />,
-      label: <Link href="/inquiries">{t.nav.inquiries}</Link>,
-    },
-  ], [t])
+  const navItems = useMemo(
+    () => [
+      {
+        key: '/dashboard',
+        icon: <DashboardOutlined />,
+        label: <Link href="/dashboard">{t.nav.dashboard}</Link>,
+      },
+      {
+        key: 'products-group',
+        icon: <ShoppingOutlined />,
+        label: t.nav.products,
+        children: [
+          { key: '/products', label: <Link href="/products">{t.nav.allProducts}</Link> },
+          {
+            key: '/products/categories',
+            label: <Link href="/products/categories">{t.nav.categories}</Link>,
+          },
+          { key: '/products/brands', label: <Link href="/products/brands">{t.nav.brands}</Link> },
+        ],
+      },
+      {
+        key: 'orders-group',
+        icon: <ShoppingCartOutlined />,
+        label: t.nav.orders,
+        children: [
+          { key: '/orders', label: <Link href="/orders">{t.nav.allOrders}</Link> },
+          { key: '/shipments', label: <Link href="/shipments">{t.nav.shipments}</Link> },
+        ],
+      },
+      {
+        key: '/inquiries',
+        icon: <MessageOutlined />,
+        label: <Link href="/inquiries">{t.nav.inquiries}</Link>,
+      },
+    ],
+    [t],
+  )
 
   const userMenuItems: MenuProps['items'] = [
     {
@@ -344,14 +359,36 @@ export function DashboardShell({
           boxShadow: '0 4px 12px rgba(154,177,122,0.45)',
         }}
       >
-        <Image src="/Lumi_Tea_Logo-removebg.png" alt="Lumi Tea" width={32} height={32} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+        <Image
+          src="/Lumi_Tea_Logo-removebg.png"
+          alt="Lumi Tea"
+          width={32}
+          height={32}
+          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+        />
       </div>
       {expanded && (
         <div style={{ overflow: 'hidden' }}>
-          <Text strong style={{ color: '#ffffff', fontSize: 15, display: 'block', whiteSpace: 'nowrap', lineHeight: 1.3 }}>
+          <Text
+            strong
+            style={{
+              color: '#ffffff',
+              fontSize: 15,
+              display: 'block',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.3,
+            }}
+          >
             Lumi Tea
           </Text>
-          <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, display: 'block', whiteSpace: 'nowrap' }}>
+          <Text
+            style={{
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: 11,
+              display: 'block',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {t.nav.storeAdmin}
           </Text>
         </div>
@@ -432,7 +469,10 @@ export function DashboardShell({
             onClose={() => setCollapsed(true)}
             closable={false}
             zIndex={200}
-            styles={{ body: { padding: 0, background: SIDEBAR_BG }, wrapper: { width: SIDEBAR_WIDTH } }}
+            styles={{
+              body: { padding: 0, background: SIDEBAR_BG },
+              wrapper: { width: SIDEBAR_WIDTH },
+            }}
           >
             {logoContent(true)}
             {sidebarMenu}
@@ -495,8 +535,12 @@ export function DashboardShell({
                     borderRadius: 8,
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#F0EAD6')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLElement).style.background = '#F0EAD6')
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLElement).style.background = 'transparent')
+                  }
                 >
                   <Avatar size={32} icon={<UserOutlined />} style={{ background: '#9AB17A' }} />
                   {!isMobile && (
@@ -537,9 +581,22 @@ export function DashboardShell({
         width={520}
         destroyOnHidden
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0 16px' }}>
-          <Avatar size={64} icon={<UserOutlined />} style={{ background: '#9AB17A', marginBottom: 10 }} />
-          <Text type="secondary" style={{ fontSize: 13 }}>{user.email}</Text>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '16px 0 16px',
+          }}
+        >
+          <Avatar
+            size={64}
+            icon={<UserOutlined />}
+            style={{ background: '#9AB17A', marginBottom: 10 }}
+          />
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            {user.email}
+          </Text>
         </div>
         <Tabs
           defaultActiveKey="profile"
@@ -558,10 +615,16 @@ export function DashboardShell({
                         { max: 60, message: t.profile.displayNameMax },
                       ]}
                     >
-                      <Input placeholder={t.profile.placeholder} maxLength={60} style={{ borderRadius: 8 }} />
+                      <Input
+                        placeholder={t.profile.placeholder}
+                        maxLength={60}
+                        style={{ borderRadius: 8 }}
+                      />
                     </Form.Item>
                   </Form>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+                  <div
+                    style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}
+                  >
                     <Button onClick={closeProfile}>{t.common.cancel}</Button>
                     <Button
                       type="primary"
@@ -589,12 +652,17 @@ export function DashboardShell({
                       <Tag>{t.profile.mfaStatusDisabled}</Tag>
                     )}
                   </Space>
-                  <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 13 }}>
+                  <Text
+                    type="secondary"
+                    style={{ display: 'block', marginBottom: 16, fontSize: 13 }}
+                  >
                     {t.profile.mfaDescription}
                   </Text>
 
                   {mfaLoading ? (
-                    <div style={{ textAlign: 'center', padding: 24 }}><Spin /></div>
+                    <div style={{ textAlign: 'center', padding: 24 }}>
+                      <Spin />
+                    </div>
                   ) : mfaFactor && !enrolling ? (
                     <div
                       style={{
@@ -626,9 +694,20 @@ export function DashboardShell({
                       </Popconfirm>
                     </div>
                   ) : enrolling && enrollData ? (
-                    <div style={{ border: '1px solid #E4DFB5', borderRadius: 8, padding: 16, background: '#FBF8EC' }}>
-                      <Text strong style={{ display: 'block', marginBottom: 8 }}>{t.profile.mfaEnrollTitle}</Text>
-                      <Text style={{ fontSize: 13, display: 'block', marginBottom: 12 }}>{t.profile.mfaScanQr}</Text>
+                    <div
+                      style={{
+                        border: '1px solid #E4DFB5',
+                        borderRadius: 8,
+                        padding: 16,
+                        background: '#FBF8EC',
+                      }}
+                    >
+                      <Text strong style={{ display: 'block', marginBottom: 8 }}>
+                        {t.profile.mfaEnrollTitle}
+                      </Text>
+                      <Text style={{ fontSize: 13, display: 'block', marginBottom: 12 }}>
+                        {t.profile.mfaScanQr}
+                      </Text>
                       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -639,17 +718,30 @@ export function DashboardShell({
                           style={{ background: '#fff', padding: 8, borderRadius: 8 }}
                         />
                       </div>
-                      <Text style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>{t.profile.mfaManualSecret}</Text>
+                      <Text style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>
+                        {t.profile.mfaManualSecret}
+                      </Text>
                       <Space.Compact style={{ width: '100%', marginBottom: 16 }}>
-                        <Input value={enrollData.secret} readOnly style={{ fontFamily: 'monospace' }} />
-                        <Button icon={<CopyOutlined />} onClick={copySecret}>{t.profile.mfaCopySecret}</Button>
+                        <Input
+                          value={enrollData.secret}
+                          readOnly
+                          style={{ fontFamily: 'monospace' }}
+                        />
+                        <Button icon={<CopyOutlined />} onClick={copySecret}>
+                          {t.profile.mfaCopySecret}
+                        </Button>
                       </Space.Compact>
-                      <Text style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>{t.profile.mfaEnterCode}</Text>
+                      <Text style={{ fontSize: 13, display: 'block', marginBottom: 8 }}>
+                        {t.profile.mfaEnterCode}
+                      </Text>
                       <Form form={mfaForm} layout="vertical" requiredMark={false}>
                         <Form.Item
                           name="mfa_code"
                           rules={[
-                            { required: true, message: t.profile.mfaEnrollError + t.profile.mfaTitle },
+                            {
+                              required: true,
+                              message: t.profile.mfaEnrollError + t.profile.mfaTitle,
+                            },
                             { pattern: /^\d{6}$/, message: t.profile.mfaEnrollError + '000000' },
                           ]}
                           style={{ marginBottom: 12 }}
@@ -671,7 +763,11 @@ export function DashboardShell({
                       </div>
                     </div>
                   ) : (
-                    <Button type="primary" icon={<SafetyCertificateOutlined />} onClick={startEnroll}>
+                    <Button
+                      type="primary"
+                      icon={<SafetyCertificateOutlined />}
+                      onClick={startEnroll}
+                    >
                       {t.profile.mfaEnable}
                     </Button>
                   )}
@@ -687,7 +783,10 @@ export function DashboardShell({
                     <Text strong>{t.profile.textSize}</Text>
                     <Tag color="green">{fontScale}%</Tag>
                   </Space>
-                  <Text type="secondary" style={{ display: 'block', marginBottom: 16, fontSize: 13 }}>
+                  <Text
+                    type="secondary"
+                    style={{ display: 'block', marginBottom: 16, fontSize: 13 }}
+                  >
                     {t.profile.textSizeDescription}
                   </Text>
                   <Slider
@@ -697,11 +796,21 @@ export function DashboardShell({
                     value={fontScale}
                     onChange={updateFontScale}
                     onChangeComplete={updateFontScale}
-                    marks={{ 100: '100%', 110: '110%', 120: '120%', 130: '130%', 140: '140%', 150: '150%' }}
+                    marks={{
+                      100: '100%',
+                      110: '110%',
+                      120: '120%',
+                      130: '130%',
+                      140: '140%',
+                      150: '150%',
+                    }}
                     tooltip={{ formatter: (v) => `${v}%` }}
                   />
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
-                    <Button onClick={() => updateFontScale(FONT_SCALE_DEFAULT)} disabled={fontScale === FONT_SCALE_DEFAULT}>
+                    <Button
+                      onClick={() => updateFontScale(FONT_SCALE_DEFAULT)}
+                      disabled={fontScale === FONT_SCALE_DEFAULT}
+                    >
                       {t.profile.textSizeReset}
                     </Button>
                   </div>

@@ -80,30 +80,60 @@ interface Shipment {
 }
 
 const fmtDate = (v: string | null) =>
-  v ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
+  v
+    ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+    : '—'
 
 const fmtDateTime = (v: string | null) =>
-  v ? new Date(v).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
+  v
+    ? new Date(v).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '—'
 
 const fmtCurrency = (amount: number | null) =>
-  amount != null ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount) : '—'
+  amount != null
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+    : '—'
 
 const carrierName: Record<string, string> = {
-  ems: 'EMS', sf_express: 'SF Express', dhl: 'DHL',
-  ups: 'UPS', fedex: 'FedEx', china_post: 'China Post', yanwen: 'Yanwen', cainiao: 'Cainiao',
+  ems: 'EMS',
+  sf_express: 'SF Express',
+  dhl: 'DHL',
+  ups: 'UPS',
+  fedex: 'FedEx',
+  china_post: 'China Post',
+  yanwen: 'Yanwen',
+  cainiao: 'Cainiao',
 }
 
 const orderStatusColors: Record<string, string> = {
-  pending: 'orange', processing: 'blue', shipped: 'cyan', delivered: 'green', cancelled: 'red',
+  pending: 'orange',
+  processing: 'blue',
+  shipped: 'cyan',
+  delivered: 'green',
+  cancelled: 'red',
 }
 
 const shipmentStatusColors: Record<string, string> = {
-  pending: 'default', picked_up: 'blue', in_transit: 'cyan',
-  out_for_delivery: 'purple', delivered: 'green', exception: 'red', returned: 'orange',
+  pending: 'default',
+  picked_up: 'blue',
+  in_transit: 'cyan',
+  out_for_delivery: 'purple',
+  delivered: 'green',
+  exception: 'red',
+  returned: 'orange',
 }
 
 const paymentStatusColors: Record<string, string> = {
-  pending: 'orange', paid: 'green', failed: 'red', refunded: 'default',
+  pending: 'orange',
+  paid: 'green',
+  failed: 'red',
+  refunded: 'default',
 }
 
 export default function OrderDetailPage() {
@@ -125,7 +155,9 @@ export default function OrderDetailPage() {
         <div>
           <Text strong>{r.product_name_en ?? '—'}</Text>
           {r.variant_name_en && (
-            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>{r.variant_name_en}</Text>
+            <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
+              {r.variant_name_en}
+            </Text>
           )}
         </div>
       ),
@@ -135,7 +167,14 @@ export default function OrderDetailPage() {
       dataIndex: 'sku',
       key: 'sku',
       responsive: ['sm'],
-      render: (v: string | null) => v ? <Text code style={{ fontSize: 11 }}>{v}</Text> : <Text type="secondary">—</Text>,
+      render: (v: string | null) =>
+        v ? (
+          <Text code style={{ fontSize: 11 }}>
+            {v}
+          </Text>
+        ) : (
+          <Text type="secondary">—</Text>
+        ),
     },
     {
       title: t.orders.colUnitPrice,
@@ -156,15 +195,23 @@ export default function OrderDetailPage() {
     if (!id) return
     const supabase = createClient()
     async function load() {
-      const [
-        { data: orderData, error },
-        { data: itemsData },
-        { data: shipmentData },
-      ] = await Promise.all([
-        supabase.from('order').select('*').eq('id', id).single(),
-        supabase.from('order_item').select('id, product_name_en, product_name_zh, variant_name_en, sku, unit_price, quantity, line_total').eq('order_id', id),
-        supabase.from('order_shipment').select('id, carrier_code, tracking_number, tracking_url, shipment_status, estimated_delivery, shipped_at, delivered_at').eq('order_id', id).maybeSingle(),
-      ])
+      const [{ data: orderData, error }, { data: itemsData }, { data: shipmentData }] =
+        await Promise.all([
+          supabase.from('order').select('*').eq('id', id).single(),
+          supabase
+            .from('order_item')
+            .select(
+              'id, product_name_en, product_name_zh, variant_name_en, sku, unit_price, quantity, line_total',
+            )
+            .eq('order_id', id),
+          supabase
+            .from('order_shipment')
+            .select(
+              'id, carrier_code, tracking_number, tracking_url, shipment_status, estimated_delivery, shipped_at, delivered_at',
+            )
+            .eq('order_id', id)
+            .maybeSingle(),
+        ])
       if (error || !orderData) {
         setNotFound(true)
       } else {
@@ -179,7 +226,9 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}
+      >
         <Spin size="large" />
       </div>
     )
@@ -191,23 +240,32 @@ export default function OrderDetailPage() {
         status="404"
         title={t.orders.notFound}
         subTitle={t.orders.notFoundDesc}
-        extra={<Link href="/orders"><Button type="primary">{t.orders.backToOrders}</Button></Link>}
+        extra={
+          <Link href="/orders">
+            <Button type="primary">{t.orders.backToOrders}</Button>
+          </Link>
+        }
       />
     )
   }
 
   const orderStatusColor = orderStatusColors[order.order_status] ?? 'default'
-  const orderStatusLabel = (t.orders as Record<string, string>)[order.order_status] ?? order.order_status
+  const orderStatusLabel =
+    (t.orders as Record<string, string>)[order.order_status] ?? order.order_status
 
   const timelineItems = [
     {
       color: 'green',
       children: (
         <>
-          <Text strong>{t.orders.orderPlaced}</Text><br />
+          <Text strong>{t.orders.orderPlaced}</Text>
+          <br />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {fmtDateTime(order.created_at)} — {t.orders.paymentReceived.toLowerCase()} {order.payment_status}
-            {order.payment_method ? ` ${t.orders.via} ${order.payment_method.replace(/_/g, ' ')}` : ''}
+            {fmtDateTime(order.created_at)} — {t.orders.paymentReceived.toLowerCase()}{' '}
+            {order.payment_status}
+            {order.payment_method
+              ? ` ${t.orders.via} ${order.payment_method.replace(/_/g, ' ')}`
+              : ''}
           </Text>
         </>
       ),
@@ -219,7 +277,8 @@ export default function OrderDetailPage() {
       color: 'blue',
       children: (
         <>
-          <Text strong>{t.orders.paymentReceived}</Text><br />
+          <Text strong>{t.orders.paymentReceived}</Text>
+          <br />
           <Text type="secondary" style={{ fontSize: 12 }}>
             {fmtCurrency(order.total)} {t.orders.charged}
             {order.payment_ref ? ` — ${t.orders.ref}: ${order.payment_ref}` : ''}
@@ -234,9 +293,11 @@ export default function OrderDetailPage() {
       color: 'cyan',
       children: (
         <>
-          <Text strong>{(t.orders as Record<string, string>)['shipped'] ?? 'Shipped'}</Text><br />
+          <Text strong>{(t.orders as Record<string, string>)['shipped'] ?? 'Shipped'}</Text>
+          <br />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {fmtDateTime(shipment.shipped_at)} — {carrierName[shipment.carrier_code ?? ''] ?? shipment.carrier_code}
+            {fmtDateTime(shipment.shipped_at)} —{' '}
+            {carrierName[shipment.carrier_code ?? ''] ?? shipment.carrier_code}
             {shipment.tracking_number ? ` · ${shipment.tracking_number}` : ''}
           </Text>
         </>
@@ -249,8 +310,11 @@ export default function OrderDetailPage() {
       color: 'green',
       children: (
         <>
-          <Text strong>{(t.orders as Record<string, string>)['delivered'] ?? 'Delivered'}</Text><br />
-          <Text type="secondary" style={{ fontSize: 12 }}>{fmtDateTime(shipment.delivered_at)}</Text>
+          <Text strong>{(t.orders as Record<string, string>)['delivered'] ?? 'Delivered'}</Text>
+          <br />
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {fmtDateTime(shipment.delivered_at)}
+          </Text>
         </>
       ),
     })
@@ -266,11 +330,21 @@ export default function OrderDetailPage() {
     order.address_line2,
     [order.city, order.state_province, order.postal_code].filter(Boolean).join(', '),
     order.country,
-  ].filter(Boolean).join('\n')
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          marginBottom: 24,
+          flexWrap: 'wrap',
+        }}
+      >
         <Link href="/orders">
           <Button type="text" icon={<ArrowLeftOutlined />} style={{ color: '#64748b' }}>
             {t.orders.backToOrders}
@@ -280,24 +354,45 @@ export default function OrderDetailPage() {
         <Title level={4} style={{ margin: 0, color: '#0f172a' }}>
           {order.order_number}
         </Title>
-        <Tag color={orderStatusColor} style={{ marginLeft: 4 }}>{orderStatusLabel}</Tag>
+        <Tag color={orderStatusColor} style={{ marginLeft: 4 }}>
+          {orderStatusLabel}
+        </Tag>
       </div>
 
       <Row gutter={[16, 16]}>
         {/* Order Items */}
         <Col span={24}>
           <Card title={t.orders.orderItems} style={{ borderRadius: 12 }}>
-            <Table columns={itemColumns} dataSource={items} rowKey="id" pagination={false} size="middle" scroll={{ x: 'max-content' }} />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, gap: 8, flexDirection: 'column', alignItems: 'flex-end' }}>
+            <Table
+              columns={itemColumns}
+              dataSource={items}
+              rowKey="id"
+              pagination={false}
+              size="middle"
+              scroll={{ x: 'max-content' }}
+            />
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginTop: 16,
+                gap: 8,
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+              }}
+            >
               <Space style={{ fontSize: 13 }}>
-                <Text type="secondary">{t.orders.subtotal}:</Text><Text>{fmtCurrency(order.subtotal)}</Text>
+                <Text type="secondary">{t.orders.subtotal}:</Text>
+                <Text>{fmtCurrency(order.subtotal)}</Text>
               </Space>
               <Space style={{ fontSize: 13 }}>
-                <Text type="secondary">{t.orders.shipping}:</Text><Text>{fmtCurrency(order.shipping_cost)}</Text>
+                <Text type="secondary">{t.orders.shipping}:</Text>
+                <Text>{fmtCurrency(order.shipping_cost)}</Text>
               </Space>
               {(order.tax ?? 0) > 0 && (
                 <Space style={{ fontSize: 13 }}>
-                  <Text type="secondary">{t.orders.tax}:</Text><Text>{fmtCurrency(order.tax)}</Text>
+                  <Text type="secondary">{t.orders.tax}:</Text>
+                  <Text>{fmtCurrency(order.tax)}</Text>
                 </Space>
               )}
               {(order.discount ?? 0) > 0 && (
@@ -309,7 +404,9 @@ export default function OrderDetailPage() {
               <Divider style={{ margin: '8px 0' }} />
               <Space style={{ fontSize: 16 }}>
                 <Text strong>{t.orders.total}:</Text>
-                <Text strong style={{ color: '#9AB17A' }}>{fmtCurrency(order.total)}</Text>
+                <Text strong style={{ color: '#9AB17A' }}>
+                  {fmtCurrency(order.total)}
+                </Text>
               </Space>
             </div>
           </Card>
@@ -317,8 +414,19 @@ export default function OrderDetailPage() {
 
         {/* Customer */}
         <Col xs={24} md={12}>
-          <Card title={<Space><UserOutlined /> {t.orders.customerSection}</Space>} style={{ borderRadius: 12, height: '100%' }}>
-            <Descriptions column={1} size="small" styles={{ label: { color: '#64748b', width: 100 } }}>
+          <Card
+            title={
+              <Space>
+                <UserOutlined /> {t.orders.customerSection}
+              </Space>
+            }
+            style={{ borderRadius: 12, height: '100%' }}
+          >
+            <Descriptions
+              column={1}
+              size="small"
+              styles={{ label: { color: '#64748b', width: 100 } }}
+            >
               <Descriptions.Item label={t.orders.name}>
                 {[order.first_name, order.last_name].filter(Boolean).join(' ') || '—'}
               </Descriptions.Item>
@@ -330,31 +438,51 @@ export default function OrderDetailPage() {
 
         {/* Shipping Address */}
         <Col xs={24} md={12}>
-          <Card title={<Space><EnvironmentOutlined /> {t.orders.shippingAddress}</Space>} style={{ borderRadius: 12, height: '100%' }}>
-            <Text style={{ whiteSpace: 'pre-line', fontSize: 13 }}>
-              {shippingAddress || '—'}
-            </Text>
+          <Card
+            title={
+              <Space>
+                <EnvironmentOutlined /> {t.orders.shippingAddress}
+              </Space>
+            }
+            style={{ borderRadius: 12, height: '100%' }}
+          >
+            <Text style={{ whiteSpace: 'pre-line', fontSize: 13 }}>{shippingAddress || '—'}</Text>
           </Card>
         </Col>
 
         {/* Payment */}
         <Col xs={24} md={12}>
-          <Card title={<Space><DollarOutlined /> {t.orders.paymentSection}</Space>} style={{ borderRadius: 12 }}>
-            <Descriptions column={1} size="small" styles={{ label: { color: '#64748b', width: 120 } }}>
+          <Card
+            title={
+              <Space>
+                <DollarOutlined /> {t.orders.paymentSection}
+              </Space>
+            }
+            style={{ borderRadius: 12 }}
+          >
+            <Descriptions
+              column={1}
+              size="small"
+              styles={{ label: { color: '#64748b', width: 120 } }}
+            >
               <Descriptions.Item label={t.orders.paymentMethod}>
                 {order.payment_method
-                  ? order.payment_method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+                  ? order.payment_method.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
                   : '—'}
               </Descriptions.Item>
               <Descriptions.Item label={t.orders.paymentStatus}>
                 {(() => {
                   const color = paymentStatusColors[order.payment_status] ?? 'default'
-                  const label = (t.orders as Record<string, string>)[order.payment_status] ?? order.payment_status
+                  const label =
+                    (t.orders as Record<string, string>)[order.payment_status] ??
+                    order.payment_status
                   return <Tag color={color}>{label}</Tag>
                 })()}
               </Descriptions.Item>
               {order.payment_ref && (
-                <Descriptions.Item label={t.orders.paymentRef}>{order.payment_ref}</Descriptions.Item>
+                <Descriptions.Item label={t.orders.paymentRef}>
+                  {order.payment_ref}
+                </Descriptions.Item>
               )}
             </Descriptions>
           </Card>
@@ -362,13 +490,26 @@ export default function OrderDetailPage() {
 
         {/* Shipment */}
         <Col xs={24} md={12}>
-          <Card title={<Space><CarOutlined /> {t.orders.shipmentSection}</Space>} style={{ borderRadius: 12 }}>
+          <Card
+            title={
+              <Space>
+                <CarOutlined /> {t.orders.shipmentSection}
+              </Space>
+            }
+            style={{ borderRadius: 12 }}
+          >
             {shipment ? (
-              <Descriptions column={1} size="small" styles={{ label: { color: '#64748b', width: 120 } }}>
+              <Descriptions
+                column={1}
+                size="small"
+                styles={{ label: { color: '#64748b', width: 120 } }}
+              >
                 <Descriptions.Item label={t.orders.shipmentStatus}>
                   {(() => {
                     const color = shipmentStatusColors[shipment.shipment_status] ?? 'default'
-                    const label = (t.shipments as Record<string, string>)[shipment.shipment_status] ?? shipment.shipment_status
+                    const label =
+                      (t.shipments as Record<string, string>)[shipment.shipment_status] ??
+                      shipment.shipment_status
                     return <Tag color={color}>{label}</Tag>
                   })()}
                 </Descriptions.Item>
@@ -382,18 +523,28 @@ export default function OrderDetailPage() {
                         {shipment.tracking_number}
                       </a>
                     ) : (
-                      <Text code style={{ fontSize: 11 }}>{shipment.tracking_number}</Text>
+                      <Text code style={{ fontSize: 11 }}>
+                        {shipment.tracking_number}
+                      </Text>
                     )
-                  ) : '—'}
+                  ) : (
+                    '—'
+                  )}
                 </Descriptions.Item>
-                <Descriptions.Item label={t.orders.estDelivery}>{fmtDate(shipment.estimated_delivery)}</Descriptions.Item>
+                <Descriptions.Item label={t.orders.estDelivery}>
+                  {fmtDate(shipment.estimated_delivery)}
+                </Descriptions.Item>
                 {shipment.delivered_at && (
-                  <Descriptions.Item label={t.orders.deliveredAt}>{fmtDateTime(shipment.delivered_at)}</Descriptions.Item>
+                  <Descriptions.Item label={t.orders.deliveredAt}>
+                    {fmtDateTime(shipment.delivered_at)}
+                  </Descriptions.Item>
                 )}
               </Descriptions>
             ) : (
               <>
-                <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>{t.common.noShipmentYet}</Text>
+                <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+                  {t.common.noShipmentYet}
+                </Text>
                 <Button type="dashed" size="small" icon={<CarOutlined />} style={{ width: '100%' }}>
                   {t.common.addShipment}
                 </Button>

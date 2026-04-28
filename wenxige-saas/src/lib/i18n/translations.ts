@@ -32,7 +32,8 @@ const translations = {
       textSizeDescription: 'Adjust the size of text across the dashboard. Range 100% – 150%.',
       textSizeReset: 'Reset to 100%',
       mfaTitle: 'Two-Factor Authentication (TOTP)',
-      mfaDescription: 'Add an extra layer of security by requiring a 6-digit code from an authenticator app at sign-in.',
+      mfaDescription:
+        'Add an extra layer of security by requiring a 6-digit code from an authenticator app at sign-in.',
       mfaStatusEnabled: 'Enabled',
       mfaStatusDisabled: 'Not enabled',
       mfaEnrolled: 'Authenticator app',
@@ -42,7 +43,8 @@ const translations = {
       mfaDisableConfirmTitle: 'Disable two-factor authentication?',
       mfaDisableConfirmDesc: 'Your account will be less secure. You can re-enable it at any time.',
       mfaEnrollTitle: 'Set up Authenticator',
-      mfaScanQr: 'Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, …).',
+      mfaScanQr:
+        'Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, …).',
       mfaManualSecret: 'Or enter this secret manually:',
       mfaEnterCode: 'Enter the 6-digit code from your app to confirm:',
       mfaEnrollSuccess: 'Two-factor authentication enabled',
@@ -428,7 +430,8 @@ const translations = {
       mfaDisableConfirmTitle: '关闭两步验证？',
       mfaDisableConfirmDesc: '关闭后账号安全性将降低，您可以随时重新启用。',
       mfaEnrollTitle: '绑定身份验证器',
-      mfaScanQr: '请使用身份验证器应用扫描以下二维码（Google Authenticator、Authy、1Password 等）。',
+      mfaScanQr:
+        '请使用身份验证器应用扫描以下二维码（Google Authenticator、Authy、1Password 等）。',
       mfaManualSecret: '或手动输入以下密钥：',
       mfaEnterCode: '请输入应用中显示的 6 位验证码以完成绑定：',
       mfaEnrollSuccess: '两步验证已启用',
