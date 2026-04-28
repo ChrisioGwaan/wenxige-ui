@@ -46,6 +46,14 @@ function TurnstileWidget({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const widgetIdRef = useRef<string | null>(null)
+  const onTokenRef = useRef(onToken)
+  const onErrorRef = useRef(onError)
+
+  // Keep latest callbacks without re-running the render effect
+  useEffect(() => {
+    onTokenRef.current = onToken
+    onErrorRef.current = onError
+  }, [onToken, onError])
 
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY) return
@@ -59,9 +67,9 @@ function TurnstileWidget({
         sitekey: TURNSTILE_SITE_KEY,
         theme: 'dark',
         size: 'flexible',
-        callback: (token) => onToken(token),
-        'error-callback': () => onError(),
-        'expired-callback': () => onError(),
+        callback: (token) => onTokenRef.current(token),
+        'error-callback': () => onErrorRef.current(),
+        'expired-callback': () => onErrorRef.current(),
       })
     }
 
@@ -84,7 +92,9 @@ function TurnstileWidget({
       }
       widgetIdRef.current = null
     }
-  }, [onToken, onError])
+    // Render exactly once; latest callbacks are read via refs above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (!TURNSTILE_SITE_KEY) return null
   return (
