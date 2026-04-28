@@ -3,12 +3,22 @@ name: CI
 on:
   pull_request:
     branches: [feature]
+    paths:
+      - 'wenxige-saas/**'
+      - '.github/workflows/ci.yml'
   push:
     branches: [feature]
+    paths:
+      - 'wenxige-saas/**'
+      - '.github/workflows/ci.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: wenxige-saas
 
 jobs:
   lint:
@@ -63,9 +73,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock', '**/bun.lockb') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+            ${{ github.workspace }}/wenxige-saas/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('wenxige-saas/bun.lock', 'wenxige-saas/bun.lockb') }}-${{ hashFiles('wenxige-saas/**/*.[jt]s', 'wenxige-saas/**/*.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lock', '**/bun.lockb') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('wenxige-saas/bun.lock', 'wenxige-saas/bun.lockb') }}-
       - run: bun install --frozen-lockfile
       - run: bun run build
