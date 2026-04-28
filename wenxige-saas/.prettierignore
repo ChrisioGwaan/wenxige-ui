@@ -1,0 +1,8 @@
+.next
+out
+build
+node_modules
+public
+supabase_schema
+*.lock
+bun.lockb
